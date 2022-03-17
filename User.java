@@ -15,5 +15,17 @@ public class User {
 	public User() {
 		
 	}
+	
+	public void viewTransactions() {
+		
+	}
+	
+	public void placeTransaction() {
+		
+	}
+	
+	public void placeOrder() {
+		
+	}
 
 }
