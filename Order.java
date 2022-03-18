@@ -7,8 +7,29 @@ public class Order {
 	private int quantity;
 	private String stockSymbol;
 	
-	public Order() {
-		
+	//Constructor
+	public Order(String userIDNum, String orderIDNum, int type, int amount, String stockName) {
+		userID = userIDNum;
+		orderID = orderIDNum;
+		orderType = type;
+		quantity = amount;
+		stockSymbol = stockName;
 	}
 
+	//Gettter functions
+	public String getOrderID() {
+		return orderID;
+	}
+
+	public int getOrderType() {
+		return orderType;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public String getStockSymbol() {
+		return stockSymbol;
+	}
 }

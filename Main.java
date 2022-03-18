@@ -6,6 +6,11 @@
 public class Main {
 
 	public static void main(String[] args) {
+		initialize();
+	}
+
+	//Starts up program
+	public static void initialize() {
 
 	}
 

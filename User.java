@@ -12,20 +12,80 @@ public class User {
 	private String fullName;
 	private double balance;
 	
-	public User() {
-		
+	//Constructor
+	public User(String idNum, String userName, String passWord, String emailAddress, String ssnum, String physicalAddress, 
+					String creditInfo, String name, double money) {
+		id = idNum;
+		username = userName;
+		password = passWord;
+		email = emailAddress;
+		ssn = ssnum;
+		address = physicalAddress;
+		creditCardInfo = creditInfo;
+		fullName = name;
+		balance = money;
 	}
 	
+	//Brings up a list of past transactions
 	public void viewTransactions() {
 		
 	}
 	
-	public void placeTransaction() {
+	//Makes a transaction
+	public void placeTransaction(double amount, String date) {
 		
 	}
 	
-	public void placeOrder() {
+	//Places an order for a specified stock and quantity. Type is used to indicate buying vs selling.
+	public void placeOrder(String stockSymbol, int quantity, int type) {
 		
+	}
+
+	//Allows user to update some aspects of their account information
+	public void updateAccountInfo(String emailAddress, String phoneNum, String physicalAddress, String creditInfo, 
+										String name) {
+
+	}
+
+	//Getter functions
+	public String getID() {
+		return id;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public String getSSN() {
+		return ssn;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public String getCreditCardInfo() {
+		return creditCardInfo;
+	}
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public double getBalance() {
+		return balance;
 	}
 
 }
