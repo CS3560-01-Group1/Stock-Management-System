@@ -3,9 +3,11 @@ public class MonetaryTransaction extends Transaction {
 
 	private double fundsTransferred;
 	private String fundDestination;
+	final private static int type = 0; //0 denotes that this is a MonetaryTransaction subclass of Transaction (should never change)
+									   //this may be an unnecessary specification?
 	
 	//Constructor
-	public MonetaryTransaction(String userIDNum, String transactionIDNum, String date, int type, double funds, 
+	public MonetaryTransaction(String userIDNum, String transactionIDNum, String date, double funds, 
 									String destination) {
 		super(userIDNum, transactionIDNum, date, type);
 		fundsTransferred = funds;

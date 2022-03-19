@@ -26,17 +26,28 @@ public class User {
 		balance = money;
 	}
 	
-	//Brings up a list of past transactions
+	//Brings up a list of past transactions (both monetary AND stock at the moment?)
 	public void viewTransactions() {
 		
 	}
 	
-	//Makes a transaction
+
+	//Displays the total amount of shares (per unique stock) owned by the user
+	public void viewPortfolio()
+	{
+		/* 
+		 * Find the latest StockTransaction for each unique stock the user has traded 
+		 * then return/display a list of the "share totals" stored as an attribute for the given stock
+		 */
+	}
+	
+	//Makes a MonetaryTransaction
 	public void placeTransaction(double amount, String date) {
 		
 	}
 	
 	//Places an order for a specified stock and quantity. Type is used to indicate buying vs selling.
+	// type: (buy/sell) = (0/1)
 	public void placeOrder(String stockSymbol, int quantity, int type) {
 		
 	}
