@@ -13,5 +13,43 @@ public class Main {
 	public static void initialize() {
 
 	}
+	
+	//login method for registered users
+	public static void login() 
+	{
+		
+	}
+	
+	public static void logoff() 
+	{
+		
+	}
+	
+	//method to register new users
+	public static void createUserAccount()
+	{
+		
+	}
+	
+	//should return the user that is currently logged into this instance of the program
+	//use for user specific operations
+	//!!is this bad practice? Anyone with account managing experience know how to do this better?
+	public static User currentUser()
+	{
+		
+		return(); 	
+	}
+	
+	//meant to allow the viewing/searching of available stocks for trade
+	public static void displayStockListings()
+	{
+		
+	}
+	
+	//retrieve a stock and return relevant information (bid/ask/PE Ratio, EPS...)
+	public static void displayStockDetails(String stockID)
+	{
+		
+	}
 
 }
