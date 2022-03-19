@@ -1,10 +1,12 @@
 
 public abstract class Transaction {
 
-	private String userID; //Foreign Key to transaction owner
+	private String userID; 
+	//Foreign Key to transaction owner
 	private String transactionID;
 	private String transactionDate;
-	private int transactionType; //0 for StockTransactions, 1 for Monetary Transactions
+	private int transactionType; 
+	//0 for StockTransactions, 1 for Monetary Transactions
 	
 	//Constructor
 	public Transaction(String userIDNum, String transactionIDNum, String date, int type) {

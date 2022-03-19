@@ -23,7 +23,7 @@ public class User {
 		address = physicalAddress;
 		creditCardInfo = creditInfo;
 		fullName = name;
-		balance = money;
+		balance = money; //balance should start out as 0 until a deposit is made to the account
 	}
 	
 	//Brings up a list of past transactions (both monetary AND stock at the moment?)
@@ -46,7 +46,7 @@ public class User {
 		
 	}
 	
-	//Places an order for a specified stock and quantity. Type is used to indicate buying vs selling.
+	//User places an order for a specified stock and quantity. Type is used to indicate buying vs selling.
 	// type: (buy/sell) = (0/1)
 	public void placeOrder(String stockSymbol, int quantity, int type) {
 		
