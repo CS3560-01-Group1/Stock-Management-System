@@ -42,7 +42,7 @@ public class User {
 	}
 	
 	//Makes a MonetaryTransaction
-	public void placeTransaction(double amount, String date) {
+	public void placeTransaction(double amount, String date, String targetBankAcct, boolean deposit) {
 		
 	}
 	
