@@ -14,8 +14,8 @@ public class Order {
 	public Order(String userIDNum, String orderIDNum, int type, int amount, String stockName) {
 		userID = userIDNum;
 		orderID = orderIDNum;
-		orderType = type;
-		quantity = amount;
+		orderType = type; 
+		orderType = amount;
 		stockSymbol = stockName;
 	}
 
