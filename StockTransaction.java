@@ -51,7 +51,7 @@ public class StockTransaction extends Transaction {
 //		Search transactions in database that match filters order.userIDNum, order.getStockSymbol(), latestTransaction = true
 //      retrieve matching transaction's shareTotal
 //		before returning, change the latestTransaction status of the previous transaction from true -> false
-		return()
+		return 0; //temporarily set to 0 to prevent compile error
 	}
 	
 	//Getter Methods
