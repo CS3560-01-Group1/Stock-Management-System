@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
@@ -237,7 +238,6 @@ public class UserInterface extends JFrame{
 		JButton accountInfoBackButton = new JButton("Back");
 		JButton searchStocksBackButton = new JButton("Back");
 		JButton accountInfoEditButton = new JButton("Edit Information");
-		JButton editAccountInfoConfirmButton = new JButton("Confirm");
 		JButton editAccountInfoBackButton = new JButton("Back");
 		JButton searchButton = new JButton("Search");
 		JButton stockInfoButton = new JButton("Stock Information");
@@ -255,6 +255,10 @@ public class UserInterface extends JFrame{
 		JButton depositConfirmButton = new JButton("Confirm Deposit");
 		JButton depositBackButton = new JButton("Back");
 		JButton transactionsBackButton = new JButton("Back");
+		JButton editLoginCredentialsButton = new JButton("Edit Login Credentials");
+		JButton editPersonalInformationButton = new JButton("Edit Personal Information");
+		JButton editAddressButton = new JButton("Edit Address");
+		JButton editCreditCardInfoButton = new JButton("Edit Credit Card Information");
 		
 		//Centering buttons
 		signInButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -267,7 +271,6 @@ public class UserInterface extends JFrame{
 		accountInfoBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		searchStocksBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountInfoEditButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		editAccountInfoConfirmButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		editAccountInfoBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		searchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -285,6 +288,10 @@ public class UserInterface extends JFrame{
 		depositConfirmButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		transactionsBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		editLoginCredentialsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		editPersonalInformationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		editAddressButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		editCreditCardInfoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//Creating text fields, some with specific formats
 		JTextField usernameField = new JTextField(15);
@@ -470,8 +477,14 @@ public class UserInterface extends JFrame{
 		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		editAccountInfoPanel.add(editAccountInfo);
 		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		editAccountInfoPanel.add(editAccountInfoConfirmButton);
+		editAccountInfoPanel.add(editLoginCredentialsButton);
 		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		editAccountInfoPanel.add(editPersonalInformationButton);
+		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		editAccountInfoPanel.add(editAddressButton);
+		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		editAccountInfoPanel.add(editCreditCardInfoButton);
+		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		editAccountInfoPanel.add(editAccountInfoBackButton);
 		
 		searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -735,11 +748,117 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		editAccountInfoConfirmButton.addActionListener(new ActionListener() {
+		editLoginCredentialsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == editAccountInfoConfirmButton) {
-					c1.show(cards, "4"); //switch to account info
+				if (e.getSource() == editLoginCredentialsButton) {
+					//Text fields for new username and password
+					JTextField field1 = new JTextField(15);
+					JTextField field2 = new JTextField(15);
+
+					//An array for the output of the JOptionPane
+					Object[] fields = {"Username", field1, "Password", field2};
+
+					JOptionPane.showConfirmDialog(null, fields, "Enter new login credentials.", JOptionPane.OK_CANCEL_OPTION);
+				}
+			}
+		});
+
+		editPersonalInformationButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == editPersonalInformationButton) {
+					//Text fields for new name and email address
+					JTextField field1 = new JTextField(15);
+					JTextField field2 = new JTextField(15);
+
+					//Formatted textfields for new phone number and ssn
+					MaskFormatter mask = null;
+					try {
+						mask = new MaskFormatter("(###) ###-####");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field3 = new JFormattedTextField(mask);
+					field3.setColumns(15);
+					try {
+						mask = new MaskFormatter("###-##-####");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field4 = new JFormattedTextField(mask);
+					field4.setColumns(15);
+	
+					//An array for the output of the JOptionPane
+					Object[] fields = {"Full Name", field1, 
+									   "Email", field2,
+									   "Phone Number", field3,
+									   "Social Security Number", field4};
+	
+					JOptionPane.showConfirmDialog(null, fields, "Enter new personal information.", JOptionPane.OK_CANCEL_OPTION);
+				}
+			}
+		});
+
+		editAddressButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == editAddressButton) {
+					//Text fields for new streetAddress and city
+					JTextField field1 = new JTextField(15);
+					JTextField field2 = new JTextField(15);
+
+					//Formatted textfields for new state and zip/postal code
+					MaskFormatter mask = null;
+					try {
+						mask = new MaskFormatter("UU");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field3 = new JFormattedTextField(mask);
+					field3.setColumns(15);
+					try {
+						mask = new MaskFormatter("#####");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field4 = new JFormattedTextField(mask);
+					field4.setColumns(15);
+	
+					//An array for the output of the JOptionPane
+					Object[] fields = {"Street Address", field1, 
+									   "City", field2,
+									   "State", field3,
+									   "Zip/Postal Code", field4};
+	
+					JOptionPane.showConfirmDialog(null, fields, "Enter new address.", JOptionPane.OK_CANCEL_OPTION);
+				}
+			}
+		});
+
+		editCreditCardInfoButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == editCreditCardInfoButton) {
+					//Formatted textfield for new credit card info
+					MaskFormatter mask = null;
+					try {
+						mask = new MaskFormatter("####-####-####-####");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field1 = new JFormattedTextField(mask);
+					field1.setColumns(15);
+	
+					//An array for the output of the JOptionPane
+					Object[] fields = {"Credit Card Number", field1};
+	
+					JOptionPane.showConfirmDialog(null, fields, "Enter new credit card information.", JOptionPane.OK_CANCEL_OPTION);
 				}
 			}
 		});
