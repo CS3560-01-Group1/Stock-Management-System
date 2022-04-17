@@ -77,7 +77,7 @@ public class Main {
 		try 
 		{   
 			Connection connection = DriverManager.getConnection(url, username, password);
-//			System.out.println("Database connected!");
+			System.out.println("Database connected!");
 	
 		    return connection;	    
 		} 
