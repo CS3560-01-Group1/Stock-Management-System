@@ -1,11 +1,14 @@
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -13,6 +16,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
 
 public class UserInterface extends JFrame{
     
@@ -38,9 +42,9 @@ public class UserInterface extends JFrame{
 		menuBar.setVisible(false);
 		
 		//Creating menus
-		JMenu homeMenu = new JMenu("Home");
+		JMenu homeMenu = new JMenu("Stock Portfolio");
 		menuBar.add(homeMenu);
-		JMenuItem goHome = new JMenuItem("Go To Home Page");
+		JMenuItem goHome = new JMenuItem("My Stock Portfolio");
 		homeMenu.add(goHome);
 		
 		JMenu accountMenu = new JMenu("Account Information");
@@ -50,10 +54,10 @@ public class UserInterface extends JFrame{
 		JMenuItem editAccount = new JMenuItem("Edit Account Information");
 		accountMenu.add(editAccount);
 		
-		JMenu stocksMenu = new JMenu("Stock List");
-		menuBar.add(stocksMenu);
-		JMenuItem searchStocks = new JMenuItem("Search Stocks");
-		stocksMenu.add(searchStocks);
+		JMenu ordersMenu = new JMenu("Orders");
+		menuBar.add(ordersMenu);
+		JMenuItem tradeStocks = new JMenuItem("Trade Stocks");
+		ordersMenu.add(tradeStocks);
 		
 		JMenu fundsMenu = new JMenu("Manage Funds");
 		menuBar.add(fundsMenu);
@@ -82,6 +86,8 @@ public class UserInterface extends JFrame{
 		loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
 		JPanel signUpPanel = new JPanel();
 		signUpPanel.setLayout(new BoxLayout(signUpPanel, BoxLayout.Y_AXIS));
+		JPanel signUp2Panel = new JPanel();
+		signUp2Panel.setLayout(new BoxLayout(signUp2Panel, BoxLayout.Y_AXIS));
 		JPanel homePanel = new JPanel();
 		homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
 		JPanel accountInfoPanel = new JPanel();
@@ -109,28 +115,75 @@ public class UserInterface extends JFrame{
 		//Creating and centering the components
 		//*****************************************************************************************
 		
-		//Creating labels
+		//Creating labels with some having bold font
+		Font titleFont = new Font("Verdana", Font.BOLD, 15);
 		JLabel login = new JLabel("Login");
+		login.setFont(titleFont);
 		JLabel username = new JLabel("Username");
 		JLabel password = new JLabel("Password");
 		JLabel signUp = new JLabel("Sign Up");
-		JLabel home = new JLabel("Home");
+		signUp.setFont(titleFont);
+		JLabel signUp2 = new JLabel("Sign Up"); //for 2nd page of sign up
+		signUp2.setFont(titleFont);
+		JLabel home = new JLabel("Stock Portfolio");
+		home.setFont(titleFont);
+		JLabel homePortfolio = new JLabel("Your portfolio is empty.");
 		JLabel accountInfo = new JLabel("Account Information");
+		accountInfo.setFont(titleFont);
 		JLabel editAccountInfo = new JLabel("Edit Account Information");
-		JLabel search = new JLabel("Stock List");
+		editAccountInfo.setFont(titleFont);
+		JLabel search = new JLabel("Trade Stocks");
+		search.setFont(titleFont);
 		JLabel stockInfo = new JLabel("Stock Information");
+		stockInfo.setFont(titleFont);
+		JLabel stockInfoName = new JLabel("Stock Name: ");
+		JLabel stockInfoDescription = new JLabel("Stock Description: ");
+		JLabel stockInfoTrend = new JLabel("Stock Trend: ");
+		JLabel stockInfoPrice = new JLabel("Stock Price: ");
+		JLabel stockInfoAvailable = new JLabel("Shares Available: ");
 		JLabel buyStock = new JLabel("Buy Stocks");
+		buyStock.setFont(titleFont);
 		JLabel sellStock = new JLabel("Sell Stocks");
+		sellStock.setFont(titleFont);
 		JLabel manageFunds = new JLabel("Manage Funds");
+		manageFunds.setFont(titleFont);
+		JLabel manageFundsBalance = new JLabel("Balance: ");
 		JLabel withdrawFunds = new JLabel("Withdraw Funds");
+		withdrawFunds.setFont(titleFont);
 		JLabel depositFunds = new JLabel("Deposit Funds");
+		depositFunds.setFont(titleFont);
 		JLabel transactions = new JLabel("Past Transactions");
+		transactions.setFont(titleFont);
+		JLabel transactionsText = new JLabel("No transactions to show at the moment.");
+		JLabel creationUsername = new JLabel("Username");
+		JLabel creationPassword = new JLabel("Password");
+		JLabel creationFullName = new JLabel("Full Name");
+		JLabel creationEmail = new JLabel("Email Address");
+		JLabel creationPhoneNumber = new JLabel("Phone Number");
+		JLabel creationSSN = new JLabel("Social Security Number");
+		JLabel creationStreetAddress = new JLabel("Street Address");
+		JLabel creationCity = new JLabel("City");
+		JLabel creationState = new JLabel("State");
+		JLabel creationZipCode = new JLabel("Zip/Postal Code");
+		JLabel creationCreditCardInfo = new JLabel("Credit Card Number");
+		JLabel accountUsername = new JLabel("Username: ");
+		JLabel accountPassword = new JLabel("Password: ");
+		JLabel accountFullName = new JLabel("Full Name: ");
+		JLabel accountEmail = new JLabel("Email: ");
+		JLabel accountPhoneNumber = new JLabel("Phone Number: ");
+		JLabel accountSSN = new JLabel("Social Security Number: ");
+		JLabel accountStreetAddress = new JLabel("Street Address: ");
+		JLabel accountCity = new JLabel("City: ");
+		JLabel accountState = new JLabel("State: ");
+		JLabel accountZipCode = new JLabel("Zip/Postal Code: ");
+		JLabel accountCreditCardInfo = new JLabel("Credit Card Number: ");
 		
 		//Centering labels
 		login.setAlignmentX(Component.CENTER_ALIGNMENT);
 		username.setAlignmentX(Component.CENTER_ALIGNMENT);
 		password.setAlignmentX(Component.CENTER_ALIGNMENT);
 		signUp.setAlignmentX(Component.CENTER_ALIGNMENT);
+		signUp2.setAlignmentX(Component.CENTER_ALIGNMENT);
 		home.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
 		editAccountInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -142,18 +195,45 @@ public class UserInterface extends JFrame{
 		withdrawFunds.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositFunds.setAlignmentX(Component.CENTER_ALIGNMENT);
 		transactions.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationUsername.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationFullName.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationEmail.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationPhoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationSSN.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationStreetAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationCity.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationState.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationZipCode.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationCreditCardInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountUsername.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountFullName.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountEmail.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountPhoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountSSN.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountStreetAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountCity.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountState.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountZipCode.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountCreditCardInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+		homePortfolio.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoName.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoDescription.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoTrend.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoPrice.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoAvailable.setAlignmentX(Component.CENTER_ALIGNMENT);
+		manageFundsBalance.setAlignmentX(Component.CENTER_ALIGNMENT);
+		transactionsText.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//Creating buttons for functions and navigation
 		JButton signInButton = new JButton("Sign In");
 		JButton signUpButton = new JButton("Sign Up");
+		JButton signUpNextButton = new JButton("Next");
 		JButton createAccountButton = new JButton("Create Account");
 		JButton signUpBackButton = new JButton("Back");
-		JButton logoutButton = new JButton("Log Out");
-		JButton accountInfoButton = new JButton("Account Information");
-		JButton searchStocksButton = new JButton("Search Stocks");
-		JButton fundsButton = new JButton("Manage Funds");
+		JButton signUp2BackButton = new JButton("Back"); //For 2nd page of sign up
 		JButton fundsBackButton = new JButton("Back");
-		JButton transactionsButton = new JButton("Past Transactions");
 		JButton accountInfoBackButton = new JButton("Back");
 		JButton searchStocksBackButton = new JButton("Back");
 		JButton accountInfoEditButton = new JButton("Edit Information");
@@ -179,14 +259,11 @@ public class UserInterface extends JFrame{
 		//Centering buttons
 		signInButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		signUpButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		signUpNextButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		createAccountButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		signUpBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		accountInfoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		searchStocksButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		fundsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		signUp2BackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		fundsBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		transactionsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountInfoBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		searchStocksBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountInfoEditButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -209,18 +286,98 @@ public class UserInterface extends JFrame{
 		depositBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		transactionsBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
-		//Creating text fields
+		//Creating text fields, some with specific formats
 		JTextField usernameField = new JTextField(15);
 		usernameField.setMaximumSize(usernameField.getPreferredSize());
 		JTextField passwordField = new JTextField(15);
 		passwordField.setMaximumSize(passwordField.getPreferredSize());
 		JTextField searchBarField = new JTextField(15);
 		searchBarField.setMaximumSize(searchBarField.getPreferredSize());
+		JTextField creationUsernameField = new JTextField(15);
+		creationUsernameField.setMaximumSize(creationUsernameField.getPreferredSize());
+		creationUsernameField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField creationPasswordField = new JTextField(15);
+		creationPasswordField.setMaximumSize(creationPasswordField.getPreferredSize());
+		creationPasswordField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField creationFullNameField = new JTextField(15);
+		creationFullNameField.setMaximumSize(creationFullNameField.getPreferredSize());
+		creationFullNameField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField creationEmailField = new JTextField(15);
+		creationEmailField.setMaximumSize(creationEmailField.getPreferredSize());
+		creationEmailField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		MaskFormatter mask = null;
+		try {
+			mask = new MaskFormatter("(###)-###-####");
+			mask.setPlaceholderCharacter('_');
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		JFormattedTextField creationPhoneNumberField = new JFormattedTextField(mask);
+		creationPhoneNumberField.setColumns(15);
+		creationPhoneNumberField.setMaximumSize(creationPhoneNumberField.getPreferredSize());
+		creationPhoneNumberField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		try {
+			mask = new MaskFormatter("###-##-####");
+			mask.setPlaceholderCharacter('_');
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		JFormattedTextField creationSSNField = new JFormattedTextField(mask);
+		creationSSNField.setColumns(15);
+		creationSSNField.setMaximumSize(creationSSNField.getPreferredSize());
+		creationSSNField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField creationStreetAddressField = new JTextField(15);
+		creationStreetAddressField.setMaximumSize(creationStreetAddressField.getPreferredSize());
+		creationStreetAddressField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField creationCityField = new JTextField(15);
+		creationCityField.setMaximumSize(creationCityField.getPreferredSize());
+		creationCityField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		try {
+			mask = new MaskFormatter("UU");
+			mask.setPlaceholderCharacter('_');
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		JFormattedTextField creationStateField = new JFormattedTextField(mask);
+		creationStateField.setColumns(15);
+		creationStateField.setMaximumSize(creationStateField.getPreferredSize());
+		creationStateField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		try {
+			mask = new MaskFormatter("#####");
+			mask.setPlaceholderCharacter('_');
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		JFormattedTextField creationZipCodeField = new JFormattedTextField(mask);
+		creationZipCodeField.setColumns(15);
+		creationZipCodeField.setMaximumSize(creationZipCodeField.getPreferredSize());
+		creationZipCodeField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		try {
+			mask = new MaskFormatter("####-####-####-####");
+			mask.setPlaceholderCharacter('_');
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		JFormattedTextField creationCreditCardInfoField = new JFormattedTextField(mask);
+		creationCreditCardInfoField.setColumns(15);
+		creationCreditCardInfoField.setMaximumSize(creationCreditCardInfoField.getPreferredSize());
+		creationCreditCardInfoField.setHorizontalAlignment(JFormattedTextField.CENTER);
 		
 		//Centering text fields
 		usernameField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		searchBarField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationUsernameField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationPasswordField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationFullNameField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationEmailField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationPhoneNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationSSNField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationStreetAddressField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationCityField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationStateField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationZipCodeField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationCreditCardInfoField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//*****************************************************************************************
 		//Adding labels, buttons, and text fields to panels with proper spacing
@@ -242,26 +399,70 @@ public class UserInterface extends JFrame{
 		signUpPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		signUpPanel.add(signUp);
 		signUpPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		signUpPanel.add(createAccountButton);
+		signUpPanel.add(creationUsername);
+		signUpPanel.add(creationUsernameField);
+		signUpPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUpPanel.add(creationPassword);
+		signUpPanel.add(creationPasswordField);
+		signUpPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		signUpPanel.add(signUpNextButton);
 		signUpPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		signUpPanel.add(signUpBackButton);
+
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 20)));
+		signUp2Panel.add(signUp2);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationFullName);
+		signUp2Panel.add(creationFullNameField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationEmail);
+		signUp2Panel.add(creationEmailField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationPhoneNumber);
+		signUp2Panel.add(creationPhoneNumberField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationSSN);
+		signUp2Panel.add(creationSSNField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationStreetAddress);
+		signUp2Panel.add(creationStreetAddressField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationCity);
+		signUp2Panel.add(creationCityField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationState);
+		signUp2Panel.add(creationStateField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationZipCode);
+		signUp2Panel.add(creationZipCodeField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationCreditCardInfo);
+		signUp2Panel.add(creationCreditCardInfoField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 20)));
+		signUp2Panel.add(createAccountButton);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(signUp2BackButton);
 		
-		homePanel.add(Box.createRigidArea(new Dimension(0, 100)));
+		homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		homePanel.add(home);
-		homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		homePanel.add(accountInfoButton);
-		homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		homePanel.add(searchStocksButton);
-		homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		homePanel.add(fundsButton);
-		homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		homePanel.add(transactionsButton);
-		homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		homePanel.add(logoutButton);
+		homePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		homePanel.add(homePortfolio);
 		
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		accountInfoPanel.add(accountInfo);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		accountInfoPanel.add(accountFullName);
+		accountInfoPanel.add(accountUsername);
+		accountInfoPanel.add(accountPassword);
+		accountInfoPanel.add(accountEmail);
+		accountInfoPanel.add(accountPhoneNumber);
+		accountInfoPanel.add(accountSSN);
+		accountInfoPanel.add(accountStreetAddress);
+		accountInfoPanel.add(accountCity);
+		accountInfoPanel.add(accountState);
+		accountInfoPanel.add(accountZipCode);
+		accountInfoPanel.add(accountCreditCardInfo);
+		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		accountInfoPanel.add(accountInfoEditButton);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		accountInfoPanel.add(accountInfoBackButton);
@@ -286,6 +487,16 @@ public class UserInterface extends JFrame{
 		
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		stockInfoPanel.add(stockInfo);
+		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		stockInfoPanel.add(stockInfoName);
+		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		stockInfoPanel.add(stockInfoDescription);
+		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		stockInfoPanel.add(stockInfoTrend);
+		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		stockInfoPanel.add(stockInfoPrice);
+		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		stockInfoPanel.add(stockInfoAvailable);
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		stockInfoPanel.add(buyStockButton);
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -309,6 +520,8 @@ public class UserInterface extends JFrame{
 		
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		fundsPanel.add(manageFunds);
+		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		fundsPanel.add(manageFundsBalance);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		fundsPanel.add(withdrawButton);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -332,6 +545,8 @@ public class UserInterface extends JFrame{
 		
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		transactionsPanel.add(transactions);
+		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		transactionsPanel.add(transactionsText);
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		transactionsPanel.add(transactionsBackButton);
 		
@@ -352,6 +567,7 @@ public class UserInterface extends JFrame{
 		cards.add(withdrawPanel, "11");
 		cards.add(depositPanel, "12");
 		cards.add(transactionsPanel, "13");
+		cards.add(signUp2Panel, "14");
         
 		//Add CardLayout to ContentPane
 		getContentPane().add(cards);
@@ -387,10 +603,10 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		searchStocks.addActionListener(new ActionListener() {
+		tradeStocks.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == searchStocks) {
+				if (e.getSource() == tradeStocks) {
 					c1.show(cards, "6"); //switch to search stocks
 				}
 			}
@@ -473,31 +689,30 @@ public class UserInterface extends JFrame{
 				}
 			}
 		});
+
+		signUp2BackButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == signUp2BackButton) {
+					c1.show(cards, "1"); //switch to login for 2nd sign up
+				}
+			}
+		});
+
+		signUpNextButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == signUpNextButton) {
+					c1.show(cards, "14"); //switch to 2nd page of sign up
+				}
+			}
+		});
 		
 		createAccountButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == createAccountButton) {
 					c1.show(cards, "1"); //switch to login
-				}
-			}
-		});
-		
-		logoutButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == logoutButton) {
-					c1.show(cards, "1"); //switch the login
-					menuBar.setVisible(false); //prevent the use of menu bar when not logged in
-				}
-			}
-		});
-		
-		accountInfoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == accountInfoButton) {
-					c1.show(cards, "4"); //switch to account info
 				}
 			}
 		});
@@ -538,15 +753,6 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		searchStocksButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == searchStocksButton) {
-					c1.show(cards, "6"); //switch to search stocks
-				}
-			}
-		});
-		
 		searchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -583,29 +789,11 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		fundsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == fundsButton) {
-					c1.show(cards, "10"); //switch to funds
-				}
-			}
-		});
-		
 		fundsBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == fundsBackButton) {
 					c1.show(cards, "3"); //switch to home
-				}
-			}
-		});
-		
-		transactionsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == transactionsButton) {
-					c1.show(cards, "13"); //switch to transactions
 				}
 			}
 		});
