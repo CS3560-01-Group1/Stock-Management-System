@@ -1,3 +1,8 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import javax.swing.JFrame;
 
 //This is a test to see if my git connected correctly 
@@ -7,8 +12,9 @@ import javax.swing.JFrame;
 //Push test from Justin branch
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		initialize();
+		exampleSQLQuery();
 	}
 
 	//Starts up program user interface
@@ -57,6 +63,51 @@ public class Main {
 	public static void displayStockDetails(String stockID)
 	{
 		
+	}
+	
+	//Establish SQL database connection
+	public static Connection getConnection() throws Exception
+	{
+		
+		String url = "jdbc:mysql://127.0.0.1:3306/stockdb";
+		// if using local instance: url = "jdbc:mysql://localhost:3306/stockdb";
+		String username = "root";
+		String password = "Soccer44!"; 
+		
+		try 
+		{   
+			Connection connection = DriverManager.getConnection(url, username, password);
+//			System.out.println("Database connected!");
+	
+		    return connection;	    
+		} 
+		catch (SQLException e) 
+		{
+		    throw new IllegalStateException("Cannot connect the database!", e);
+		}
+
+
+	}
+	
+	//example for how to execute database queries from application
+	public static void exampleSQLQuery() throws Exception
+	{
+		try
+		{
+			//establishing connection to database
+			Connection connection = getConnection();
+			//A SQL query that creates a new table called 'new_table' within database 'stockdb'
+			PreparedStatement query = connection.prepareStatement("CREATE TABLE `stockdb`.`new_table` (`testAtt` INT NOT NULL)");
+			query.executeUpdate();
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		finally
+		{
+			System.out.println("Query Complete: created 'new table'");
+		}
 	}
 
 }
