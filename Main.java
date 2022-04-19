@@ -1,7 +1,9 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.JFrame;
 
@@ -69,7 +71,7 @@ public class Main {
 	public static Connection getConnection() throws Exception
 	{
 		
-		String url = "jdbc:mysql://127.0.0.1:3306/stockdb";
+		String url = "jdbc:mysql://DESKTOP-MDHAGU4:3306/stockdb";
 		// if using local instance: url = "jdbc:mysql://localhost:3306/stockdb";
 		String username = "root";
 		String password = "Soccer44!"; 
@@ -99,6 +101,8 @@ public class Main {
 			//A SQL query that creates a new table called 'new_table' within database 'stockdb'
 			PreparedStatement query = connection.prepareStatement("CREATE TABLE `stockdb`.`new_table` (`testAtt` INT NOT NULL)");
 			query.executeUpdate();
+			
+
 		}
 		catch(Exception e)
 		{
@@ -107,6 +111,32 @@ public class Main {
 		finally
 		{
 			System.out.println("Query Complete: created 'new table'");
+		}
+		
+		
+		try
+		{
+			Connection connection = getConnection();
+		 // create the java statement
+	      
+	      // execute the query, and get a java resultset
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stockdb.stock");
+	      
+	      // iterate through the java resultset
+	      while (rs.next())
+	      {
+	    	  
+	    	System.out.println(rs.getString("stockSymbol"));
+	      }
+	      
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+		}
+		finally
+		{
+			System.out.println("Query Complete: Selected all stock symbols");
 		}
 	}
 
