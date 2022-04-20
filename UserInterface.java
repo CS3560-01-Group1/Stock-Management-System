@@ -4,18 +4,23 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.text.ParseException;
+import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
@@ -616,11 +621,65 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Switchs to search stocks screen. Loads all stocks symbols from the database into a list for user
 		tradeStocks.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == tradeStocks) {
 					c1.show(cards, "6"); //switch to search stocks
+					//Array to store all stockSymbols
+					ArrayList<String> stocks = new ArrayList<>();
+
+					//Creating JList
+					JList stockList;
+
+					//Creating scroll pane
+					JScrollPane scrollStockList;
+
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+					
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stockdb.stock");
+
+						// iterate through the java resultset
+						while (rs.next())
+						{
+							stocks.add(rs.getString("stockSymbol"));
+						}
+						
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
+					finally
+					{
+						System.out.println("Query Complete: Selected all stock symbols");
+					}
+
+					String[] array = stocks.toArray(new String [0]);
+					stockList = new JList(array);
+					scrollStockList = new JScrollPane(stockList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+					scrollStockList.setPreferredSize(new Dimension(50, 100));
+					scrollStockList.setMaximumSize(new Dimension(50, 100));
+
+					searchPanel.removeAll();
+					searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+					searchPanel.add(search);
+					searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+					searchPanel.add(searchBarField);
+					searchPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+					searchPanel.add(searchButton);
+					searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+					searchPanel.add(scrollStockList);
+					searchPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+					searchPanel.add(stockInfoButton);
+					searchPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+					searchPanel.add(searchStocksBackButton);
+					searchPanel.revalidate();
 				}
 			}
 		});
@@ -672,7 +731,7 @@ public class UserInterface extends JFrame{
 		});
 		
 		//*****************************************************************************************
-		//Assigning functionalities to buttons
+		//Assigning functionalities to navigation buttons
 		//*****************************************************************************************
 		
 		signInButton.addActionListener(new ActionListener() {
@@ -748,135 +807,11 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		editLoginCredentialsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == editLoginCredentialsButton) {
-					//Text fields for new username and password
-					JTextField field1 = new JTextField(15);
-					JTextField field2 = new JTextField(15);
-
-					//An array for the output of the JOptionPane
-					Object[] fields = {"Username", field1, "Password", field2};
-
-					JOptionPane.showConfirmDialog(null, fields, "Enter new login credentials.", JOptionPane.OK_CANCEL_OPTION);
-				}
-			}
-		});
-
-		editPersonalInformationButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == editPersonalInformationButton) {
-					//Text fields for new name and email address
-					JTextField field1 = new JTextField(15);
-					JTextField field2 = new JTextField(15);
-
-					//Formatted textfields for new phone number and ssn
-					MaskFormatter mask = null;
-					try {
-						mask = new MaskFormatter("(###) ###-####");
-						mask.setPlaceholderCharacter('_');
-					} catch (ParseException e1) {
-						e1.printStackTrace();
-					}
-					JFormattedTextField field3 = new JFormattedTextField(mask);
-					field3.setColumns(15);
-					try {
-						mask = new MaskFormatter("###-##-####");
-						mask.setPlaceholderCharacter('_');
-					} catch (ParseException e1) {
-						e1.printStackTrace();
-					}
-					JFormattedTextField field4 = new JFormattedTextField(mask);
-					field4.setColumns(15);
-	
-					//An array for the output of the JOptionPane
-					Object[] fields = {"Full Name", field1, 
-									   "Email", field2,
-									   "Phone Number", field3,
-									   "Social Security Number", field4};
-	
-					JOptionPane.showConfirmDialog(null, fields, "Enter new personal information.", JOptionPane.OK_CANCEL_OPTION);
-				}
-			}
-		});
-
-		editAddressButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == editAddressButton) {
-					//Text fields for new streetAddress and city
-					JTextField field1 = new JTextField(15);
-					JTextField field2 = new JTextField(15);
-
-					//Formatted textfields for new state and zip/postal code
-					MaskFormatter mask = null;
-					try {
-						mask = new MaskFormatter("UU");
-						mask.setPlaceholderCharacter('_');
-					} catch (ParseException e1) {
-						e1.printStackTrace();
-					}
-					JFormattedTextField field3 = new JFormattedTextField(mask);
-					field3.setColumns(15);
-					try {
-						mask = new MaskFormatter("#####");
-						mask.setPlaceholderCharacter('_');
-					} catch (ParseException e1) {
-						e1.printStackTrace();
-					}
-					JFormattedTextField field4 = new JFormattedTextField(mask);
-					field4.setColumns(15);
-	
-					//An array for the output of the JOptionPane
-					Object[] fields = {"Street Address", field1, 
-									   "City", field2,
-									   "State", field3,
-									   "Zip/Postal Code", field4};
-	
-					JOptionPane.showConfirmDialog(null, fields, "Enter new address.", JOptionPane.OK_CANCEL_OPTION);
-				}
-			}
-		});
-
-		editCreditCardInfoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == editCreditCardInfoButton) {
-					//Formatted textfield for new credit card info
-					MaskFormatter mask = null;
-					try {
-						mask = new MaskFormatter("####-####-####-####");
-						mask.setPlaceholderCharacter('_');
-					} catch (ParseException e1) {
-						e1.printStackTrace();
-					}
-					JFormattedTextField field1 = new JFormattedTextField(mask);
-					field1.setColumns(15);
-	
-					//An array for the output of the JOptionPane
-					Object[] fields = {"Credit Card Number", field1};
-	
-					JOptionPane.showConfirmDialog(null, fields, "Enter new credit card information.", JOptionPane.OK_CANCEL_OPTION);
-				}
-			}
-		});
-		
 		accountInfoBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == accountInfoBackButton) {
 					c1.show(cards, "3"); //switch to home
-				}
-			}
-		});
-		
-		searchButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == searchButton) {
-					//Blank for now
 				}
 			}
 		});
@@ -1033,5 +968,187 @@ public class UserInterface extends JFrame{
 				}
 			}
 		});
+
+		//*****************************************************************************************
+		//Buttons that update user interface and database depending on user input
+		//*****************************************************************************************
+
+		editLoginCredentialsButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == editLoginCredentialsButton) {
+					//Text fields for new username and password
+					JTextField field1 = new JTextField(15);
+					JTextField field2 = new JTextField(15);
+
+					//An array for the output of the JOptionPane
+					Object[] fields = {"Username", field1, "Password", field2};
+
+					JOptionPane.showConfirmDialog(null, fields, "Enter new login credentials.", JOptionPane.OK_CANCEL_OPTION);
+				}
+			}
+		});
+
+		editPersonalInformationButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == editPersonalInformationButton) {
+					//Text fields for new name and email address
+					JTextField field1 = new JTextField(15);
+					JTextField field2 = new JTextField(15);
+
+					//Formatted textfields for new phone number and ssn
+					MaskFormatter mask = null;
+					try {
+						mask = new MaskFormatter("(###) ###-####");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field3 = new JFormattedTextField(mask);
+					field3.setColumns(15);
+					try {
+						mask = new MaskFormatter("###-##-####");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field4 = new JFormattedTextField(mask);
+					field4.setColumns(15);
+	
+					//An array for the output of the JOptionPane
+					Object[] fields = {"Full Name", field1, 
+									   "Email", field2,
+									   "Phone Number", field3,
+									   "Social Security Number", field4};
+	
+					JOptionPane.showConfirmDialog(null, fields, "Enter new personal information.", JOptionPane.OK_CANCEL_OPTION);
+				}
+			}
+		});
+
+		editAddressButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == editAddressButton) {
+					//Text fields for new streetAddress and city
+					JTextField field1 = new JTextField(15);
+					JTextField field2 = new JTextField(15);
+
+					//Formatted textfields for new state and zip/postal code
+					MaskFormatter mask = null;
+					try {
+						mask = new MaskFormatter("UU");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field3 = new JFormattedTextField(mask);
+					field3.setColumns(15);
+					try {
+						mask = new MaskFormatter("#####");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field4 = new JFormattedTextField(mask);
+					field4.setColumns(15);
+	
+					//An array for the output of the JOptionPane
+					Object[] fields = {"Street Address", field1, 
+									   "City", field2,
+									   "State", field3,
+									   "Zip/Postal Code", field4};
+	
+					JOptionPane.showConfirmDialog(null, fields, "Enter new address.", JOptionPane.OK_CANCEL_OPTION);
+				}
+			}
+		});
+
+		editCreditCardInfoButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == editCreditCardInfoButton) {
+					//Formatted textfield for new credit card info
+					MaskFormatter mask = null;
+					try {
+						mask = new MaskFormatter("####-####-####-####");
+						mask.setPlaceholderCharacter('_');
+					} catch (ParseException e1) {
+						e1.printStackTrace();
+					}
+					JFormattedTextField field1 = new JFormattedTextField(mask);
+					field1.setColumns(15);
+	
+					//An array for the output of the JOptionPane
+					Object[] fields = {"Credit Card Number", field1};
+	
+					JOptionPane.showConfirmDialog(null, fields, "Enter new credit card information.", JOptionPane.OK_CANCEL_OPTION);
+				}
+			}
+		});
+
+		//Filter search results
+		searchButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == searchButton) {
+					
+					if(!searchBarField.getText().equals("")) {
+						//Array to store all stockSymbols
+						ArrayList<String> stocks = new ArrayList<>();
+
+						//Creating JList
+						JList stockList;
+
+						//Creating scroll pane
+						JScrollPane scrollStockList;
+
+						try
+						{
+							Connection connection = Main.getConnection();
+							// create the java statement
+						
+							// execute the query, and get a java resultset
+							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock WHERE stockSymbol LIKE '%" 
+																						+ searchBarField.getText().toUpperCase() + "%';");
+
+							// iterate through the java resultset
+							while (rs.next())
+							{
+								stocks.add(rs.getString("stockSymbol"));
+							}
+							
+						}
+						catch (Exception ex)
+						{
+							System.out.println(ex);
+						}
+
+						String[] array = stocks.toArray(new String [0]);
+						stockList = new JList(array);
+						scrollStockList = new JScrollPane(stockList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+						scrollStockList.setPreferredSize(new Dimension(50, 100));
+						scrollStockList.setMaximumSize(new Dimension(50, 100));
+
+						searchPanel.removeAll();
+						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+						searchPanel.add(search);
+						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+						searchPanel.add(searchBarField);
+						searchPanel.add(Box.createRigidArea(new Dimension(0, 5)));
+						searchPanel.add(searchButton);
+						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+						searchPanel.add(scrollStockList);
+						searchPanel.add(Box.createRigidArea(new Dimension(0, 30)));
+						searchPanel.add(stockInfoButton);
+						searchPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						searchPanel.add(searchStocksBackButton);
+						searchPanel.revalidate();
+					}
+				}
+			}
+		});
+
     }
 }
