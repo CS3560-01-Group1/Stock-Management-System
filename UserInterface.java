@@ -727,4 +727,20 @@ public class UserInterface extends JFrame{
 			}
 		});
     }
+
+
+//ADDITIONAL METHODS THAT DONT BELONG TO ANY CLASS 
+//IMPLEMENT DIRECTLY INTO USER INTERFACE CLASS METHODS
+	
+	//retrieve table of stocks and their basic information 
+	public void displayStockListings()
+	{
+		
+	}
+	
+	//retrieve a stock and return all informations (detailed view)
+	public void displayStockDetails(String stockID)
+	{
+		
+	}
 }

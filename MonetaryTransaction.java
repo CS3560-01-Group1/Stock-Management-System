@@ -1,36 +1,62 @@
+import java.sql.ResultSet;
 
 public class MonetaryTransaction extends Transaction {
 
+	private int transactionID;
+	private int userID;
+	private String externalBankRouteNum; //routing num
+	private String externalBankName; //name of bank sending/receiving from
+	private String externalBankActNum; //account num 
+	private String activityType; //DEPOSIT or WITHDRAWL
+	
 	private double fundsTransferred;
-	private String bankAcctAddress;
-	//The location money was sent to or deposited from
-	final private static int type = 0; 
-	//0 denotes that this is a MonetaryTransaction subclass of Transaction (should never change)									   
-	//this may be an unnecessary specification?
-	private static boolean isDeposit; 
-	//If true, money was deposited
-	//If false, money was withdrawn
+
 	
 	//Constructor
-	public MonetaryTransaction(String userIDNum, String transactionIDNum, String date, double funds, 
-									String destination) {
-		super(userIDNum, transactionIDNum, date, type);
-		fundsTransferred = funds;
-		bankAcctAddress = destination;
+	public MonetaryTransaction() {
 	}
 
-	//Function to withdraw/deposit money to increase/decrease account balance
-	public void updateBalance(double funds, double destination, int type) {
-
+	public void newMonetaryTransaction(int idOfUser, String routingNum, String bankName, String bankAccountNum,
+			String transactionActivity)
+	{
+		//verify input (outside scope of method)
+		//create new transaction (superclass) 
+		//Link ID of transaction to this subclass of transaction
+		transactionID = newTransactionRecord();
+		
+		//query insert into monetary transaction with given input (including transactionID)
+		//if insert successful, populate attributes of this object
+		//remember to update user's balance (outside scope of this method)
 	}
+	
+	//retrieve the details of an existing monetaryTransaction based on a given ID
+	public void retrieveMonetaryTransaction(int transactionIDInput)
+	{
+		//query select on the monetarytransaction (and transacaction super class) that match the given transactionID
+		retrieveTransaction(transactionIDInput); //populates attributes of superclass
+		//if successful, populate attributes of subclass (this one) 
+	}
+	
 
 	//Getter functions
 	public double getFundsTransferred() {
 		return fundsTransferred;
 	}
 
-	public String getFundDestination() {
-		return bankAcctAddress;
+	public String getRoutingNum() {
+		return externalBankRouteNum;
+	}
+	
+	public String getBankName() {
+		return this.externalBankName;	
+	}
+	
+	public String getBankAcntNum() {
+		return this.externalBankRouteNum;
+	}
+	
+	public int getUserIDOf() {
+		return this.userID;
 	}
 
 }

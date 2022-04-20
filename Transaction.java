@@ -1,28 +1,35 @@
+import java.sql.ResultSet;
 
 public abstract class Transaction {
 
-	private String userID; 
-	//Foreign Key to transaction owner
-	private String transactionID;
+	private int transactionID;
 	private String transactionDate;
-	private int transactionType; 
-	//0 for StockTransactions, 1 for Monetary Transactions
 	
 	//Constructor
-	public Transaction(String userIDNum, String transactionIDNum, String date, int type) {
-		userID = userIDNum;
-		transactionID = transactionIDNum;
-		transactionDate = date;
-		transactionType = type; //0 for StockTransactions, 1 for Monetary Transactions
+	public Transaction() {
 	}
+	
 
 	//Records a transaction in the transactions list for the user
-	public void recordTransaction(String transID, String date, int type) {
-
+	//Called by MonetaryTransaction or StockTransaction Classes
+	public int newTransactionRecord() {
+		//query "INSERT INTO stockdb.transaction VALUES()" 
+		//automatically records unique ID and date upon creation 
+		//if insert successful, update this objects attributes 
+		//return new transaction ID to monetary/stock transaction class that called this method (since they share a PK)
+		return transactionID;
 	}
+	
+	
+	public void retrieveTransaction(int transactionIDInput)
+	{
+		//search database for transaction matching given ID input
+		//if search successful, update this object's attributes
+	}
+	
 
 	//Getter functions
-	public String getTransactionID() {
+	public int getTransactionID() {
 		return transactionID;
 	}
 
@@ -30,7 +37,4 @@ public abstract class Transaction {
 		return transactionDate;
 	}
 
-	public int getTransactionType() {
-		return transactionType;
-	}
 }

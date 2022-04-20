@@ -25,10 +25,10 @@ DROP TABLE IF EXISTS `monetarytransaction`;
 CREATE TABLE `monetarytransaction` (
   `transactionID` int NOT NULL,
   `userID` int NOT NULL,
-  `externalBankRoute#` int NOT NULL,
+  `externalBankRoute#` varchar(20) NOT NULL,
   `externalBankName` varchar(50) NOT NULL,
-  `externalBankAct#` int NOT NULL,
-  `activityType` varchar(5) NOT NULL,
+  `externalBankAct#` varchar(20) NOT NULL,
+  `activityType` varchar(10) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   PRIMARY KEY (`transactionID`),
   KEY `userID` (`userID`),
@@ -43,28 +43,8 @@ CREATE TABLE `monetarytransaction` (
 
 LOCK TABLES `monetarytransaction` WRITE;
 /*!40000 ALTER TABLE `monetarytransaction` DISABLE KEYS */;
+INSERT INTO `monetarytransaction` VALUES (10,1,'9876562918','Chase','1235925209','DEPOSIT',100.00);
 /*!40000 ALTER TABLE `monetarytransaction` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `new_table`
---
-
-DROP TABLE IF EXISTS `new_table`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `new_table` (
-  `testAtt` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `new_table`
---
-
-LOCK TABLES `new_table` WRITE;
-/*!40000 ALTER TABLE `new_table` DISABLE KEYS */;
-/*!40000 ALTER TABLE `new_table` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -186,18 +166,6 @@ INSERT INTO `stocktransaction` VALUES (1,1,1,12.42),(2,2,1,52.12),(3,3,1,2.11),(
 UNLOCK TABLES;
 
 --
--- Temporary view structure for view `totalsharetest`
---
-
-DROP TABLE IF EXISTS `totalsharetest`;
-/*!50001 DROP VIEW IF EXISTS `totalsharetest`*/;
-SET @saved_cs_client     = @@character_set_client;
-/*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `totalsharetest` AS SELECT 
- 1 AS `shareSum`*/;
-SET character_set_client = @saved_cs_client;
-
---
 -- Table structure for table `transaction`
 --
 
@@ -208,7 +176,7 @@ CREATE TABLE `transaction` (
   `transactionID` int NOT NULL AUTO_INCREMENT,
   `transactionDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`transactionID`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -217,7 +185,7 @@ CREATE TABLE `transaction` (
 
 LOCK TABLES `transaction` WRITE;
 /*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
-INSERT INTO `transaction` VALUES (1,'2022-04-18 13:05:53'),(2,'2022-04-18 13:57:15'),(3,'2022-04-18 13:57:15'),(4,'2022-04-18 14:58:30');
+INSERT INTO `transaction` VALUES (1,'2022-04-18 13:05:53'),(2,'2022-04-18 13:57:15'),(3,'2022-04-18 13:57:15'),(4,'2022-04-18 14:58:30'),(10,'2022-04-20 14:17:43');
 /*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -232,15 +200,15 @@ CREATE TABLE `user` (
   `userID` int NOT NULL AUTO_INCREMENT,
   `username` varchar(25) NOT NULL,
   `password` varchar(25) NOT NULL,
-  `balance` decimal(10,2) NOT NULL,
-  `ssn` int NOT NULL,
+  `balance` decimal(10,2) unsigned NOT NULL DEFAULT '0.00',
+  `ssn` varchar(10) NOT NULL,
   `address` varchar(100) NOT NULL,
   `fName` varchar(20) NOT NULL,
   `lName` varchar(20) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
   `phone#` varchar(12) DEFAULT NULL,
   PRIMARY KEY (`userID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,27 +217,9 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'abc','123',100.00,999662323,'myhouse','Bob','Bill','bobbill@yahoo.com','9099099009');
+INSERT INTO `user` VALUES (1,'abc','123',100.00,'999662323','myhouse','Bob','Bill','bobbill@yahoo.com','9099099009'),(2,'user','pass',0.00,'123546565','247 Spruce Dr, CA, 22716','Charlie','Smith',NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Final view structure for view `totalsharetest`
---
-
-/*!50001 DROP VIEW IF EXISTS `totalsharetest`*/;
-/*!50001 SET @saved_cs_client          = @@character_set_client */;
-/*!50001 SET @saved_cs_results         = @@character_set_results */;
-/*!50001 SET @saved_col_connection     = @@collation_connection */;
-/*!50001 SET character_set_client      = utf8mb4 */;
-/*!50001 SET character_set_results     = utf8mb4 */;
-/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
-/*!50001 CREATE ALGORITHM=UNDEFINED */
-/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */
-/*!50001 VIEW `totalsharetest` AS select sum(`stock`.`totalShares`) AS `shareSum` from `stock` */;
-/*!50001 SET character_set_client      = @saved_cs_client */;
-/*!50001 SET character_set_results     = @saved_cs_results */;
-/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -280,4 +230,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-19 15:14:50
+-- Dump completed on 2022-04-20 15:11:09
