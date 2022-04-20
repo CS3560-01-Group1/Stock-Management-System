@@ -12,12 +12,10 @@ public abstract class Transaction {
 
 	//Records a transaction in the transactions list for the user
 	//Called by MonetaryTransaction or StockTransaction Classes
-	public int newTransactionRecord() {
+	public void newTransactionRecord() {
 		//query "INSERT INTO stockdb.transaction VALUES()" 
 		//automatically records unique ID and date upon creation 
 		//if insert successful, update this objects attributes 
-		//return new transaction ID to monetary/stock transaction class that called this method (since they share a PK)
-		return transactionID;
 	}
 	
 	
@@ -27,6 +25,10 @@ public abstract class Transaction {
 		//if search successful, update this object's attributes
 	}
 	
+	public void archiveTransaction()
+	{
+		//"delete" entry on "stockdb.transaction" table of matching transaction ID
+	}
 
 	//Getter functions
 	public int getTransactionID() {

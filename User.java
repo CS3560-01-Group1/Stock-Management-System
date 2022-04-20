@@ -102,7 +102,7 @@ public class User {
 	public void updateBalance(int changeInBalance)
 	{
 		//query change in user's balance
-		//happens after a monetary transaction is created
+		//happens after a transaction (stock or monetary) is created
 		//if successful, update this object's balance attribute
 	}
 
