@@ -758,8 +758,13 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signInButton) {
-					c1.show(cards, "3"); //switch to home
-					menuBar.setVisible(true); //prevent use of menu bar when not logged in
+					if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
+						c1.show(cards, "3"); //switch to home
+						menuBar.setVisible(true); //prevent use of menu bar when not logged in
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Invalid username or password.");
+					}
 				}
 			}
 		});

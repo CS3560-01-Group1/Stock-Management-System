@@ -1,3 +1,4 @@
+import java.sql.Connection;
 import java.sql.ResultSet;
 
 public class User {
@@ -25,14 +26,57 @@ public class User {
 	}
 	
 	
-	public Boolean loginConfirmation(String inputUsername, String inputPassword) 
+	public static Boolean loginConfirmation(String inputUsername, String inputPassword) 
 	{
+		//Make sure there is actually input for both username and password
+		if (inputUsername.equals(""))
+			return false;
+		if (inputPassword.equals(""))
+			return false;
+
 		//Find row matching "inputUsername" in database
-		//Check if inputed password = stored password
-		//if true
-			//populate all the attributes of this objects with the matching user's attributes stored in database
-			//return confirmation of login 
-		return true;
+		boolean usernameFound = false;
+		try
+		{
+			Connection connection = Main.getConnection();
+			// create the java statement
+					
+			// execute the query, and get a java resultset
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM user");
+			
+			//Checks if result is empty
+			if(!rs.isBeforeFirst())
+				return false;
+			
+			// iterate through the java resultset
+			while (rs.next())
+			{
+				if (inputUsername.equals(rs.getString("username")));
+					usernameFound = true;
+			}
+			
+			//Check if inputed password = stored password
+			if (usernameFound) {
+				rs = connection.createStatement().executeQuery("SELECT * FROM user where username = '" 
+																	+ inputUsername + "'");
+				if(!rs.isBeforeFirst())
+					return false;
+				rs.next();
+				if (rs.getString("password").equals(inputPassword)) {
+					return true;
+				}
+				else
+					return false;
+			}
+			else
+				return false;
+		}
+		catch (Exception ex)
+		{
+			System.out.println(ex);
+		}
+
+		return false;
 	}
 	
 	public void logoff() 
