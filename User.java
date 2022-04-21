@@ -167,6 +167,24 @@ public class User {
 		//query change in user's balance
 		//happens after a transaction (stock or monetary) is created
 		//if successful, update this object's balance attribute
+		balance = balance + changeInBalance;
+		try
+		{
+			//establishing connection to database
+			Connection connection = Main.getConnection();
+			//A SQL query that updates the balance inside of the user table
+			String str = "UPDATE user set " + balance + " WHERE userID = " + id;
+			PreparedStatement query = connection.prepareStatement(str);
+			query.executeUpdate();
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		finally
+		{
+			System.out.println("Query Complete: Updated Balance");
+		}
 	}
 	
 	//Deletes user account and all information regarding this user
