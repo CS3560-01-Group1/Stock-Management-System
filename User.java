@@ -173,7 +173,7 @@ public class User {
 			//establishing connection to database
 			Connection connection = Main.getConnection();
 			//A SQL query that updates the balance inside of the user table
-			String str = "UPDATE user set " + balance + " WHERE userID = " + id;
+			String str = "UPDATE stockdb.user set " + balance + " WHERE userID = " + id;
 			PreparedStatement query = connection.prepareStatement(str);
 			query.executeUpdate();
 		}
