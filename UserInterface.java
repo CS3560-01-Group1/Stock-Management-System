@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -174,18 +175,15 @@ public class UserInterface extends JFrame{
 		JLabel creationCity = new JLabel("City");
 		JLabel creationState = new JLabel("State");
 		JLabel creationZipCode = new JLabel("Zip/Postal Code");
-		JLabel creationCreditCardInfo = new JLabel("Credit Card Number");
 		JLabel accountUsername = new JLabel("Username: ");
 		JLabel accountPassword = new JLabel("Password: ");
-		JLabel accountFullName = new JLabel("Full Name: ");
+		JLabel accountFirstName = new JLabel("First Name: ");
+		JLabel accountLastName = new JLabel("Last Name: ");
 		JLabel accountEmail = new JLabel("Email: ");
 		JLabel accountPhoneNumber = new JLabel("Phone Number: ");
 		JLabel accountSSN = new JLabel("Social Security Number: ");
-		JLabel accountStreetAddress = new JLabel("Street Address: ");
-		JLabel accountCity = new JLabel("City: ");
-		JLabel accountState = new JLabel("State: ");
-		JLabel accountZipCode = new JLabel("Zip/Postal Code: ");
-		JLabel accountCreditCardInfo = new JLabel("Credit Card Number: ");
+		JLabel accountAddress = new JLabel("Address: ");
+		JLabel bankNumber = new JLabel("Bank Number: ");
 		
 		//Centering labels
 		login.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -215,18 +213,14 @@ public class UserInterface extends JFrame{
 		creationCity.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationState.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationZipCode.setAlignmentX(Component.CENTER_ALIGNMENT);
-		creationCreditCardInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountUsername.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
-		accountFullName.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountFirstName.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountLastName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountEmail.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountPhoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountSSN.setAlignmentX(Component.CENTER_ALIGNMENT);
-		accountStreetAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
-		accountCity.setAlignmentX(Component.CENTER_ALIGNMENT);
-		accountState.setAlignmentX(Component.CENTER_ALIGNMENT);
-		accountZipCode.setAlignmentX(Component.CENTER_ALIGNMENT);
-		accountCreditCardInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
 		homePortfolio.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoAsk.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -237,6 +231,7 @@ public class UserInterface extends JFrame{
 		stockInfoTotalShares.setAlignmentX(Component.CENTER_ALIGNMENT);
 		manageFundsBalance.setAlignmentX(Component.CENTER_ALIGNMENT);
 		transactionsText.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bankNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//Creating buttons for functions and navigation
 		JButton signInButton = new JButton("Sign In");
@@ -269,7 +264,6 @@ public class UserInterface extends JFrame{
 		JButton editLoginCredentialsButton = new JButton("Edit Login Credentials");
 		JButton editPersonalInformationButton = new JButton("Edit Personal Information");
 		JButton editAddressButton = new JButton("Edit Address");
-		JButton editCreditCardInfoButton = new JButton("Edit Credit Card Information");
 		
 		//Centering buttons
 		signInButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -302,7 +296,6 @@ public class UserInterface extends JFrame{
 		editLoginCredentialsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		editPersonalInformationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		editAddressButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		editCreditCardInfoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//Creating text fields, some with specific formats
 		JTextField usernameField = new JTextField(15);
@@ -379,10 +372,9 @@ public class UserInterface extends JFrame{
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
-		JFormattedTextField creationCreditCardInfoField = new JFormattedTextField(mask);
-		creationCreditCardInfoField.setColumns(15);
-		creationCreditCardInfoField.setMaximumSize(creationCreditCardInfoField.getPreferredSize());
-		creationCreditCardInfoField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JFormattedTextField bankNumberField = new JFormattedTextField(15);
+		bankNumberField.setMaximumSize(bankNumberField.getPreferredSize());
+		bankNumberField.setHorizontalAlignment(JFormattedTextField.CENTER);
 		
 		//Centering text fields
 		usernameField.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -399,7 +391,7 @@ public class UserInterface extends JFrame{
 		creationCityField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationStateField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationZipCodeField.setAlignmentX(Component.CENTER_ALIGNMENT);
-		creationCreditCardInfoField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bankNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		
 		//*****************************************************************************************
@@ -485,9 +477,6 @@ public class UserInterface extends JFrame{
 		signUp2Panel.add(creationZipCode);
 		signUp2Panel.add(creationZipCodeField);
 		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
-		signUp2Panel.add(creationCreditCardInfo);
-		signUp2Panel.add(creationCreditCardInfoField);
-		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
 		signUp2Panel.add(creationEmail);
 		signUp2Panel.add(creationEmailField);
 		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -506,17 +495,14 @@ public class UserInterface extends JFrame{
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		accountInfoPanel.add(accountInfo);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		accountInfoPanel.add(accountFullName);
+		accountInfoPanel.add(accountFirstName);
+		accountInfoPanel.add(accountLastName);
 		accountInfoPanel.add(accountUsername);
 		accountInfoPanel.add(accountPassword);
 		accountInfoPanel.add(accountEmail);
 		accountInfoPanel.add(accountPhoneNumber);
 		accountInfoPanel.add(accountSSN);
-		accountInfoPanel.add(accountStreetAddress);
-		accountInfoPanel.add(accountCity);
-		accountInfoPanel.add(accountState);
-		accountInfoPanel.add(accountZipCode);
-		accountInfoPanel.add(accountCreditCardInfo);
+		accountInfoPanel.add(accountAddress);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		accountInfoPanel.add(accountInfoEditButton);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -530,8 +516,6 @@ public class UserInterface extends JFrame{
 		editAccountInfoPanel.add(editPersonalInformationButton);
 		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		editAccountInfoPanel.add(editAddressButton);
-		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		editAccountInfoPanel.add(editCreditCardInfoButton);
 		editAccountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		editAccountInfoPanel.add(editAccountInfoBackButton);
 		
@@ -588,6 +572,10 @@ public class UserInterface extends JFrame{
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(manageFundsBalance);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		fundsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		fundsPanel.add(bankNumber);
+		fundsPanel.add(bankNumberField);
+		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(withdrawButton);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(depositButton);
@@ -654,6 +642,22 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == viewAccount) {
+					try {
+						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						rs.next();
+
+						accountFirstName.setText("First Name: " + rs.getString("fName"));
+						accountLastName.setText("Last Name: " + rs.getString("lName"));
+						accountUsername.setText("Username: " + rs.getString("username"));
+						accountPassword.setText("Password: " + rs.getString("password"));
+						accountEmail.setText("Email Address: " + rs.getString("email"));
+						accountPhoneNumber.setText("Phone Number: " + rs.getString("phone#"));
+						accountSSN.setText("Social Security Number: " + rs.getString("ssn"));
+						accountAddress.setText("Address: " + rs.getString("address"));
+						accountInfoPanel.revalidate();
+					} catch (SQLException ex) {
+						System.out.println(ex);
+					}
 					c1.show(cards, "4"); //switch to account info
 				}
 			}
@@ -860,8 +864,7 @@ public class UserInterface extends JFrame{
 						creationStreetAddressField.getText().equals("") ||
 						creationCityField.getText().equals("") ||
 						creationStateField.getText().equals("") ||
-						creationZipCodeField.getText().equals("") ||
-						creationCreditCardInfoField.getText().equals(""))
+						creationZipCodeField.getText().equals(""))
 						JOptionPane.showMessageDialog(null, "Please fill in all non-optional fields.");
 					else {
 						String address = creationStreetAddressField.getText() + ", " 
@@ -1221,29 +1224,6 @@ public class UserInterface extends JFrame{
 									   "Zip/Postal Code", field4};
 	
 					JOptionPane.showConfirmDialog(null, fields, "Enter new address.", JOptionPane.OK_CANCEL_OPTION);
-				}
-			}
-		});
-
-		editCreditCardInfoButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == editCreditCardInfoButton) {
-					//Formatted textfield for new credit card info
-					MaskFormatter mask = null;
-					try {
-						mask = new MaskFormatter("####-####-####-####");
-						mask.setPlaceholderCharacter('_');
-					} catch (ParseException e1) {
-						e1.printStackTrace();
-					}
-					JFormattedTextField field1 = new JFormattedTextField(mask);
-					field1.setColumns(15);
-	
-					//An array for the output of the JOptionPane
-					Object[] fields = {"Credit Card Number", field1};
-	
-					JOptionPane.showConfirmDialog(null, fields, "Enter new credit card information.", JOptionPane.OK_CANCEL_OPTION);
 				}
 			}
 		});

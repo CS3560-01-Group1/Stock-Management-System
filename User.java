@@ -180,7 +180,25 @@ public class User {
 		
 	}
 
-	//Getter functions
+	//Get account information
+	public static ResultSet getAccountInfo(String usernameInput) {
+		try
+		{
+			Connection connection = Main.getConnection();
+			// create the java statement
+
+			// execute the query
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM user WHERE `username` = '" 
+																	+ usernameInput + "'");
+			return rs;
+		}
+		catch (Exception ex)
+		{
+			System.out.println(ex);
+		}
+		return null;
+	}
+
 	public int getID() {
 		return id;
 	}
