@@ -165,9 +165,10 @@ public class UserInterface extends JFrame{
 		JLabel transactionsText = new JLabel("No transactions to show at the moment.");
 		JLabel creationUsername = new JLabel("Username");
 		JLabel creationPassword = new JLabel("Password");
-		JLabel creationFullName = new JLabel("Full Name");
-		JLabel creationEmail = new JLabel("Email Address");
-		JLabel creationPhoneNumber = new JLabel("Phone Number");
+		JLabel creationFirstName = new JLabel("First Name");
+		JLabel creationLastName = new JLabel("Last Name");
+		JLabel creationEmail = new JLabel("Email Address (Optional)");
+		JLabel creationPhoneNumber = new JLabel("Phone Number (Optional");
 		JLabel creationSSN = new JLabel("Social Security Number");
 		JLabel creationStreetAddress = new JLabel("Street Address");
 		JLabel creationCity = new JLabel("City");
@@ -205,7 +206,8 @@ public class UserInterface extends JFrame{
 		transactions.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationUsername.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
-		creationFullName.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationFirstName.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationLastName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationEmail.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationPhoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationSSN.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -315,9 +317,12 @@ public class UserInterface extends JFrame{
 		JTextField creationPasswordField = new JTextField(15);
 		creationPasswordField.setMaximumSize(creationPasswordField.getPreferredSize());
 		creationPasswordField.setHorizontalAlignment(JFormattedTextField.CENTER);
-		JTextField creationFullNameField = new JTextField(15);
-		creationFullNameField.setMaximumSize(creationFullNameField.getPreferredSize());
-		creationFullNameField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField creationFirstNameField = new JTextField(15);
+		creationFirstNameField.setMaximumSize(creationFirstNameField.getPreferredSize());
+		creationFirstNameField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField creationLastNameField = new JTextField(15);
+		creationLastNameField.setMaximumSize(creationFirstNameField.getPreferredSize());
+		creationLastNameField.setHorizontalAlignment(JFormattedTextField.CENTER);
 		JTextField creationEmailField = new JTextField(15);
 		creationEmailField.setMaximumSize(creationEmailField.getPreferredSize());
 		creationEmailField.setHorizontalAlignment(JFormattedTextField.CENTER);
@@ -385,7 +390,8 @@ public class UserInterface extends JFrame{
 		searchBarField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationUsernameField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationPasswordField.setAlignmentX(Component.CENTER_ALIGNMENT);
-		creationFullNameField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationFirstNameField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		creationLastNameField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationEmailField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationPhoneNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationSSNField.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -450,6 +456,12 @@ public class UserInterface extends JFrame{
 		signUpPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		signUpPanel.add(creationPassword);
 		signUpPanel.add(creationPasswordField);
+		signUpPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUpPanel.add(creationFirstName);
+		signUpPanel.add(creationFirstNameField);
+		signUpPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUpPanel.add(creationLastName);
+		signUpPanel.add(creationLastNameField);
 		signUpPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		signUpPanel.add(signUpNextButton);
 		signUpPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -457,15 +469,6 @@ public class UserInterface extends JFrame{
 
 		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 20)));
 		signUp2Panel.add(signUp2);
-		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
-		signUp2Panel.add(creationFullName);
-		signUp2Panel.add(creationFullNameField);
-		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
-		signUp2Panel.add(creationEmail);
-		signUp2Panel.add(creationEmailField);
-		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
-		signUp2Panel.add(creationPhoneNumber);
-		signUp2Panel.add(creationPhoneNumberField);
 		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
 		signUp2Panel.add(creationSSN);
 		signUp2Panel.add(creationSSNField);
@@ -484,6 +487,12 @@ public class UserInterface extends JFrame{
 		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
 		signUp2Panel.add(creationCreditCardInfo);
 		signUp2Panel.add(creationCreditCardInfoField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationEmail);
+		signUp2Panel.add(creationEmailField);
+		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
+		signUp2Panel.add(creationPhoneNumber);
+		signUp2Panel.add(creationPhoneNumberField);
 		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 20)));
 		signUp2Panel.add(createAccountButton);
 		signUp2Panel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -800,7 +809,45 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signUpNextButton) {
-					c1.show(cards, "14"); //switch to 2nd page of sign up
+
+					boolean usernameValid = true;
+
+					//Check if username is already in use
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+					
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM user");
+
+						// iterate through the java resultset
+						while (rs.next())
+						{
+							if (rs.getString("username").equals(creationUsernameField.getText()))
+								usernameValid = false;
+						}	
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
+					
+					//Make sure the text fields are not empty
+					if (creationUsernameField.getText().equals("") || 
+						creationPasswordField.getText().equals("") ||
+						creationFirstNameField.getText().equals("") ||
+						creationLastNameField.getText().equals("")) {
+						JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+					}
+					//Make sure username is unique
+					else if (usernameValid) {
+						c1.show(cards, "14"); //switch to 2nd page of sign up
+					}
+					//Output error if either of the above is not satisfied
+					else
+						JOptionPane.showMessageDialog(null, "Username already in use.\n" +
+															"Please enter a different one");
 				}
 			}
 		});
@@ -809,7 +856,28 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == createAccountButton) {
-					c1.show(cards, "1"); //switch to login
+					if (creationSSNField.getText().equals("") ||
+						creationStreetAddressField.getText().equals("") ||
+						creationCityField.getText().equals("") ||
+						creationStateField.getText().equals("") ||
+						creationZipCodeField.getText().equals("") ||
+						creationCreditCardInfoField.getText().equals(""))
+						JOptionPane.showMessageDialog(null, "Please fill in all non-optional fields.");
+					else {
+						String address = creationStreetAddressField.getText() + ", " 
+										+ creationCityField.getText() + ", "
+										+ creationStateField.getText() + ", "
+										+ creationZipCodeField.getText();
+						User.createUserAccount(creationUsernameField.getText(),
+												creationPasswordField.getText(),
+												creationSSNField.getText(),
+												address, 
+												creationFirstNameField.getText(), 
+												creationLastNameField.getText(), 
+												creationEmailField.getText(), 
+												creationPhoneNumberField.getText());
+						c1.show(cards, "1"); //switch to login
+					}
 				}
 			}
 		});

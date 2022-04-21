@@ -12,7 +12,7 @@ public class User {
 	private String lastName;
 	private double balance; //optional (starts as 0 upon account creation)
 	private String email; //optional
-	private int phoneNumber; //optional
+	private String phoneNumber; //optional
 	
 	//Constructor
 	public User(int idNum) {
@@ -85,20 +85,38 @@ public class User {
 	}
 	
 	//method to register new users
-	public void createUserAccount(String usernameInput, String passwordInput, String ssnInput,
-			String addressInput, String fNameInput, String lNameInput, String emailInput, int phoneNumInput)
+	public static void createUserAccount(String usernameInput, String passwordInput, String ssnInput,
+			String addressInput, String fNameInput, String lNameInput, String emailInput, String phoneNumInput)
 	{
-		id = 0; //when creating a new row entry, use userID = 0 and it will automatically pick a new unique ID
+		//id = 0; when creating a new row entry, use userID = 0 and it will automatically pick a new unique ID
 				//remember to change the ID in this object to the new non-zero ID after insert query
-		username = usernameInput;
-		password = passwordInput;
-		ssn = ssnInput;
-		address = addressInput;
-		firstName = fNameInput;
-		lastName = lNameInput;
-		balance = 0;
-		email = emailInput; //optional 
-		phoneNumber = phoneNumInput; //optional
+		try
+		{
+			Connection connection = Main.getConnection();
+			// create the java statement
+			
+			//Generate appropriate query
+			String query = "INSERT INTO `user` (`userID`, `username`, `password`, `balance`, `ssn`, `address`, `fName`, `lName`";
+			if (!emailInput.equals(""))
+				query += ", `email`";
+			if (!phoneNumInput.equals(""))
+				query += ", `phone#`";
+			query += ") values (0, '" + usernameInput + "', '" + passwordInput + "', 0.00, '" + ssnInput + "', '" 
+					+ addressInput + "', '" + fNameInput + "', '" + lNameInput;
+			if (!emailInput.equals(""))
+				query += "', '" + emailInput;
+			if (!phoneNumInput.equals(""))
+				query += "', '" + phoneNumInput;
+			query += "')";
+
+			// execute the query
+			connection.createStatement().executeUpdate(query);
+		}
+		catch (Exception ex)
+		{
+			System.out.println(ex);
+		}
+		
 	}
 
 	//Brings up a list of past transactions under this User
@@ -179,7 +197,7 @@ public class User {
 		return email;
 	}
 
-	public int getPhoneNumber() {
+	public String getPhoneNumber() {
 		return phoneNumber;
 	}
 
