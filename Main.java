@@ -26,22 +26,6 @@ public class Main {
 		cardLayout.setVisible(true);
 	}
 	
-	//login method for registered users
-	public static void login() 
-	{
-		
-	}
-	
-	public static void logoff() 
-	{
-		
-	}
-	
-	//method to register new users
-	public static void createUserAccount()
-	{
-		
-	}
 	
 	//should return the user that is currently logged into this instance of the program
 	//use for user specific operations
@@ -55,17 +39,6 @@ public class Main {
 	}
 	*/
 	
-	//meant to allow the viewing/searching of available stocks for trade
-	public static void displayStockListings()
-	{
-		
-	}
-	
-	//retrieve a stock and return relevant information (bid/ask/PE Ratio, EPS...)
-	public static void displayStockDetails(String stockID)
-	{
-		
-	}
 	
 	//Establish SQL database connection
 	public static Connection getConnection() throws Exception
@@ -125,8 +98,10 @@ public class Main {
 	      // iterate through the java resultset
 	      while (rs.next())
 	      {
-	    	  
+	    	//select "stocksymbol" attribute column  
 	    	System.out.println(rs.getString("stockSymbol"));
+	    	System.out.println("People are buying this stock at: $" + rs.getDouble("bid"));
+	    	System.out.println("People are selling this stock at: $" + rs.getDouble("ask"));
 	      }
 	      
 		}

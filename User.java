@@ -1,65 +1,125 @@
+import java.sql.ResultSet;
 
 public class User {
 	
-	private String id;
+	private int id;
 	private String username;
 	private String password;
-	private String email;
-	private String phoneNumber;
 	private String ssn;
 	private String address;
-	private String creditCardInfo;
-	private String fullName;
-	private double balance;
+	private String firstName;
+	private String lastName;
+	private double balance; //optional (starts as 0 upon account creation)
+	private String email; //optional
+	private int phoneNumber; //optional
 	
 	//Constructor
-	public User(String idNum, String userName, String passWord, String emailAddress, String ssnum, String physicalAddress, 
-					String creditInfo, String name, double money) {
+	public User(int idNum) {
 		id = idNum;
-		username = userName;
-		password = passWord;
-		email = emailAddress;
-		ssn = ssnum;
-		address = physicalAddress;
-		creditCardInfo = creditInfo;
-		fullName = name;
-		balance = money; //balance should start out as 0 until a deposit is made to the account
+		//fill in all the attributes of User using information of row where idNum = user.userID from database
 	}
 	
-	//Brings up a list of past transactions (both monetary AND stock at the moment?)
-	public void viewTransactions() {
+	//Alternative constructor where user is not defined yet
+	public User() {
 		
 	}
 	
-
-	//Displays the total amount of shares (per unique stock) owned by the user
-	public void viewPortfolio()
+	
+	public Boolean loginConfirmation(String inputUsername, String inputPassword) 
 	{
-		/* 
-		 * Find the latest StockTransaction for each unique stock the user has traded 
-		 * then return/display a list of the "share totals" stored as an attribute for the given stock
-		 */
+		//Find row matching "inputUsername" in database
+		//Check if inputed password = stored password
+		//if true
+			//populate all the attributes of this objects with the matching user's attributes stored in database
+			//return confirmation of login 
+		return true;
+	}
+	
+	public void logoff() 
+	{
+		//erase all attributes from this object (NOT FROM THE DATABASE)
+	}
+	
+	//method to register new users
+	public void createUserAccount(String usernameInput, String passwordInput, String ssnInput,
+			String addressInput, String fNameInput, String lNameInput, String emailInput, int phoneNumInput)
+	{
+		id = 0; //when creating a new row entry, use userID = 0 and it will automatically pick a new unique ID
+				//remember to change the ID in this object to the new non-zero ID after insert query
+		username = usernameInput;
+		password = passwordInput;
+		ssn = ssnInput;
+		address = addressInput;
+		firstName = fNameInput;
+		lastName = lNameInput;
+		balance = 0;
+		email = emailInput; //optional 
+		phoneNumber = phoneNumInput; //optional
+	}
+
+	//Brings up a list of past transactions under this User
+	public ResultSet viewAllTransactions() {
+		//query join with transaction table and monetarytransaction and order tables from database
+		//grab row elements matching the same ID of THIS user only
+		//return the set of results (for each row)
+		return null;
+	}
+	
+	
+
+	//Returns the total amount of shares of each stock owned by this user
+	public ResultSet viewPortfolio()
+	{
+		//Cleighton will do this one
+		//(do not include expired orders)
+		return null;
 	}
 	
 	//Makes a MonetaryTransaction
 	public void placeTransaction(double amount, String date, String targetBankAcct, boolean deposit) {
-		
+		//create new monetary transaction object 
+		//use constructor method to insert new row into "stockdb.monetarytransaction" table 
+		//update this object's balance if transaction was inserted successfully
 	}
 	
-	//User places an order for a specified stock and quantity. Type is used to indicate buying vs selling.
-	// type: (buy/sell) = (0/1)
+	//User places an order for a specified stock and quantity.
+	//type (1/0) = (buy/sell)
 	public void placeOrder(String stockSymbol, int quantity, int type) {
-		
+		//create new order object
+		//user constructor method to insert new row into "stockdb.order" table
 	}
 
 	//Allows user to update some aspects of their account information
 	public void updateAccountInfo(String emailAddress, String phoneNum, String physicalAddress, String creditInfo, 
 										String name) {
+		//select row in "stock.user" table matching this object's id = user.userID
+		//update each column's information accordingly 
+		//(make sure non-null attributes aren't left empty or null)
+			//if any input was left empty for non-null fields just don't make any change then.
+		//if update is successful, update the user attributes in this object
 
+	}
+	
+	public void updateBalance(int changeInBalance)
+	{
+		//query change in user's balance
+		//happens after a transaction (stock or monetary) is created
+		//if successful, update this object's balance attribute
+	}
+	
+	//Deletes user account and all information regarding this user
+	public void deleteAccount()
+	{
+		//Initiate query to "delete" all data regarding this user
+		//Select query across all tables (transaction -> monetarytransaction, transaction -> order, user)
+		//delete all matching content
+		//finally, remove the attributes of this object
+		logoff();
+		
 	}
 
 	//Getter functions
-	public String getID() {
+	public int getID() {
 		return id;
 	}
 
@@ -75,7 +135,7 @@ public class User {
 		return email;
 	}
 
-	public String getPhoneNumber() {
+	public int getPhoneNumber() {
 		return phoneNumber;
 	}
 
@@ -87,16 +147,18 @@ public class User {
 		return address;
 	}
 
-	public String getCreditCardInfo() {
-		return creditCardInfo;
+	public String getFirstName() {
+		return firstName;
 	}
-
-	public String getFullName() {
-		return fullName;
+	
+	public String getlastName() {
+		return lastName;
 	}
 
 	public double getBalance() {
 		return balance;
 	}
+	
+	
 
 }
