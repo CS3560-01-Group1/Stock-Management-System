@@ -74,7 +74,7 @@ public class Main {
 		String url = "jdbc:mysql://127.0.0.1:3306/stockdb";
 		// if using local instance: url = "jdbc:mysql://localhost:3306/stockdb";
 		String username = "root";
-		String password = "Pikapower123$"; 
+		String password = ""; 
 		
 		try 
 		{   

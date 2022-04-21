@@ -7,9 +7,9 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.text.ParseException;
-import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -143,10 +143,12 @@ public class UserInterface extends JFrame{
 		JLabel stockInfo = new JLabel("Stock Information");
 		stockInfo.setFont(titleFont);
 		JLabel stockInfoName = new JLabel("Stock Name: ");
-		JLabel stockInfoDescription = new JLabel("Stock Description: ");
-		JLabel stockInfoTrend = new JLabel("Stock Trend: ");
-		JLabel stockInfoPrice = new JLabel("Stock Price: ");
-		JLabel stockInfoAvailable = new JLabel("Shares Available: ");
+		JLabel stockInfoAsk = new JLabel("Ask Price: ");
+		JLabel stockInfoBid = new JLabel("Bid Price: ");
+		JLabel stockInfoWeek = new JLabel("52-Week: ");
+		JLabel stockInfoQuarterly = new JLabel("Quarterly Dividend Percent: ");
+		JLabel stockInfoPE = new JLabel("PE Ratio: ");
+		JLabel stockInfoTotalShares = new JLabel("Total Shares: ");
 		JLabel buyStock = new JLabel("Buy Stocks");
 		buyStock.setFont(titleFont);
 		JLabel sellStock = new JLabel("Sell Stocks");
@@ -225,10 +227,12 @@ public class UserInterface extends JFrame{
 		accountCreditCardInfo.setAlignmentX(Component.CENTER_ALIGNMENT);
 		homePortfolio.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoName.setAlignmentX(Component.CENTER_ALIGNMENT);
-		stockInfoDescription.setAlignmentX(Component.CENTER_ALIGNMENT);
-		stockInfoTrend.setAlignmentX(Component.CENTER_ALIGNMENT);
-		stockInfoPrice.setAlignmentX(Component.CENTER_ALIGNMENT);
-		stockInfoAvailable.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoAsk.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoBid.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoWeek.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoQuarterly.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoPE.setAlignmentX(Component.CENTER_ALIGNMENT);
+		stockInfoTotalShares.setAlignmentX(Component.CENTER_ALIGNMENT);
 		manageFundsBalance.setAlignmentX(Component.CENTER_ALIGNMENT);
 		transactionsText.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
@@ -245,7 +249,7 @@ public class UserInterface extends JFrame{
 		JButton accountInfoEditButton = new JButton("Edit Information");
 		JButton editAccountInfoBackButton = new JButton("Back");
 		JButton searchButton = new JButton("Search");
-		JButton stockInfoButton = new JButton("Stock Information");
+		JButton stockInfoButton = new JButton("View Stock");
 		JButton stockInfoBackButton = new JButton("Back");
 		JButton buyStockButton = new JButton("Buy Stock");
 		JButton buyStockConfirmButton = new JButton("Confirm Purchase");
@@ -391,6 +395,36 @@ public class UserInterface extends JFrame{
 		creationZipCodeField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationCreditCardInfoField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
+		
+		//*****************************************************************************************
+		//Creating a default list model for list of stocks
+		//*****************************************************************************************
+		DefaultListModel<String> stockListModel = new DefaultListModel<>();
+		try
+		{
+			Connection connection = Main.getConnection();
+			// create the java statement
+
+			// execute the query, and get a java resultset
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stockdb.stock");
+
+			// iterate through the java resultset
+			while (rs.next())
+			{
+				stockListModel.addElement(rs.getString("stockSymbol"));
+			}
+			
+		}
+		catch (Exception ex)
+		{
+			System.out.println(ex);
+		}
+
+		final JList<String> stockList = new JList<>(stockListModel);
+		final JScrollPane scrollStockList = new JScrollPane(stockList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollStockList.setPreferredSize(new Dimension(50, 100));
+		scrollStockList.setMaximumSize(new Dimension(50, 100));
+
 		//*****************************************************************************************
 		//Adding labels, buttons, and text fields to panels with proper spacing
 		//*****************************************************************************************
@@ -508,13 +542,17 @@ public class UserInterface extends JFrame{
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		stockInfoPanel.add(stockInfoName);
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		stockInfoPanel.add(stockInfoDescription);
+		stockInfoPanel.add(stockInfoAsk);
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		stockInfoPanel.add(stockInfoTrend);
+		stockInfoPanel.add(stockInfoBid);
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		stockInfoPanel.add(stockInfoPrice);
+		stockInfoPanel.add(stockInfoWeek);
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		stockInfoPanel.add(stockInfoAvailable);
+		stockInfoPanel.add(stockInfoQuarterly);
+		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		stockInfoPanel.add(stockInfoPE);
+		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		stockInfoPanel.add(stockInfoTotalShares);
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		stockInfoPanel.add(buyStockButton);
 		stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -627,14 +665,7 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == tradeStocks) {
 					c1.show(cards, "6"); //switch to search stocks
-					//Array to store all stockSymbols
-					ArrayList<String> stocks = new ArrayList<>();
-
-					//Creating JList
-					JList stockList;
-
-					//Creating scroll pane
-					JScrollPane scrollStockList;
+					stockListModel.clear();
 
 					try
 					{
@@ -647,24 +678,13 @@ public class UserInterface extends JFrame{
 						// iterate through the java resultset
 						while (rs.next())
 						{
-							stocks.add(rs.getString("stockSymbol"));
-						}
-						
+							stockListModel.addElement(rs.getString("stockSymbol"));
+						}	
 					}
 					catch (Exception ex)
 					{
 						System.out.println(ex);
 					}
-					finally
-					{
-						System.out.println("Query Complete: Selected all stock symbols");
-					}
-
-					String[] array = stocks.toArray(new String [0]);
-					stockList = new JList(array);
-					scrollStockList = new JScrollPane(stockList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-					scrollStockList.setPreferredSize(new Dimension(50, 100));
-					scrollStockList.setMaximumSize(new Dimension(50, 100));
 
 					searchPanel.removeAll();
 					searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -820,7 +840,74 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == stockInfoButton) {
-					c1.show(cards, "7"); //switch to stock info
+					if (stockList.isSelectionEmpty())
+						JOptionPane.showMessageDialog(null, "Please select a stock.");
+					else {
+						String stockName = "";
+						float askPrice = 0;
+						float bidPrice = 0;
+						float week = 0;
+						float quarterlyDividendPercent = 0;
+						float peRatio = 0;
+						int totalShares = 0;
+
+						try
+						{
+							Connection connection = Main.getConnection();
+							// create the java statement
+						
+							// execute the query, and get a java resultset
+							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
+							rs.next();
+							stockName = rs.getString("stockSymbol");
+							askPrice = rs.getFloat("ask");
+							bidPrice = rs.getFloat("bid");
+							week = rs.getFloat("52_Week");
+							quarterlyDividendPercent = rs.getFloat("quarterlyDividendPerc");
+							peRatio = rs.getFloat("PEratio");
+							totalShares = rs.getInt("totalShares");
+						}
+						catch (Exception ex)
+						{
+							System.out.println(ex);
+						}
+
+						stockInfoName.setText("Name: " + stockName);
+						stockInfoAsk.setText("Ask Price: " + askPrice);
+						stockInfoBid.setText("Bid Price: " + bidPrice);
+						stockInfoWeek.setText("52-Week: " + week);
+						stockInfoQuarterly.setText("Quarterly Dividend Percent: " + quarterlyDividendPercent);
+						stockInfoPE.setText("PE Ratio: " + peRatio);
+						stockInfoTotalShares.setText("Total Shares: " + totalShares);
+
+						stockInfoPanel.removeAll();
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+						stockInfoPanel.add(stockInfo);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(stockInfoName);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(stockInfoAsk);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(stockInfoBid);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(stockInfoWeek);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(stockInfoQuarterly);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(stockInfoPE);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(stockInfoTotalShares);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+						stockInfoPanel.add(buyStockButton);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(sellStockButton);
+						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+						stockInfoPanel.add(stockInfoBackButton);
+						stockInfoPanel.revalidate();
+
+						c1.show(cards, "7"); //switch to stock info
+					}
 				}
 			}
 		});
@@ -1095,14 +1182,8 @@ public class UserInterface extends JFrame{
 				if (e.getSource() == searchButton) {
 					
 					if(!searchBarField.getText().equals("")) {
-						//Array to store all stockSymbols
-						ArrayList<String> stocks = new ArrayList<>();
 
-						//Creating JList
-						JList stockList;
-
-						//Creating scroll pane
-						JScrollPane scrollStockList;
+						stockListModel.clear();
 
 						try
 						{
@@ -1116,7 +1197,7 @@ public class UserInterface extends JFrame{
 							// iterate through the java resultset
 							while (rs.next())
 							{
-								stocks.add(rs.getString("stockSymbol"));
+								stockListModel.addElement(rs.getString("stockSymbol"));
 							}
 							
 						}
@@ -1124,12 +1205,6 @@ public class UserInterface extends JFrame{
 						{
 							System.out.println(ex);
 						}
-
-						String[] array = stocks.toArray(new String [0]);
-						stockList = new JList(array);
-						scrollStockList = new JScrollPane(stockList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-						scrollStockList.setPreferredSize(new Dimension(50, 100));
-						scrollStockList.setMaximumSize(new Dimension(50, 100));
 
 						searchPanel.removeAll();
 						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
