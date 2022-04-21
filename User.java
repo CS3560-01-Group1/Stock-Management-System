@@ -99,13 +99,13 @@ public class User {
 			String query = "INSERT INTO `user` (`userID`, `username`, `password`, `balance`, `ssn`, `address`, `fName`, `lName`";
 			if (!emailInput.equals(""))
 				query += ", `email`";
-			if (!phoneNumInput.equals(""))
+			if (!phoneNumInput.equals("(___)-___-____"))
 				query += ", `phone#`";
 			query += ") values (0, '" + usernameInput + "', '" + passwordInput + "', 0.00, '" + ssnInput + "', '" 
 					+ addressInput + "', '" + fNameInput + "', '" + lNameInput;
 			if (!emailInput.equals(""))
 				query += "', '" + emailInput;
-			if (!phoneNumInput.equals(""))
+			if (!phoneNumInput.equals("(___)-___-____"))
 				query += "', '" + phoneNumInput;
 			query += "')";
 
