@@ -59,8 +59,8 @@ public class User {
 
 	//Brings up a list of past transactions under this User
 	public ResultSet viewAllTransactions() {
-		//query join with transaction table and monetary/stock transaction tables from database
-		//grab row elements matching the same ID of this user
+		//query join with transaction table and monetarytransaction and order tables from database
+		//grab row elements matching the same ID of THIS user only
 		//return the set of results (for each row)
 		return null;
 	}
@@ -71,6 +71,7 @@ public class User {
 	public ResultSet viewPortfolio()
 	{
 		//Cleighton will do this one
+		//(do not include expired orders)
 		return null;
 	}
 	
@@ -104,6 +105,17 @@ public class User {
 		//query change in user's balance
 		//happens after a transaction (stock or monetary) is created
 		//if successful, update this object's balance attribute
+	}
+	
+	//Deletes user account and all information regarding this user
+	public void deleteAccount()
+	{
+		//Initiate query to "delete" all data regarding this user
+		//Select query across all tables (transaction -> monetarytransaction, transaction -> order, user)
+		//delete all matching content
+		//finally, remove the attributes of this object
+		logoff();
+		
 	}
 
 	//Getter functions

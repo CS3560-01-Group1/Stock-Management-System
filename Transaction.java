@@ -2,8 +2,9 @@ import java.sql.ResultSet;
 
 public abstract class Transaction {
 
-	private int transactionID;
+	private int transactionID; //primary key for MonetaryTransaction and Order
 	private String transactionDate;
+	private int userID;
 	
 	//Constructor
 	public Transaction() {
@@ -12,9 +13,9 @@ public abstract class Transaction {
 
 	//Records a transaction in the transactions list for the user
 	//Called by MonetaryTransaction or StockTransaction Classes
-	public void newTransactionRecord() {
-		//query "INSERT INTO stockdb.transaction VALUES()" 
-		//automatically records unique ID and date upon creation 
+	public void newTransactionRecord(int idOfUser) {
+		//query "INSERT INTO stockdb.transaction VALUES()" with given userID
+		//this will automatically records unique transactionID and date upon creation 
 		//if insert successful, update this objects attributes 
 	}
 	
@@ -37,6 +38,10 @@ public abstract class Transaction {
 
 	public String getTransactionDate() {
 		return transactionDate;
+	}
+	
+	public int belongsToUser() {
+		return this.userID;
 	}
 
 }

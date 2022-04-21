@@ -24,16 +24,13 @@ DROP TABLE IF EXISTS `monetarytransaction`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `monetarytransaction` (
   `transactionID` int NOT NULL,
-  `userID` int NOT NULL,
   `externalBankRoute#` varchar(20) NOT NULL,
   `externalBankName` varchar(50) NOT NULL,
   `externalBankAct#` varchar(20) NOT NULL,
   `activityType` varchar(10) NOT NULL,
   `amount` decimal(10,2) NOT NULL,
   PRIMARY KEY (`transactionID`),
-  KEY `userID` (`userID`),
-  CONSTRAINT `monetarytransaction_ibfk_1` FOREIGN KEY (`transactionID`) REFERENCES `transaction` (`transactionID`),
-  CONSTRAINT `monetarytransaction_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `user` (`userID`)
+  CONSTRAINT `monetarytransaction_ibfk_1` FOREIGN KEY (`transactionID`) REFERENCES `transaction` (`transactionID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -43,7 +40,7 @@ CREATE TABLE `monetarytransaction` (
 
 LOCK TABLES `monetarytransaction` WRITE;
 /*!40000 ALTER TABLE `monetarytransaction` DISABLE KEYS */;
-INSERT INTO `monetarytransaction` VALUES (10,1,'9876562918','Chase','1235925209','DEPOSIT',100.00);
+INSERT INTO `monetarytransaction` VALUES (10,'9876562918','Chase','1235925209','DEPOSIT',100.00);
 /*!40000 ALTER TABLE `monetarytransaction` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -55,19 +52,22 @@ DROP TABLE IF EXISTS `order`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order` (
-  `orderID` int NOT NULL AUTO_INCREMENT,
+  `transactionID` int NOT NULL,
   `orderType` int NOT NULL,
+  `stockSymbol` varchar(45) NOT NULL,
   `quantity` decimal(6,2) NOT NULL,
-  `userID` int NOT NULL,
-  `stockSymbol` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`orderID`),
+  `executedPrice` decimal(10,2) DEFAULT NULL,
+  `orderStatus` int NOT NULL DEFAULT '0',
+  PRIMARY KEY (`transactionID`),
   KEY `stockSymbol` (`stockSymbol`),
-  KEY `userID` (`userID`),
   KEY `orderType` (`orderType`),
+  KEY `order_ibfk_4_idx` (`transactionID`),
+  KEY `orderStatus` (`orderStatus`),
   CONSTRAINT `order_ibfk_1` FOREIGN KEY (`stockSymbol`) REFERENCES `stock` (`stockSymbol`),
-  CONSTRAINT `order_ibfk_2` FOREIGN KEY (`userID`) REFERENCES `user` (`userID`),
-  CONSTRAINT `order_ibfk_3` FOREIGN KEY (`orderType`) REFERENCES `ordertypetable` (`orderType`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `order_ibfk_3` FOREIGN KEY (`orderType`) REFERENCES `ordertypetable` (`orderType`),
+  CONSTRAINT `order_ibfk_4` FOREIGN KEY (`transactionID`) REFERENCES `transaction` (`transactionID`),
+  CONSTRAINT `order_ibfk_5` FOREIGN KEY (`orderStatus`) REFERENCES `orderstatuses` (`orderStatus`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -76,8 +76,32 @@ CREATE TABLE `order` (
 
 LOCK TABLES `order` WRITE;
 /*!40000 ALTER TABLE `order` DISABLE KEYS */;
-INSERT INTO `order` VALUES (1,0,50.00,1,'QQQ'),(2,1,-20.00,1,'QQQ'),(3,0,50.00,1,'QQQ'),(4,0,69.00,1,'ABC');
+INSERT INTO `order` VALUES (1,0,'QQQ',50.00,12.56,1),(2,1,'QQQ',-20.00,8.09,1),(3,0,'QQQ',50.00,9.99,1),(4,0,'ABC',69.00,6.01,1);
 /*!40000 ALTER TABLE `order` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `orderstatuses`
+--
+
+DROP TABLE IF EXISTS `orderstatuses`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `orderstatuses` (
+  `orderStatus` int NOT NULL AUTO_INCREMENT,
+  `statusType` varchar(25) NOT NULL,
+  PRIMARY KEY (`orderStatus`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `orderstatuses`
+--
+
+LOCK TABLES `orderstatuses` WRITE;
+/*!40000 ALTER TABLE `orderstatuses` DISABLE KEYS */;
+INSERT INTO `orderstatuses` VALUES (0,'Open'),(1,'Completed'),(2,'Expired');
+/*!40000 ALTER TABLE `orderstatuses` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -135,37 +159,6 @@ INSERT INTO `stock` VALUES ('ABC',4.56,1.23,7.89,NULL,10.00,999),('MEM',5.32,5.0
 UNLOCK TABLES;
 
 --
--- Table structure for table `stocktransaction`
---
-
-DROP TABLE IF EXISTS `stocktransaction`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `stocktransaction` (
-  `transactionID` int NOT NULL,
-  `orderID` int NOT NULL,
-  `userID` int NOT NULL,
-  `priceExecuted` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`transactionID`),
-  KEY `orderID` (`orderID`),
-  KEY `userID` (`userID`),
-  CONSTRAINT `stocktransaction_ibfk_1` FOREIGN KEY (`transactionID`) REFERENCES `transaction` (`transactionID`),
-  CONSTRAINT `stocktransaction_ibfk_2` FOREIGN KEY (`orderID`) REFERENCES `order` (`orderID`),
-  CONSTRAINT `stocktransaction_ibfk_3` FOREIGN KEY (`userID`) REFERENCES `order` (`userID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `stocktransaction`
---
-
-LOCK TABLES `stocktransaction` WRITE;
-/*!40000 ALTER TABLE `stocktransaction` DISABLE KEYS */;
-INSERT INTO `stocktransaction` VALUES (1,1,1,12.42),(2,2,1,52.12),(3,3,1,2.11),(4,4,1,12.34);
-/*!40000 ALTER TABLE `stocktransaction` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `transaction`
 --
 
@@ -175,7 +168,10 @@ DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE `transaction` (
   `transactionID` int NOT NULL AUTO_INCREMENT,
   `transactionDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`transactionID`)
+  `userID` int NOT NULL,
+  PRIMARY KEY (`transactionID`),
+  KEY `userID` (`userID`),
+  CONSTRAINT `transaction_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `user` (`userID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -185,7 +181,7 @@ CREATE TABLE `transaction` (
 
 LOCK TABLES `transaction` WRITE;
 /*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
-INSERT INTO `transaction` VALUES (1,'2022-04-18 13:05:53'),(2,'2022-04-18 13:57:15'),(3,'2022-04-18 13:57:15'),(4,'2022-04-18 14:58:30'),(10,'2022-04-20 14:17:43');
+INSERT INTO `transaction` VALUES (1,'2022-04-18 13:05:53',1),(2,'2022-04-18 13:57:15',1),(3,'2022-04-18 13:57:15',1),(4,'2022-04-18 14:58:30',1),(10,'2022-04-20 21:58:52',1);
 /*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,4 +226,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-20 15:11:09
+-- Dump completed on 2022-04-20 22:23:52
