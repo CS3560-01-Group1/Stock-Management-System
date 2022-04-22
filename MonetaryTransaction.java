@@ -27,7 +27,7 @@ public class MonetaryTransaction extends Transaction {
 	}
 	
 	//give user chance to change a transaction they just made in case they made a mistake 
-		public void rewriteMonetaryTransaction(String routingNum, String bankName, String bankAccountNum,
+	public void rewriteMonetaryTransaction(String routingNum, String bankName, String bankAccountNum,
 				String transactionActivity)
 		{
 			//transaction record already exists

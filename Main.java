@@ -16,7 +16,8 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		initialize();
-		exampleSQLQuery();
+//		exampleSQLQuery();
+
 	}
 
 	//Starts up program user interface
