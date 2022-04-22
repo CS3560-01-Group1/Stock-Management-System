@@ -1,3 +1,5 @@
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 public class Order extends Transaction{
 
@@ -19,7 +21,6 @@ public class Order extends Transaction{
 	//called when a user wants to create a new order on a stock
 	public void newOrder(int idOfUser, String stockSymbol, int typeOfOrder, double quantityInput)
 	{
-		//Cleighton will do this one 
 		
 		//Verify type order/quantity are valid (outside this method's scope)
 			//can't purchase share quantity > user balance
@@ -28,9 +29,34 @@ public class Order extends Transaction{
 		//create new transaction
 		newTransactionRecord(idOfUser);
 		//query insert into "stockdb.order" table with the given inputs
+			//buy orders -> quantity input = positive
+			//sell order -> quantity input = negative
 			//orderStatus = 0 default
 			//executedPrice = null default
+		if (typeOfOrder == 1) { //if sell order type, shares are negative
+			quantityInput *= -1;
+		}
+		String query = "INSERT INTO stockdb.order(transactionID, orderType, stockSymbol, quantity)"
+				+ "VALUES (" + this.getTransactionID() + "," + typeOfOrder + ",\"" + stockSymbol + "\"," + quantityInput + ")";
+		System.out.println(query);
+		try
+		{
+			//establishing connection to database
+			Connection connection = Main.getConnection();
+			PreparedStatement insertQuery = connection.prepareStatement(query);
+			insertQuery.executeUpdate();
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		finally
+		{
+			System.out.println("Query Complete: recorded a new Order. Transaction ID: " + this.getTransactionID());
+		}
+			
 		//if successful, update this object's attributes accordingly
+		retrieveOrder(this.getTransactionID());
 		
 		//As soon as the order goes through, the order is completed
 		completeOrder(0);
