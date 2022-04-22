@@ -1,6 +1,7 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "c:\\Program Files\\MySQL\\mysql-connector-java-8.0.28\\mysql-connector-java-8.0.28.jar"
+        "c:\\Program Files\\MySQL\\mysql-connector-java-8.0.28\\mysql-connector-java-8.0.28.jar",
+        "a:\\School\\Academics\\Spring 2022\\CS 3560 Object Orientated Programming\\mysql-connector-java-8.0.28\\mysql-connector-java-8.0.28\\mysql-connector-java-8.0.28.jar"
     ]
 }
