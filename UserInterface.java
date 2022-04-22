@@ -1128,13 +1128,11 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawConfirmButton) {
 					try {
-						/*
 						float newBalance;
-						newBalance = User.updateBalance(usernameField.getText(), Float.parseFloat(withdrawAmountField.getText()));
+						newBalance = User.updateBalance1(usernameField.getText(), Float.parseFloat(withdrawAmountField.getText()));
 						manageFundsBalance.setText("Balance: " + newBalance);
 						fundsPanel.revalidate();
 						c1.show(cards, "10"); //switch to funds
-						*/
 					}
 					catch (Exception ex) {
 						System.out.println(ex);
@@ -1174,7 +1172,7 @@ public class UserInterface extends JFrame{
 				if (e.getSource() == depositConfirmButton) {
 					try {
 						float newBalance;
-						/*
+
 						// execute the query, and get a java resultset
 						ResultSet rs = User.getAccountInfo(usernameField.getText());
 						rs.next();
@@ -1185,12 +1183,11 @@ public class UserInterface extends JFrame{
 						}
 						else {
 							fundsPanel.revalidate();
-							newBalance = User.updateBalance(usernameField.getText(), -Float.parseFloat(depositAmountField.getText()));
+							newBalance = User.updateBalance1(usernameField.getText(), -Float.parseFloat(depositAmountField.getText()));
 							manageFundsBalance.setText("Balance: " + newBalance);
 							fundsPanel.revalidate();
 							c1.show(cards, "10"); //switch to funds
 						}
-						*/
 					}
 					catch (Exception ex) {
 						System.out.println(ex);

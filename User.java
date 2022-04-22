@@ -1,4 +1,5 @@
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class User {
@@ -185,6 +186,39 @@ public class User {
 		{
 			System.out.println("Query Complete: Updated Balance");
 		}
+	}
+
+	//Alternate version of update balance
+	public static float updateBalance1(String username, float changeInBalance) {
+		try
+		{
+			float balance;
+
+			//Establishing connection to database
+			Connection connection = Main.getConnection();
+
+			//Execute query
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username` = '" 
+																	+ username + "'");	
+			rs.next();
+
+			//Get balance
+			balance = rs.getFloat("balance");
+
+			//Add change to balance
+			balance += changeInBalance;
+
+			//Update balance in database
+			connection.createStatement().executeUpdate("UPDATE `user` SET `balance` = " 
+														+ balance + " WHERE `username` = '" + username + "'");
+
+			return balance;
+		}
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		return 0;
 	}
 	
 	//Deletes user account and all information regarding this user
