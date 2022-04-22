@@ -1220,7 +1220,48 @@ public class UserInterface extends JFrame{
 					//An array for the output of the JOptionPane
 					Object[] fields = {"Username", field1, "Password", field2};
 
-					JOptionPane.showConfirmDialog(null, fields, "Enter new login credentials.", JOptionPane.OK_CANCEL_OPTION);
+					int n = JOptionPane.showConfirmDialog(null, fields, "Enter new login credentials.", JOptionPane.OK_CANCEL_OPTION);
+
+					if (n == JOptionPane.OK_OPTION) {
+						try
+						{
+							boolean validUsername = true;
+							Connection connection = Main.getConnection();
+							// create the java statement
+						
+							// execute the query, and get a java resultset
+							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user`");
+
+							// iterate through the java resultset
+							while (rs.next())
+							{
+								if (rs.getString("username").equals(field1.getText())) {
+									validUsername = false;
+								}
+							}
+							//Check if both fields are filled in
+							if (field1.getText().equals("") || field2.getText().equals("")) {
+								JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+							}
+							//Check if username is in use
+							else if (!validUsername) {
+								JOptionPane.showMessageDialog(null, "Username is already in use.\nPlease try another username.");
+							}
+							//Update password and username
+							else {
+								User.updateLoginCredentials(usernameField.getText(), field1.getText(), field2.getText());
+								accountUsername.setText("Username: " + field1.getText());
+								accountPassword.setText("Password: " + field2.getText());
+								accountInfoPanel.revalidate();			
+							}
+							
+						}
+						catch (Exception ex)
+						{
+							System.out.println(ex);
+						}
+					}
+					
 				}
 			}
 		});
@@ -1229,19 +1270,20 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editPersonalInformationButton) {
-					//Text fields for new name and email address
+					//Text fields for new first name, last name, and email address
 					JTextField field1 = new JTextField(15);
 					JTextField field2 = new JTextField(15);
+					JTextField field3 = new JTextField(15);
 
 					//Formatted textfields for new phone number and ssn
 					MaskFormatter mask = null;
 					try {
-						mask = new MaskFormatter("(###) ###-####");
+						mask = new MaskFormatter("(###)-###-####");
 						mask.setPlaceholderCharacter('_');
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
-					JFormattedTextField field3 = new JFormattedTextField(mask);
+					JFormattedTextField field4 = new JFormattedTextField(mask);
 					field3.setColumns(15);
 					try {
 						mask = new MaskFormatter("###-##-####");
@@ -1249,16 +1291,44 @@ public class UserInterface extends JFrame{
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
-					JFormattedTextField field4 = new JFormattedTextField(mask);
+					JFormattedTextField field5 = new JFormattedTextField(mask);
 					field4.setColumns(15);
 	
 					//An array for the output of the JOptionPane
-					Object[] fields = {"Full Name", field1, 
-									   "Email", field2,
-									   "Phone Number", field3,
-									   "Social Security Number", field4};
+					Object[] fields = {"First Name", field1, 
+									   "Last Name", field2,
+									   "Email (Optional)", field3,
+									   "Phone Number (Optional)", field4,
+									   "Social Security Number", field5};
 	
-					JOptionPane.showConfirmDialog(null, fields, "Enter new personal information.", JOptionPane.OK_CANCEL_OPTION);
+					int n = JOptionPane.showConfirmDialog(null, fields, "Enter new personal information.", JOptionPane.OK_CANCEL_OPTION);
+
+					if (n == JOptionPane.OK_OPTION) {
+						try
+						{
+							//Check if required fields are filled in
+							if (field1.getText().equals("") || field2.getText().equals("")
+									|| field5.getText().equals("")) {
+								JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+							}
+							//Update all attributes
+							else {
+								User.updatePersonalInformation(usernameField.getText(), field1.getText(), 
+															   field2.getText(), field3.getText(), 
+															   field4.getText(), field5.getText());	
+								accountFirstName.setText("First Name: " + field1.getText());
+								accountLastName.setText("Last Name: " + field2.getText());
+								accountEmail.setText("Email: " + field3.getText());
+								accountPhoneNumber.setText("Phone Number: " + field4.getText());
+								accountSSN.setText("Social Security Number: " + field5.getText());
+								accountInfoPanel.revalidate();			
+							}	
+						}
+						catch (Exception ex)
+						{
+							System.out.println(ex);
+						}
+					}
 				}
 			}
 		});
@@ -1296,7 +1366,31 @@ public class UserInterface extends JFrame{
 									   "State", field3,
 									   "Zip/Postal Code", field4};
 	
-					JOptionPane.showConfirmDialog(null, fields, "Enter new address.", JOptionPane.OK_CANCEL_OPTION);
+					int n = JOptionPane.showConfirmDialog(null, fields, "Enter new address.", JOptionPane.OK_CANCEL_OPTION);
+
+					if (n == JOptionPane.OK_OPTION) {
+						try
+						{
+							//Check if required fields are filled in
+							if (field1.getText().equals("") || field2.getText().equals("")
+									|| field3.getText().equals("") || field4.getText().equals("")) {
+								JOptionPane.showMessageDialog(null, "Please fill in all fields.");
+							}
+							//Create address string and update address value in database
+							else {
+								String address = "" + field1.getText() + ", " 
+													+ field2.getText() + ", " 
+													+ field3.getText() + ", " 
+													+ field4.getText();
+								accountAddress.setText("Address: " + address);
+								accountInfoPanel.revalidate();			
+							}	
+						}
+						catch (Exception ex)
+						{
+							System.out.println(ex);
+						}
+					}
 				}
 			}
 		});
@@ -1317,7 +1411,7 @@ public class UserInterface extends JFrame{
 							// create the java statement
 						
 							// execute the query, and get a java resultset
-							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock WHERE stockSymbol LIKE '%" 
+							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` WHERE `stockSymbol` LIKE '%" 
 																						+ searchBarField.getText().toUpperCase() + "%';");
 
 							// iterate through the java resultset

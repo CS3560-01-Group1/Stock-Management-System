@@ -152,15 +152,65 @@ public class User {
 		//user constructor method to insert new row into "stockdb.order" table
 	}
 
-	//Allows user to update some aspects of their account information
-	public void updateAccountInfo(String emailAddress, String phoneNum, String physicalAddress, String creditInfo, 
-										String name) {
-		//select row in "stock.user" table matching this object's id = user.userID
-		//update each column's information accordingly 
-		//(make sure non-null attributes aren't left empty or null)
-			//if any input was left empty for non-null fields just don't make any change then.
-		//if update is successful, update the user attributes in this object
+	//Allows user to update login information
+	public static void updateLoginCredentials(String oldUsername, String newUsername, String newPassword) {
 
+		try{
+		Connection connection = Main.getConnection();
+		// create the java statement
+
+		//Updates the login credentials information in database
+		connection.createStatement().executeUpdate("UPDATE `user` SET `password` = '" 
+													+ newPassword + "' WHERE `username` = '" + oldUsername + "'");	
+		connection.createStatement().executeUpdate("UPDATE `user` SET `username` = '" 
+													+ newUsername + "' WHERE `username` = '" + oldUsername + "'");
+		}
+		catch (Exception ex) {
+			System.out.println(ex);
+		}
+	}
+
+	//Allows user to update personal information
+	public static void updatePersonalInformation(String userName, String newFName, String newLName, String newEmail, 
+													String newPhoneNum, String newSSN) {
+
+		try{
+		Connection connection = Main.getConnection();
+		// create the java statement
+
+		//Updates the personal information attribute in database
+		connection.createStatement().executeUpdate("UPDATE `user` SET `fName` = '" 
+												+ newFName + "' WHERE `username` = '" + userName + "'");	
+		connection.createStatement().executeUpdate("UPDATE `user` SET `lName` = '" 
+												+ newLName + "' WHERE `username` = '" + userName + "'");
+		connection.createStatement().executeUpdate("UPDATE `user` SET `email` = '" 
+												+ newEmail + "' WHERE `username` = '" + userName + "'");
+		connection.createStatement().executeUpdate("UPDATE `user` SET `phone#` = '" 
+												+ newPhoneNum + "' WHERE `username` = '" + userName + "'");
+		connection.createStatement().executeUpdate("UPDATE `user` SET `ssn` = '" 
+												+ newSSN + "' WHERE `username` = '" + userName + "'");
+		}
+		catch (Exception ex) {
+			System.out.println(ex);
+		}
+	}
+
+	//Allows user to update address
+	public static void updateaddress(String userName, String newAddress) {
+
+		try{
+		Connection connection = Main.getConnection();
+		// create the java statement
+		
+		//Updates the address in database
+		connection.createStatement().executeUpdate("UPDATE `user` SET `address` = '" 
+														+ newAddress + "' WHERE `username` = '" 
+														+ userName + "'");	
+
+		}
+		catch (Exception ex) {
+			System.out.println(ex);
+		}
 	}
 	
 	public void updateBalance(int changeInBalance)
