@@ -70,10 +70,6 @@ public class UserInterface extends JFrame{
 		menuBar.add(fundsMenu);
 		JMenuItem myFunds = new JMenuItem("My Funds");
 		fundsMenu.add(myFunds);
-		JMenuItem withdraw = new JMenuItem("Withdraw Funds");
-		fundsMenu.add(withdraw);
-		JMenuItem deposit = new JMenuItem("Deposit Funds");
-		fundsMenu.add(deposit);
 		
 		JMenu transactionsMenu = new JMenu("Transactions");
 		menuBar.add(transactionsMenu);
@@ -183,7 +179,10 @@ public class UserInterface extends JFrame{
 		JLabel accountPhoneNumber = new JLabel("Phone Number: ");
 		JLabel accountSSN = new JLabel("Social Security Number: ");
 		JLabel accountAddress = new JLabel("Address: ");
-		JLabel bankNumber = new JLabel("Bank Number: ");
+		JLabel bankAccountNumber = new JLabel("Bank Account Number: ");
+		JLabel bankRoutingNumber = new JLabel("Bank Routing Number: ");
+		JLabel withdrawAmount = new JLabel("Amount to Withdraw: ");
+		JLabel depositAmount = new JLabel("Amount to Deposit: ");
 		
 		//Centering labels
 		login.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -231,7 +230,10 @@ public class UserInterface extends JFrame{
 		stockInfoTotalShares.setAlignmentX(Component.CENTER_ALIGNMENT);
 		manageFundsBalance.setAlignmentX(Component.CENTER_ALIGNMENT);
 		transactionsText.setAlignmentX(Component.CENTER_ALIGNMENT);
-		bankNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bankAccountNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bankRoutingNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
+		withdrawAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
+		depositAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//Creating buttons for functions and navigation
 		JButton signInButton = new JButton("Sign In");
@@ -367,14 +369,29 @@ public class UserInterface extends JFrame{
 		creationZipCodeField.setMaximumSize(creationZipCodeField.getPreferredSize());
 		creationZipCodeField.setHorizontalAlignment(JFormattedTextField.CENTER);
 		try {
-			mask = new MaskFormatter("####-####-####-####");
+			mask = new MaskFormatter("##########");
 			mask.setPlaceholderCharacter('_');
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
-		JFormattedTextField bankNumberField = new JFormattedTextField(15);
-		bankNumberField.setMaximumSize(bankNumberField.getPreferredSize());
-		bankNumberField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JFormattedTextField bankAccountNumberField = new JFormattedTextField(mask);
+		bankAccountNumberField.setColumns(15);
+		bankAccountNumberField.setMaximumSize(bankAccountNumberField.getPreferredSize());
+		bankAccountNumberField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		try {
+			mask = new MaskFormatter("#########");
+			mask.setPlaceholderCharacter('_');
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+		JFormattedTextField bankRoutingNumberField = new JFormattedTextField(mask);
+		bankRoutingNumberField.setColumns(15);
+		bankRoutingNumberField.setMaximumSize(bankRoutingNumberField.getPreferredSize());
+		bankRoutingNumberField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField withdrawAmountField = new JTextField(5);
+		withdrawAmountField.setMaximumSize(withdrawAmountField.getPreferredSize());
+		JTextField depositAmountField = new JTextField(5);
+		depositAmountField.setMaximumSize(depositAmountField.getPreferredSize());
 		
 		//Centering text fields
 		usernameField.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -391,8 +408,10 @@ public class UserInterface extends JFrame{
 		creationCityField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationStateField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationZipCodeField.setAlignmentX(Component.CENTER_ALIGNMENT);
-		bankNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
+		bankAccountNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bankRoutingNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		withdrawAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		depositAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//*****************************************************************************************
 		//Creating a default list model for list of stocks
@@ -572,9 +591,11 @@ public class UserInterface extends JFrame{
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(manageFundsBalance);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		fundsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		fundsPanel.add(bankNumber);
-		fundsPanel.add(bankNumberField);
+		fundsPanel.add(bankAccountNumber);
+		fundsPanel.add(bankAccountNumberField);
+		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		fundsPanel.add(bankRoutingNumber);
+		fundsPanel.add(bankRoutingNumberField);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(withdrawButton);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -585,6 +606,9 @@ public class UserInterface extends JFrame{
 		withdrawPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		withdrawPanel.add(withdrawFunds);
 		withdrawPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		withdrawPanel.add(withdrawAmount);
+		withdrawPanel.add(withdrawAmountField);
+		withdrawPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		withdrawPanel.add(withdrawConfirmButton);
 		withdrawPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		withdrawPanel.add(withdrawBackButton);
@@ -592,6 +616,9 @@ public class UserInterface extends JFrame{
 		depositPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		depositPanel.add(depositFunds);
 		depositPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		depositPanel.add(depositAmount);
+		depositPanel.add(depositAmountField);
+		depositPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		depositPanel.add(depositConfirmButton);
 		depositPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		depositPanel.add(depositBackButton);
@@ -629,6 +656,7 @@ public class UserInterface extends JFrame{
 		//Assigning functionalities to menu buttons
 		//*****************************************************************************************
 		
+		//Switches to stock portfolio screen
 		goHome.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -638,6 +666,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Switches to view account information screen
 		viewAccount.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -663,6 +692,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Switches to edit account information screen
 		editAccount.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -672,7 +702,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		//Switchs to search stocks screen. Loads all stocks symbols from the database into a list for user
+		//Switches to search stocks screen. Loads all stocks symbols from the database into a list for user
 		tradeStocks.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -717,33 +747,30 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Switch to manage funds screen
 		myFunds.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == myFunds) {
+					try {
+						// execute the query, and get a java resultset
+						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						rs.next();
+
+						// Get user balance
+						manageFundsBalance.setText("Balance: " + rs.getString("balance"));
+
+						fundsPanel.revalidate();
+					}
+					catch (Exception ex) {
+						System.out.println(ex);
+					}
 					c1.show(cards, "10"); //switch to manage funds
 				}
 			}
 		});
 		
-		withdraw.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == withdraw) {
-					c1.show(cards, "11"); //switch to withdraw
-				}
-			}
-		});
-		
-		deposit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == deposit) {
-					c1.show(cards, "12"); //switch to deposit
-				}
-			}
-		});
-		
+		//Switches to transactions screen
 		myTransactions.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -753,6 +780,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Switches to login screen removes menu bar
 		signOut.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1082,7 +1110,15 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawButton) {
-					c1.show(cards, "11"); //switch to withdraw
+					//Make sure the fields are not empty
+					if (bankAccountNumberField.getText().equals("__________") ||
+							bankRoutingNumberField.getText().equals("_________")) {
+						JOptionPane.showMessageDialog(null, "Please enter bank account number\n"
+															+ "and bank routing number.");
+					}
+					else {
+						c1.show(cards, "11"); //switch to withdraw
+					}
 				}
 			}
 		});
@@ -1091,7 +1127,18 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawConfirmButton) {
-					c1.show(cards, "10"); //switch to funds
+					try {
+						/*
+						float newBalance;
+						newBalance = User.updateBalance(usernameField.getText(), Float.parseFloat(withdrawAmountField.getText()));
+						manageFundsBalance.setText("Balance: " + newBalance);
+						fundsPanel.revalidate();
+						c1.show(cards, "10"); //switch to funds
+						*/
+					}
+					catch (Exception ex) {
+						System.out.println(ex);
+					}
 				}
 			}
 		});
@@ -1109,7 +1156,14 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositButton) {
-					c1.show(cards, "12"); //switch to deposit
+					if (bankAccountNumberField.getText().equals("__________") ||
+							bankRoutingNumberField.getText().equals("_________")) {
+						JOptionPane.showMessageDialog(null, "Please enter bank account number\n"
+															+ "and bank routing number.");
+					}
+					else {
+						c1.show(cards, "12"); //switch to deposit
+					}
 				}
 			}
 		});
@@ -1118,7 +1172,29 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositConfirmButton) {
-					c1.show(cards, "10"); //switch to funds
+					try {
+						float newBalance;
+						/*
+						// execute the query, and get a java resultset
+						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						rs.next();
+
+						// Make sure the user has enough money to deposit;
+						if (Float.parseFloat(depositAmountField.getText()) > rs.getFloat("balance")) {
+							JOptionPane.showMessageDialog(null, "You cannot deposit more than your current balance!");
+						}
+						else {
+							fundsPanel.revalidate();
+							newBalance = User.updateBalance(usernameField.getText(), -Float.parseFloat(depositAmountField.getText()));
+							manageFundsBalance.setText("Balance: " + newBalance);
+							fundsPanel.revalidate();
+							c1.show(cards, "10"); //switch to funds
+						}
+						*/
+					}
+					catch (Exception ex) {
+						System.out.println(ex);
+					}
 				}
 			}
 		});
@@ -1133,7 +1209,7 @@ public class UserInterface extends JFrame{
 		});
 
 		//*****************************************************************************************
-		//Buttons that update user interface and database depending on user input
+		//Other button functionalities
 		//*****************************************************************************************
 
 		editLoginCredentialsButton.addActionListener(new ActionListener() {
