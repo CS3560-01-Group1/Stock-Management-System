@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+
+import javax.lang.model.util.ElementScanner14;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -22,6 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
@@ -130,7 +133,6 @@ public class UserInterface extends JFrame{
 		signUp2.setFont(titleFont);
 		JLabel home = new JLabel("Stock Portfolio");
 		home.setFont(titleFont);
-		JLabel homePortfolio = new JLabel("Your portfolio is empty.");
 		JLabel accountInfo = new JLabel("Account Information");
 		accountInfo.setFont(titleFont);
 		JLabel editAccountInfo = new JLabel("Edit Account Information");
@@ -159,7 +161,6 @@ public class UserInterface extends JFrame{
 		depositFunds.setFont(titleFont);
 		JLabel transactions = new JLabel("Past Transactions");
 		transactions.setFont(titleFont);
-		JLabel transactionsText = new JLabel("No transactions to show at the moment.");
 		JLabel creationUsername = new JLabel("Username");
 		JLabel creationPassword = new JLabel("Password");
 		JLabel creationFirstName = new JLabel("First Name");
@@ -220,7 +221,6 @@ public class UserInterface extends JFrame{
 		accountPhoneNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountSSN.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountAddress.setAlignmentX(Component.CENTER_ALIGNMENT);
-		homePortfolio.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoAsk.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoBid.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -229,12 +229,11 @@ public class UserInterface extends JFrame{
 		stockInfoPE.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoTotalShares.setAlignmentX(Component.CENTER_ALIGNMENT);
 		manageFundsBalance.setAlignmentX(Component.CENTER_ALIGNMENT);
-		transactionsText.setAlignmentX(Component.CENTER_ALIGNMENT);
 		bankAccountNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		bankRoutingNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		withdrawAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
+
 		//Creating buttons for functions and navigation
 		JButton signInButton = new JButton("Sign In");
 		JButton signUpButton = new JButton("Sign Up");
@@ -413,6 +412,20 @@ public class UserInterface extends JFrame{
 		withdrawAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
+		//Creating text areas for the porfolio and transaction screens
+		JTextArea transactionsText = new JTextArea("No transactions to show at the moment.");
+		JTextArea homePortfolio = new JTextArea("Your portfolio is empty.");
+
+		//Creating scroll panes for the portfolio and transaction screens
+		JScrollPane transactionsPane = new JScrollPane(transactionsText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+																JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		transactionsPane.setPreferredSize(new Dimension(250, 300));
+		transactionsPane.setMaximumSize(new Dimension(250, 300));
+		JScrollPane portfolioPane = new JScrollPane(homePortfolio, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+																JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		portfolioPane.setPreferredSize(new Dimension(250, 300));
+		portfolioPane.setMaximumSize(new Dimension(250, 300));
+
 		//*****************************************************************************************
 		//Creating a default list model for list of stocks
 		//*****************************************************************************************
@@ -509,7 +522,7 @@ public class UserInterface extends JFrame{
 		homePanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		homePanel.add(home);
 		homePanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		homePanel.add(homePortfolio);
+		homePanel.add(portfolioPane);
 		
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		accountInfoPanel.add(accountInfo);
@@ -626,7 +639,7 @@ public class UserInterface extends JFrame{
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		transactionsPanel.add(transactions);
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		transactionsPanel.add(transactionsText);
+		transactionsPanel.add(transactionsPane);
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		transactionsPanel.add(transactionsBackButton);
 		
@@ -775,6 +788,63 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == myTransactions) {
+					try {
+						// Establishes connection to database
+						Connection connection = Main.getConnection();
+
+						//Executes search query
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`" 
+																				+ " = '" + usernameField.getText() + "'");
+						rs.next();
+						
+						// Store userID
+						int userID = rs.getInt("userID");
+
+						// Gets transactions using user ID
+						rs = Transaction.getTransactions(userID);
+
+						// Checks if result is empty
+						if (!rs.isBeforeFirst()) {
+							transactionsText.setText("No transactions to show at the moment.");
+						}
+						// Otherwise display transactions
+						else {
+							String transactionsList = "";
+							while (rs.next()) {
+								transactionsList += "Transaction ID: " + rs.getInt("transactionID") + "\n";
+								transactionsList += "Date of Transaction: " + rs.getString("transactionDate") + "\n";
+								if (rs.getString("orderType") == null) {
+									transactionsList += "Bank Name: " + rs.getString("externalBankName") + "\n";
+									transactionsList += "Bank Account Number: " + rs.getString("externalBankAct#") + "\n";
+									transactionsList += "Bank Routing Number: " + rs.getString("externalBankRoute#") + "\n";
+									transactionsList += "Activity Type: " + rs.getString("activityType") + "\n";
+									transactionsList += "Amount: " + rs.getFloat("amount") + "\n";
+									transactionsList += "\n";
+								}
+								else {
+									if (rs.getInt("orderType") == 0)
+										transactionsList += "Order Type: Buy\n";
+									else 
+										transactionsList += "Order Type: Sell\n";
+									transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
+									transactionsList += "Quantity: " + rs.getFloat("quantity") + "\n";
+									transactionsList += "Executed Price: " + rs.getFloat("executedPrice") + "\n";
+									if (rs.getInt("orderStatus") == 0)
+											transactionsList += "Order Status: Open\n";
+									else if (rs.getInt("orderStatus") == 1)
+											transactionsList += "Order Status: Completed\n";
+									else
+											transactionsList += "Order Status: Expired\n";
+										transactionsList += "\n";
+								}
+							}
+							transactionsText.setText(transactionsList);
+						}
+					}
+					catch (Exception ex) {
+						System.out.println(ex);
+					}
+					transactionsPanel.revalidate();
 					c1.show(cards, "13"); //switch to transactions
 				}
 			}
