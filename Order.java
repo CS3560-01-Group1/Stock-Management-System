@@ -61,7 +61,7 @@ public class Order extends Transaction{
 		retrieveOrder(this.getTransactionID());
 		
 		//As soon as the order goes through, the order is completed
-		completeOrder(0);
+//		completeOrder(0); do this outside this method's scope 
 	}
 	
 	//retrieve details of existing an order based on matching orderID
