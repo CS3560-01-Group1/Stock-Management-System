@@ -131,10 +131,26 @@ public class User {
 	
 
 	//Returns the total amount of shares of each stock owned by this user
-	public ResultSet viewPortfolio()
+	//(Does not include expired or open orders)
+	public ResultSet viewPortfolio(int userIDInput)
 	{
-		//Cleighton will do this one
-		//(do not include expired orders)
+		try
+		{
+			String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + userIDInput; 
+			
+			Connection connection = Main.getConnection();
+			ResultSet rs = connection.createStatement().executeQuery(query);
+			
+			//return set of stocks and total shares
+			//col1 = stockOwner, col2 = sharesOwned
+			return rs;
+	      
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+		}
+		//if query didn't succeed, return nothing
 		return null;
 	}
 	
