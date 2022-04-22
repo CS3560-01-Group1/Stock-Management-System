@@ -17,11 +17,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		initialize();
 //		exampleSQLQuery();
-		Order test = new Order();
-		test.newOrder(3, "ABC", 0, 20.00);
-		System.out.println(test.getTransactionID() + test.getTransactionDate() + test.belongsToUser());
 
-		
 	}
 
 	//Starts up program user interface

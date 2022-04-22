@@ -19,7 +19,7 @@ public abstract class Transaction {
 		//query "INSERT INTO stockdb.transaction (userID) VALUES()" with given userID
 		try
 		{
-			String query = "INSERT INTO stockdb.transaction (userID) VALUES(" + "idOfUser" + ")";
+			String query = "INSERT INTO stockdb.transaction (userID) VALUES(" + idOfUser + ")";
 			Connection connection = Main.getConnection();
 			PreparedStatement createQuery = connection.prepareStatement(query);
 			createQuery.executeUpdate();
@@ -28,14 +28,17 @@ public abstract class Transaction {
 			
 			//get ID transaction we just created
 			ResultSet rs = connection.createStatement().executeQuery("SELECT LAST_INSERT_ID()");
+			rs.next();
+			
 			this.transactionID = rs.getInt("LAST_INSERT_ID()");
 			
-			//get attributes of transaction
+			//get attributes of transaction and set this object's attributes
 			String query2 = "SELECT * FROM stockdb.transaction WHERE transactionID = " + this.transactionID;
 			rs = connection.createStatement().executeQuery(query2);
+			rs.next();
 			
 			this.transactionDate = rs.getString("transactionDate").toString();
-			this.userID = rs.getInt(userID);
+			this.userID = idOfUser;
 			
 		}
 		catch(Exception e)

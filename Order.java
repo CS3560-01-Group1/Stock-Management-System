@@ -27,7 +27,8 @@ public class Order extends Transaction{
 			//can't sell share quantity > total shares owned (of that stock) 
 		
 		//create new transaction
-		newTransactionRecord(idOfUser);
+		this.newTransactionRecord(idOfUser);
+		System.out.println(this.getTransactionID());
 		//query insert into "stockdb.order" table with the given inputs
 			//buy orders -> quantity input = positive
 			//sell order -> quantity input = negative
@@ -41,6 +42,7 @@ public class Order extends Transaction{
 		System.out.println(query);
 		try
 		{
+
 			//establishing connection to database
 			Connection connection = Main.getConnection();
 			PreparedStatement insertQuery = connection.prepareStatement(query);
