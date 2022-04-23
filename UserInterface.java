@@ -182,9 +182,11 @@ public class UserInterface extends JFrame{
 		JLabel bankRoutingNumber = new JLabel("Bank Routing Number: ");
 		JLabel withdrawAmount = new JLabel("Amount to Withdraw: ");
 		JLabel depositAmount = new JLabel("Amount to Deposit: ");
+		JLabel buyStockAmountName = new JLabel("Stock Name: ");
 		JLabel buyStockAmountAvailable = new JLabel("Total Shares Available: ");
 		JLabel buyStockAmountPrice = new JLabel("Current Price Per Share: ");
 		JLabel buyStockAmount = new JLabel("Amount of Shares to Purchase:");
+		JLabel sellStockAmountName = new JLabel("Stock Name: ");
 		JLabel sellStockAmountAvailable = new JLabel("Total Shares Owned: ");
 		JLabel sellStockAmountPrice = new JLabel("Current Price Per Share: ");
 		JLabel sellStockAmount = new JLabel("Amount of Shares to Sell:");
@@ -237,9 +239,11 @@ public class UserInterface extends JFrame{
 		bankRoutingNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		withdrawAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buyStockAmountName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buyStockAmountAvailable.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buyStockAmountPrice.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buyStockAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
+		sellStockAmountName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sellStockAmountAvailable.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sellStockAmountPrice.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sellStockAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -602,13 +606,15 @@ public class UserInterface extends JFrame{
 		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		buyStockPanel.add(buyStock);
 		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		buyStockPanel.add(buyStockAmountName);
+		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		buyStockPanel.add(buyStockAmountAvailable);
 		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		buyStockPanel.add(buyStockAmountPrice);
-		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		buyStockPanel.add(buyStockAmount);
 		buyStockPanel.add(buyStockAmountField);
-		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		buyStockPanel.add(buyStockConfirmButton);
 		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		buyStockPanel.add(buyStockBackButton);
@@ -616,13 +622,15 @@ public class UserInterface extends JFrame{
 		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		sellStockPanel.add(sellStock);
 		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		sellStockPanel.add(sellStockAmountName);
+		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		sellStockPanel.add(sellStockAmountAvailable);
 		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		sellStockPanel.add(sellStockAmountPrice);
-		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		sellStockPanel.add(sellStockAmount);
 		sellStockPanel.add(sellStockAmountField);
-		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		sellStockPanel.add(sellStockConfirmButton);
 		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		sellStockPanel.add(sellStockBackButton);
@@ -1154,7 +1162,25 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() ==buyStockButton) {
-					c1.show(cards, "8"); //switch to buy stock
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+						
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
+						rs.next();
+						buyStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
+						buyStockAmountAvailable.setText("Total Shares Available: " + rs.getFloat("totalShares"));
+						buyStockAmountPrice.setText("Price Per Share: " + rs.getFloat("bid"));
+						buyStockPanel.revalidate();
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
+				c1.show(cards, "8"); //switch to buy stock
 				}
 			}
 		});
@@ -1181,6 +1207,24 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == sellStockButton) {
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
+						rs.next();
+						sellStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
+						sellStockAmountAvailable.setText("Total Shares Owned: " + rs.getFloat("totalShares"));
+						sellStockAmountPrice.setText("Price Per Share: " + rs.getFloat("ask"));
+						sellStockPanel.revalidate();
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
 					c1.show(cards, "9"); //switch to sell stock
 				}
 			}
