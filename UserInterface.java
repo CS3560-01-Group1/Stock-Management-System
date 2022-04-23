@@ -698,7 +698,7 @@ public class UserInterface extends JFrame{
 		cards.add(depositPanel, "12");
 		cards.add(transactionsPanel, "13");
 		cards.add(signUp2Panel, "14");
-        
+
 		//Add CardLayout to ContentPane
 		getContentPane().add(cards);
 		
@@ -711,6 +711,21 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == goHome) {
+					try {
+						//Establishes connection with database
+						Connection connection = Main.getConnection();
+
+						// Executes query and stores userID
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
+																				+ " = '" + usernameField.getText() + "'");
+						rs.next();
+						int userID = rs.getInt("userID");
+
+
+					}
+					catch (Exception ex) {
+						System.out.println(ex);
+					}
 					c1.show(cards, "3"); //switch to home
 				}
 			}
@@ -1192,6 +1207,38 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == buyStockConfirmButton) {
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+						
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
+						rs.next();
+						ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
+																					+ " = '" + usernameField.getText() + "'");
+						rs1.next();
+						float total = Float.parseFloat(buyStockAmountField.getText()) * rs.getFloat("bid");
+
+						String reviewOrder = "Review Order:\n";
+						reviewOrder += "Stock Name: " + rs.getString("stockSymbol") + "\n";
+						reviewOrder += "Order Type: Buy\n";
+						reviewOrder += "Shares: " + buyStockAmountField.getText() + "\n";
+						reviewOrder += "Price per Share: " + rs.getFloat("bid") + "\n\n";
+						reviewOrder += "Balance: " + rs1.getFloat("balance") + "\n";
+						reviewOrder += "Total Price: " + total;
+
+						int n = JOptionPane.showConfirmDialog(null, reviewOrder, "Confirm Purchase", JOptionPane.OK_CANCEL_OPTION);
+
+						if (n == JOptionPane.OK_OPTION) {
+							JOptionPane.showMessageDialog(null, "Purchase successful!");
+						}
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
 					c1.show(cards, "7"); //switch to stock info
 				}
 			}
