@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.TimerTask;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -1232,7 +1234,12 @@ public class UserInterface extends JFrame{
 						int n = JOptionPane.showConfirmDialog(null, reviewOrder, "Confirm Purchase", JOptionPane.OK_CANCEL_OPTION);
 
 						if (n == JOptionPane.OK_OPTION) {
-							JOptionPane.showMessageDialog(null, "Purchase successful!");
+							//market delay timer...
+							
+							
+							Main.marketDelay.schedule(new MarketDelay("Buy", buyStockAmountField.getText(), rs.getString("stockSymbol")), 5*1000);
+							
+							//After delay, if order is not interrupted, it is completed!
 						}
 					}
 					catch (Exception ex)
