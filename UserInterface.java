@@ -29,6 +29,7 @@ import javax.swing.text.MaskFormatter;
 public class UserInterface extends JFrame{
     
     private CardLayout c1;
+    private User curUser;
 	
 	public UserInterface() {
 		//Setting title and frame size
@@ -908,6 +909,8 @@ public class UserInterface extends JFrame{
 					if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
 						c1.show(cards, "3"); //switch to home
 						menuBar.setVisible(true); //prevent use of menu bar when not logged in
+						
+						curUser = new User(usernameField.getText(), passwordField.getText());
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Invalid username or password.");
@@ -1216,9 +1219,16 @@ public class UserInterface extends JFrame{
 						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
 																						+ stockList.getSelectedValue() + "'");
 						rs.next();
-						sellStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
-						sellStockAmountAvailable.setText("Total Shares Owned: " + rs.getFloat("totalShares"));
-						sellStockAmountPrice.setText("Price Per Share: " + rs.getFloat("ask"));
+						String stockSym = rs.getString("stockSymbol");
+						double askPrice = rs.getDouble("ask");
+						
+						String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
+						rs = connection.createStatement().executeQuery(query);
+						rs.next();
+						
+						sellStockAmountName.setText("Stock Name: " + stockSym);
+						sellStockAmountAvailable.setText("Your Shares: " + rs.getString("sharesOwned"));
+						sellStockAmountPrice.setText("Price Per Share: " + askPrice);
 						sellStockPanel.revalidate();
 					}
 					catch (Exception ex)

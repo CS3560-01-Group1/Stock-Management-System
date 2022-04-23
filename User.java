@@ -21,6 +21,34 @@ public class User {
 		//fill in all the attributes of User using information of row where idNum = user.userID from database
 	}
 	
+	public User(String usernameIn, String passwordIn) 
+	{
+		try
+		{
+			Connection connection = Main.getConnection();
+			String query = "SELECT * FROM stockdb.user WHERE username = \"" + usernameIn + "\" AND password = \"" + passwordIn + "\"";
+			ResultSet rs = connection.createStatement().executeQuery(query);
+	      
+			rs.next();
+			
+			this.username = usernameIn;
+			this.password = passwordIn;
+			this.id = rs.getInt("userID");
+			this.ssn = rs.getString("ssn");
+			this.address = rs.getString("address");
+			this.firstName = rs.getString("fName");
+			this.lastName = rs.getString("lName");
+			this.balance = rs.getDouble("balance");
+			this.email = rs.getString("email");
+			this.phoneNumber = rs.getString("phone#");
+			
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+		}
+	}
+	
 	//Alternative constructor where user is not defined yet
 	public User() {
 		
