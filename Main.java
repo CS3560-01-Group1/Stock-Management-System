@@ -46,7 +46,7 @@ public class Main {
 	public static Connection getConnection() throws Exception
 	{
 		
-		String url = "jdbc:mysql://127.0.0.1:3306/stockdb";
+		String url = "jdbc:mysql://localhost:3306/stockdb";
 		// if using local instance: url = "jdbc:mysql://localhost:3306/stockdb";
 		String username = "root";
 		String password = "b1gInf0"; 
@@ -60,7 +60,9 @@ public class Main {
 		} 
 		catch (SQLException e) 
 		{
+			e.printStackTrace();
 		    throw new IllegalStateException("Cannot connect the database!", e);
+
 		}
 
 
