@@ -132,7 +132,7 @@ public class User {
 
 	//Returns the total amount of shares of each stock owned by this user
 	//(Does not include expired or open orders)
-	public ResultSet viewPortfolio(int userIDInput)
+	public static ResultSet viewPortfolio(int userIDInput)
 	{
 		try
 		{

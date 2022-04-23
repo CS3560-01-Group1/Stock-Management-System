@@ -720,7 +720,22 @@ public class UserInterface extends JFrame{
 						rs.next();
 						int userID = rs.getInt("userID");
 
-
+						rs = User.viewPortfolio(userID);
+						if (!rs.isBeforeFirst()) {
+							homePortfolio.setText("Your porfolio is empty.");
+						}
+						else {
+							String portfolio = "";
+							String temp;
+							while (rs.next()) {
+								temp = rs.getString("stockOwner");
+								temp = temp.substring(temp.length() - 3);
+								portfolio += "Stock Name: " + temp + "\n";
+								portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n\n";
+							}
+							homePortfolio.setText(portfolio);
+						}
+						homePanel.revalidate();
 					}
 					catch (Exception ex) {
 						System.out.println(ex);
@@ -921,6 +936,36 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signInButton) {
 					if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
+						try {
+							//Establishes connection with database
+							Connection connection = Main.getConnection();
+	
+							// Executes query and stores userID
+							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
+																					+ " = '" + usernameField.getText() + "'");
+							rs.next();
+							int userID = rs.getInt("userID");
+	
+							rs = User.viewPortfolio(userID);
+							if (!rs.isBeforeFirst()) {
+								homePortfolio.setText("Your porfolio is empty.");
+							}
+							else {
+								String portfolio = "";
+								String temp;
+								while (rs.next()) {
+									temp = rs.getString("stockOwner");
+									temp = temp.substring(temp.length() - 3);
+									portfolio += "Stock Name: " + temp + "\n";
+									portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n\n";
+								}
+								homePortfolio.setText(portfolio);
+							}
+							homePanel.revalidate();
+						}
+						catch (Exception ex) {
+							System.out.println(ex);
+						}
 						c1.show(cards, "3"); //switch to home
 						menuBar.setVisible(true); //prevent use of menu bar when not logged in
 					}
