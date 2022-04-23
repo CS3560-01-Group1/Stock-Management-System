@@ -49,6 +49,7 @@ public class Main {
 		String url = "jdbc:mysql://localhost:3306/stockdb";
 		// if using local instance: url = "jdbc:mysql://localhost:3306/stockdb";
 		String username = "root";
+<<<<<<< HEAD
 		String password = "b1gInf0"; 
 		
 		try 
