@@ -110,7 +110,16 @@ public class User {
 	
 	public void logoff() 
 	{
-		//erase all attributes from this object (NOT FROM THE DATABASE)
+		id = 0;
+		username = null;
+		password = null;
+		ssn = null;
+		address = null;
+		firstName = null;
+		lastName = null;
+		balance = 0; 
+		email = null;
+		phoneNumber = null; 
 	}
 	
 	//method to register new users

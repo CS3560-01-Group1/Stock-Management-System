@@ -924,6 +924,8 @@ public class UserInterface extends JFrame{
 				if (e.getSource() == signOut) {
 					c1.show(cards, "1"); //switch to login
 					menuBar.setVisible(false); //prevent use of menu bar when not logged in
+					
+					curUser.logoff();
 				}
 			}
 		});
