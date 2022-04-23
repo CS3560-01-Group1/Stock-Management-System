@@ -29,6 +29,7 @@ import javax.swing.text.MaskFormatter;
 public class UserInterface extends JFrame{
     
     private CardLayout c1;
+    private User curUser;
 	
 	public UserInterface() {
 		//Setting title and frame size
@@ -182,9 +183,11 @@ public class UserInterface extends JFrame{
 		JLabel bankRoutingNumber = new JLabel("Bank Routing Number: ");
 		JLabel withdrawAmount = new JLabel("Amount to Withdraw: ");
 		JLabel depositAmount = new JLabel("Amount to Deposit: ");
+		JLabel buyStockAmountName = new JLabel("Stock Name: ");
 		JLabel buyStockAmountAvailable = new JLabel("Total Shares Available: ");
 		JLabel buyStockAmountPrice = new JLabel("Current Price Per Share: ");
 		JLabel buyStockAmount = new JLabel("Amount of Shares to Purchase:");
+		JLabel sellStockAmountName = new JLabel("Stock Name: ");
 		JLabel sellStockAmountAvailable = new JLabel("Total Shares Owned: ");
 		JLabel sellStockAmountPrice = new JLabel("Current Price Per Share: ");
 		JLabel sellStockAmount = new JLabel("Amount of Shares to Sell:");
@@ -237,9 +240,11 @@ public class UserInterface extends JFrame{
 		bankRoutingNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		withdrawAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
+		buyStockAmountName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buyStockAmountAvailable.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buyStockAmountPrice.setAlignmentX(Component.CENTER_ALIGNMENT);
 		buyStockAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
+		sellStockAmountName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sellStockAmountAvailable.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sellStockAmountPrice.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sellStockAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -602,13 +607,15 @@ public class UserInterface extends JFrame{
 		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		buyStockPanel.add(buyStock);
 		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		buyStockPanel.add(buyStockAmountName);
+		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		buyStockPanel.add(buyStockAmountAvailable);
 		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		buyStockPanel.add(buyStockAmountPrice);
-		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		buyStockPanel.add(buyStockAmount);
 		buyStockPanel.add(buyStockAmountField);
-		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		buyStockPanel.add(buyStockConfirmButton);
 		buyStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		buyStockPanel.add(buyStockBackButton);
@@ -616,13 +623,15 @@ public class UserInterface extends JFrame{
 		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		sellStockPanel.add(sellStock);
 		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		sellStockPanel.add(sellStockAmountName);
+		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		sellStockPanel.add(sellStockAmountAvailable);
 		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		sellStockPanel.add(sellStockAmountPrice);
-		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		sellStockPanel.add(sellStockAmount);
 		sellStockPanel.add(sellStockAmountField);
-		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		sellStockPanel.add(sellStockConfirmButton);
 		sellStockPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		sellStockPanel.add(sellStockBackButton);
@@ -689,7 +698,7 @@ public class UserInterface extends JFrame{
 		cards.add(depositPanel, "12");
 		cards.add(transactionsPanel, "13");
 		cards.add(signUp2Panel, "14");
-        
+
 		//Add CardLayout to ContentPane
 		getContentPane().add(cards);
 		
@@ -702,6 +711,36 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == goHome) {
+					try {
+						//Establishes connection with database
+						Connection connection = Main.getConnection();
+
+						// Executes query and stores userID
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
+																				+ " = '" + usernameField.getText() + "'");
+						rs.next();
+						int userID = rs.getInt("userID");
+
+						rs = User.viewPortfolio(userID);
+						if (!rs.isBeforeFirst()) {
+							homePortfolio.setText("Your porfolio is empty.");
+						}
+						else {
+							String portfolio = "";
+							String temp;
+							while (rs.next()) {
+								temp = rs.getString("stockOwner");
+								temp = temp.substring(temp.length() - 3);
+								portfolio += "Stock Name: " + temp + "\n";
+								portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n\n";
+							}
+							homePortfolio.setText(portfolio);
+						}
+						homePanel.revalidate();
+					}
+					catch (Exception ex) {
+						System.out.println(ex);
+					}
 					c1.show(cards, "3"); //switch to home
 				}
 			}
@@ -898,8 +937,40 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signInButton) {
 					if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
+						try {
+							//Establishes connection with database
+							Connection connection = Main.getConnection();
+	
+							// Executes query and stores userID
+							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
+																					+ " = '" + usernameField.getText() + "'");
+							rs.next();
+							int userID = rs.getInt("userID");
+	
+							rs = User.viewPortfolio(userID);
+							if (!rs.isBeforeFirst()) {
+								homePortfolio.setText("Your porfolio is empty.");
+							}
+							else {
+								String portfolio = "";
+								String temp;
+								while (rs.next()) {
+									temp = rs.getString("stockOwner");
+									temp = temp.substring(temp.length() - 3);
+									portfolio += "Stock Name: " + temp + "\n";
+									portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n\n";
+								}
+								homePortfolio.setText(portfolio);
+							}
+							homePanel.revalidate();
+						}
+						catch (Exception ex) {
+							System.out.println(ex);
+						}
 						c1.show(cards, "3"); //switch to home
 						menuBar.setVisible(true); //prevent use of menu bar when not logged in
+						
+						curUser = new User(usernameField.getText(), passwordField.getText());
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "Invalid username or password.");
@@ -1154,7 +1225,25 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() ==buyStockButton) {
-					c1.show(cards, "8"); //switch to buy stock
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+						
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
+						rs.next();
+						buyStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
+						buyStockAmountAvailable.setText("Total Shares Available: " + rs.getFloat("totalShares"));
+						buyStockAmountPrice.setText("Price Per Share: " + rs.getFloat("bid"));
+						buyStockPanel.revalidate();
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
+				c1.show(cards, "8"); //switch to buy stock
 				}
 			}
 		});
@@ -1163,6 +1252,38 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == buyStockConfirmButton) {
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+						
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
+						rs.next();
+						ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
+																					+ " = '" + usernameField.getText() + "'");
+						rs1.next();
+						float total = Float.parseFloat(buyStockAmountField.getText()) * rs.getFloat("bid");
+
+						String reviewOrder = "Review Order:\n";
+						reviewOrder += "Stock Name: " + rs.getString("stockSymbol") + "\n";
+						reviewOrder += "Order Type: Buy\n";
+						reviewOrder += "Shares: " + buyStockAmountField.getText() + "\n";
+						reviewOrder += "Price per Share: " + rs.getFloat("bid") + "\n\n";
+						reviewOrder += "Balance: " + rs1.getFloat("balance") + "\n";
+						reviewOrder += "Total Price: " + total;
+
+						int n = JOptionPane.showConfirmDialog(null, reviewOrder, "Confirm Purchase", JOptionPane.OK_CANCEL_OPTION);
+
+						if (n == JOptionPane.OK_OPTION) {
+							JOptionPane.showMessageDialog(null, "Purchase successful!");
+						}
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
 					c1.show(cards, "7"); //switch to stock info
 				}
 			}
@@ -1181,6 +1302,31 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == sellStockButton) {
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
+						rs.next();
+						String stockSym = rs.getString("stockSymbol");
+						double askPrice = rs.getDouble("ask");
+						
+						String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
+						rs = connection.createStatement().executeQuery(query);
+						rs.next();
+						
+						sellStockAmountName.setText("Stock Name: " + stockSym);
+						sellStockAmountAvailable.setText("Your Shares: " + rs.getString("sharesOwned"));
+						sellStockAmountPrice.setText("Price Per Share: " + askPrice);
+						sellStockPanel.revalidate();
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
 					c1.show(cards, "9"); //switch to sell stock
 				}
 			}
