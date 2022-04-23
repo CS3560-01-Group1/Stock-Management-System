@@ -80,13 +80,12 @@ public class Order extends Transaction{
 		//After alloted time VERIFY AGAIN
 			//IF SELL TYPE: check user's curr shares if valid to sell
 			//IF BUY TYPE: check user's curr balance if valid to buy at stock price
-		//If not verified -> revokeOrder and return out of method
+		//If not verified -> expireOrder and return out of method
 		
-		//create new stock transaction 
-			//price executed depends on the type of order 
-				//buy = current bid price of stock
-				//sell = current ask price of stock
-		
+		//Set order status as completed
+		//refresh transaction date 
+		//UPDATE `stockdb`.`transaction` SET transactionDate = CURRENT_TIMESTAMP WHERE (`transactionID` = '');
+
 	}
 	
 	//expire an order entry 
