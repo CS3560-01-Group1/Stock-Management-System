@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -1214,31 +1215,41 @@ public class UserInterface extends JFrame{
 						Connection connection = Main.getConnection();
 						// create the java statement
 						
-						// execute the query, and get a java resultset
+						//get stock information
 						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` where stockSymbol = '" 
 																						+ stockList.getSelectedValue() + "'");
 						rs.next();
+						//get user information
 						ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
 																					+ " = '" + usernameField.getText() + "'");
 						rs1.next();
+						//calculate total cost
 						float total = Float.parseFloat(buyStockAmountField.getText()) * rs.getFloat("bid");
+						
+						String stockName = rs.getString("stockSymbol");
+						int orderType = 0; 
+						double shareAmnt = Double.parseDouble(buyStockAmountField.getText());
+						
 
 						String reviewOrder = "Review Order:\n";
-						reviewOrder += "Stock Name: " + rs.getString("stockSymbol") + "\n";
+						reviewOrder += "Stock Name: " + stockName + "\n";
 						reviewOrder += "Order Type: Buy\n";
-						reviewOrder += "Shares: " + buyStockAmountField.getText() + "\n";
+						reviewOrder += "Shares: " + shareAmnt + "\n";
 						reviewOrder += "Price per Share: " + rs.getFloat("bid") + "\n\n";
-						reviewOrder += "Balance: " + rs1.getFloat("balance") + "\n";
+						reviewOrder += "Current Balance: " + rs1.getFloat("balance") + "\n";
 						reviewOrder += "Total Price: " + total;
-
+						
+						//show order review window
 						int n = JOptionPane.showConfirmDialog(null, reviewOrder, "Confirm Purchase", JOptionPane.OK_CANCEL_OPTION);
 
-						if (n == JOptionPane.OK_OPTION) {
+						if (n == JOptionPane.OK_OPTION) { //after confirm, place open order in database
+							//create new open order
+							Order buyOrder = new Order();
+							buyOrder.newOrder(curUser.getID(), stockName, orderType, shareAmnt);
 							//market delay timer...
 							
 							
-							Main.marketDelay.schedule(new MarketDelay("Buy", buyStockAmountField.getText(), rs.getString("stockSymbol")), 5*1000);
-							
+							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 0*1000);
 							//After delay, if order is not interrupted, it is completed!
 						}
 					}
@@ -1264,6 +1275,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == sellStockButton) {
+					sellStockConfirmButton.setEnabled(true);
 					try
 					{
 						Connection connection = Main.getConnection();
@@ -1276,14 +1288,29 @@ public class UserInterface extends JFrame{
 						String stockSym = rs.getString("stockSymbol");
 						double askPrice = rs.getDouble("ask");
 						
-						String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
-						rs = connection.createStatement().executeQuery(query);
-						rs.next();
+						try
+						{
+							String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
+							rs = connection.createStatement().executeQuery(query);
+							rs.next();
+							
+							sellStockAmountName.setText("Stock Name: " + stockSym);
+							sellStockAmountAvailable.setText("Your Shares: " + rs.getString("sharesOwned"));
+							sellStockAmountPrice.setText("Value Per Share: " + askPrice);
+							sellStockPanel.revalidate();
+						}
+						catch (Exception ex) //tries to show how many shares the users owns but 
+											//they own none so there is nothing to show
+						{
+							sellStockAmountName.setText("Stock Name: " + stockSym);
+							sellStockAmountAvailable.setText("Your Shares: " + 0);
+							sellStockAmountPrice.setText("Value Per Share: " + askPrice);
+							sellStockConfirmButton.setEnabled(false); //can't sell if own nothing
+							sellStockPanel.revalidate();
+							
+							
+						}
 						
-						sellStockAmountName.setText("Stock Name: " + stockSym);
-						sellStockAmountAvailable.setText("Your Shares: " + rs.getString("sharesOwned"));
-						sellStockAmountPrice.setText("Price Per Share: " + askPrice);
-						sellStockPanel.revalidate();
 					}
 					catch (Exception ex)
 					{
@@ -1297,9 +1324,54 @@ public class UserInterface extends JFrame{
 		sellStockConfirmButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == sellStockConfirmButton) {
-					c1.show(cards, "7"); //switch to stock info
+				try
+				{
+					Connection connection = Main.getConnection();
+					// create the java statement
+					
+					//get stock information
+					ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` where stockSymbol = '" 
+																					+ stockList.getSelectedValue() + "'");
+					rs.next();
+					//get user information
+					ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
+																				+ " = '" + usernameField.getText() + "'");
+					rs1.next();
+					//calculate total cost
+					float total = Float.parseFloat(sellStockAmountField.getText()) * rs.getFloat("ask");
+					
+					String stockName = rs.getString("stockSymbol");
+					int orderType = 1; 
+					double shareAmnt = Double.parseDouble(sellStockAmountField.getText());
+					
+
+					String reviewOrder = "Review Order:\n";
+					reviewOrder += "Stock Name: " + stockName + "\n";
+					reviewOrder += "Order Type: Buy\n";
+					reviewOrder += "Shares: " + shareAmnt + "\n";
+					reviewOrder += "Value per Share: " + rs.getFloat("ask") + "\n\n";
+					reviewOrder += "Current Balance: " + rs1.getFloat("balance") + "\n";
+					reviewOrder += "Total Value: " + total;
+					
+					//show order review window
+					int n = JOptionPane.showConfirmDialog(null, reviewOrder, "Confirm Sale", JOptionPane.OK_CANCEL_OPTION);
+
+					if (n == JOptionPane.OK_OPTION) { //after confirm, place open order in database
+						//create new open order
+						Order sellOrder = new Order();
+						sellOrder.newOrder(curUser.getID(), stockName, orderType, shareAmnt);
+						//market delay timer...
+						
+						
+						Main.marketDelay.schedule(new MarketDelay(sellStockAmountField.getText(), rs.getString("stockSymbol"), sellOrder.getTransactionID()), 0*1000);
+						//After delay, if order is not interrupted, it is completed!
+					}
 				}
+				catch (Exception ex)
+				{
+					System.out.println(ex);
+				}
+				c1.show(cards, "7"); //switch to stock info
 			}
 		});
 		

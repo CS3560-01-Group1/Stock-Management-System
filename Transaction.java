@@ -44,9 +44,7 @@ public abstract class Transaction {
 		{
 			System.out.println(e);
 		}
-		//this will automatically records unique transactionID and date upon creation 
-		//if insert successful, update this objects attributes 
-		retrieveTransaction(this.transactionID);
+
 	}
 	
 	

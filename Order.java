@@ -1,10 +1,12 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class Order extends Transaction{
 
 	private int orderType; 
 	//buy/sell : 0/1 -> refers to stockdb.ordertypetable 
+	private String orderTypeDesc;
 	private double quantity;
 	private String stockSymbol; 
 	//foreign key to the stock the order is placed onto
@@ -39,7 +41,6 @@ public class Order extends Transaction{
 		}
 		String query = "INSERT INTO stockdb.order(transactionID, orderType, stockSymbol, quantity)"
 				+ "VALUES (" + this.getTransactionID() + "," + typeOfOrder + ",\"" + stockSymbol + "\"," + quantityInput + ")";
-		System.out.println(query);
 		try
 		{
 
@@ -72,26 +73,116 @@ public class Order extends Transaction{
 	}
 	
 	//occurs when the order is "completed" and the shares have been sold/bought
-	private void completeOrder(int waitTime) 
+	public String completeOrder(int transactionIDInput) 
 	{ 
-		//Cleighton will do this one
-		
-		//Allow a given waitTime to pass to simulate the order being processed (maybe do this outside this method)
-		//After alloted time VERIFY AGAIN
-			//IF SELL TYPE: check user's curr shares if valid to sell
-			//IF BUY TYPE: check user's curr balance if valid to buy at stock price
-		//If not verified -> expireOrder and return out of method
-		
-		//Set order status as completed
-		//refresh transaction date 
-		//UPDATE `stockdb`.`transaction` SET transactionDate = CURRENT_TIMESTAMP WHERE (`transactionID` = '');
+		try
+		{
+			//Get all order information
+			String queryOrderSelect = "SELECT * FROM stockdb.order\r\n"
+					+ "JOIN stockdb.ordertypetable ON `order`.orderType = ordertypetable.orderType\r\n"
+					+ "JOIN stockdb.orderstatuses ON `order`.orderStatus = orderstatuses.orderStatus\r\n"
+					+ "JOIN stockdb.transaction ON `order`.transactionID = transaction.transactionID\r\n"
+					+ "WHERE `order`.transactionID = " + transactionIDInput;
+			Connection connection = Main.getConnection();
+			ResultSet rs = connection.createStatement().executeQuery(queryOrderSelect);
+			rs.next();
+			
+			this.orderTypeDesc = rs.getString("typeOfOrder");
+			this.quantity = rs.getDouble("quantity");
+			
+			//Also get current stock price for late user
+			String queryStockPrices = "SELECT * FROM stockdb.stock WHERE stockSymbol = \"" + rs.getString("stockSymbol") + "\"";
+			ResultSet rs2 = connection.createStatement().executeQuery(queryStockPrices);
+			rs2.next();
+			
+			String orderType = rs.getString("typeOfOrder");
+			
+			//IF SELL TYPE: verify user's curr shares if valid to sell
+			if (orderType.equals("sell"))
+			{
+				//current shares owned by user	
+				String queryGetShares = "SELECT usersShareTotal.sharesOwned FROM stockdb.usersShareTotal "
+						+ "WHERE stockOwner = \"" + rs.getInt("userID") + "_" + rs.getString("stockSymbol") + "\"";
+				ResultSet rs3 = connection.createStatement().executeQuery(queryGetShares);
+				rs3.next();
+				//If not verified -> expireOrder and return out of method
+				if (rs3.getDouble("sharesOwned") < -1 * rs.getDouble("quantity")) {
+					System.out.println("Lack of Share's owned");
+					expireOrder();
 
+					return null;
+				}
+				
+				//verified. complete order and update user balance
+				String orderStatusUpdate = "UPDATE `order` SET `order`.orderStatus = 1, "
+						+ "`order`.executedPrice = " + rs2.getDouble("ask") + " WHERE transactionID = "
+						+ transactionIDInput;
+				PreparedStatement update = connection.prepareStatement(orderStatusUpdate);
+				update.executeUpdate();
+				
+				double balanceChange = -1 * (rs2.getDouble("ask") * rs.getDouble("quantity"));
+				String userBalanceUpdate = "UPDATE `user` SET `user`.balance = `user`.balance + " 
+						+ balanceChange;		
+				update = connection.prepareStatement(userBalanceUpdate);
+				update.executeUpdate();
+				
+			}
+			
+			//IF BUY TYPE: verify user's curr balance if valid to buy at stock price
+			else 
+			{
+				//current user balance
+				String queryGetBalance = "SELECT user.balance FROM stockdb.user WHERE userID = " + rs.getInt("userID");
+				ResultSet rs3 = connection.createStatement().executeQuery(queryGetBalance);
+				rs3.next();
+				
+				
+				//If not verified -> expireOrder and return out of method
+				if (rs3.getDouble("balance") < (rs.getDouble("quantity") * rs2.getDouble("bid"))) {
+					expireOrder();
+					System.out.println("Over BUDGET!");
+					return null;
+				}
+				
+				//verified. complete order, update user balance
+				String orderStatusUpdate = "UPDATE `order` SET `order`.orderStatus = 1, "
+						+ "`order`.executedPrice = " + rs2.getDouble("bid") + " WHERE transactionID = "
+						+ transactionIDInput;
+				PreparedStatement update = connection.prepareStatement(orderStatusUpdate);
+				update.executeUpdate();
+				
+				double balanceChange = (rs2.getDouble("bid") * rs.getDouble("quantity"));
+				String userBalanceUpdate = "UPDATE `user` SET `user`.balance = `user`.balance - " 
+						+ balanceChange;
+				update = connection.prepareStatement(userBalanceUpdate);
+				update.executeUpdate();
+			}	
+			
+			//transaction date timestamp renew
+			String transactionUpdate = "UPDATE `stockdb`.transaction SET transactionDate = CURRENT_TIMESTAMP "
+					+ "WHERE transactionID = " + transactionIDInput;
+			PreparedStatement update = connection.prepareStatement(transactionUpdate);
+			update.executeUpdate();
+			
+			
+			return (rs.getString("typeOfOrder"));
+		
+	      
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+		}
+		
+		return null;
 	}
 	
 	//expire an order entry 
 	private void expireOrder()
 	{
 		//mark orderStatus = 2 (expired) 
+		
+
 		
 	}
 	
@@ -138,6 +229,10 @@ public class Order extends Transaction{
 		}
 		
 		return 0;
+	}
+	
+	public String getOrderTypeDetail() {
+		return this.orderTypeDesc;
 	}
 	
 }
