@@ -53,22 +53,45 @@ public class UserInterface extends JFrame{
 	private JPanel transactionsPanel = new JPanel();
 	
 	//Creating text fields, some with specific formats
-	JTextField usernameField = new JTextField(15);
-	JTextField passwordField = new JTextField(15);
-	JTextField searchBarField = new JTextField(15);
-	JTextField withdrawAmountField = new JTextField(5);
-	JTextField depositAmountField = new JTextField(5);
-	JTextField buyStockAmountField = new JTextField(5);
-	JTextField sellStockAmountField = new JTextField(5);
+	private JTextField usernameField = new JTextField(15);
+	private JTextField passwordField = new JTextField(15);
+	private JTextField searchBarField = new JTextField(15);
+	private JTextField withdrawAmountField = new JTextField(5);
+	private JTextField depositAmountField = new JTextField(5);
+	private JTextField buyStockAmountField = new JTextField(5);
+	private JTextField sellStockAmountField = new JTextField(5);
 	
+	//Creating menu bar
+	private JMenuBar menuBar = new JMenuBar(); 
+	
+	//Creating menus
+	private JMenu homeMenu = new JMenu("Stock Portfolio");
+	private JMenuItem goHome = new JMenuItem("My Stock Portfolio");
+	
+	private JMenu accountMenu = new JMenu("Account Information");
+	private JMenuItem viewAccount = new JMenuItem("View Account Information");
+	private JMenuItem editAccount = new JMenuItem("Edit Account Information");
+	
+	private JMenu ordersMenu = new JMenu("Orders");
+	private JMenuItem tradeStocks = new JMenuItem("Trade Stocks");
+	
+	private JMenu fundsMenu = new JMenu("Manage Funds");
+	private JMenuItem myFunds = new JMenuItem("My Funds");
+	
+	private JMenu transactionsMenu = new JMenu("Transactions");
+	private JMenuItem myTransactions = new JMenuItem("My Transactions");
+	
+	private JMenu logoffMenu = new JMenu("Log Off");
+	private JMenuItem signOut = new JMenuItem("Sign Out");
+
 	//Creating text areas for the porfolio and transaction screens
-	JTextArea transactionsText = new JTextArea("No transactions to show at the moment.");
-	JTextArea homePortfolio = new JTextArea("Your portfolio is empty.");
+	private JTextArea transactionsText = new JTextArea("No transactions to show at the moment.");
+	private JTextArea homePortfolio = new JTextArea("Your portfolio is empty.");
 
 	//Creating scroll panes for the portfolio and transaction screens
-	JScrollPane transactionsPane = new JScrollPane(transactionsText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+	private JScrollPane transactionsPane = new JScrollPane(transactionsText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	JScrollPane portfolioPane = new JScrollPane(homePortfolio, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+	private JScrollPane portfolioPane = new JScrollPane(homePortfolio, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
 															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
 	public UserInterface() {
@@ -85,41 +108,27 @@ public class UserInterface extends JFrame{
 		//*****************************************************************************************
 		
 		//Creating menu bar
-		JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
 		menuBar.setVisible(false);
 		
 		//Creating menus
-		JMenu homeMenu = new JMenu("Stock Portfolio");
 		menuBar.add(homeMenu);
-		JMenuItem goHome = new JMenuItem("My Stock Portfolio");
 		homeMenu.add(goHome);
 		
-		JMenu accountMenu = new JMenu("Account Information");
 		menuBar.add(accountMenu);
-		JMenuItem viewAccount = new JMenuItem("View Account Information");
 		accountMenu.add(viewAccount);
-		JMenuItem editAccount = new JMenuItem("Edit Account Information");
 		accountMenu.add(editAccount);
 		
-		JMenu ordersMenu = new JMenu("Orders");
 		menuBar.add(ordersMenu);
-		JMenuItem tradeStocks = new JMenuItem("Trade Stocks");
 		ordersMenu.add(tradeStocks);
 		
-		JMenu fundsMenu = new JMenu("Manage Funds");
 		menuBar.add(fundsMenu);
-		JMenuItem myFunds = new JMenuItem("My Funds");
 		fundsMenu.add(myFunds);
 		
-		JMenu transactionsMenu = new JMenu("Transactions");
 		menuBar.add(transactionsMenu);
-		JMenuItem myTransactions = new JMenuItem("My Transactions");
 		transactionsMenu.add(myTransactions);
 		
-		JMenu logoffMenu = new JMenu("Log Off");
 		menuBar.add(logoffMenu);
-		JMenuItem signOut = new JMenuItem("Sign Out");
 		logoffMenu.add(signOut);
 		
 		//*****************************************************************************************
@@ -728,37 +737,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == goHome) {
-					try {
-						//Establishes connection with database
-						Connection connection = Main.getConnection();
-
-						// Executes query and stores userID
-						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
-																				+ " = '" + usernameField.getText() + "'");
-						rs.next();
-						int userID = rs.getInt("userID");
-
-						rs = User.viewPortfolio(userID);
-						if (!rs.isBeforeFirst()) {
-							homePortfolio.setText("Your porfolio is empty.");
-						}
-						else {
-							String portfolio = "";
-							String temp;
-							while (rs.next()) {
-								temp = rs.getString("stockOwner");
-								temp = temp.substring(temp.length() - 3);
-								portfolio += "Stock Name: " + temp + "\n";
-								portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n\n";
-							}
-							homePortfolio.setText(portfolio);
-						}
-						homePanel.revalidate();
-					}
-					catch (Exception ex) {
-						System.out.println(ex);
-					}
-					c1.show(cards, "3"); //switch to home
+					displayStockPortfolio();
 				}
 			}
 		});
@@ -899,45 +878,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signInButton) {
-					if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
-						try {
-							//Establishes connection with database
-							Connection connection = Main.getConnection();
-	
-							// Executes query and stores userID
-							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
-																					+ " = '" + usernameField.getText() + "'");
-							rs.next();
-							int userID = rs.getInt("userID");
-	
-							rs = User.viewPortfolio(userID);
-							if (!rs.isBeforeFirst()) {
-								homePortfolio.setText("Your porfolio is empty.");
-							}
-							else {
-								String portfolio = "";
-								String temp;
-								while (rs.next()) {
-									temp = rs.getString("stockOwner");
-									temp = temp.substring(temp.length() - 3);
-									portfolio += "Stock Name: " + temp + "\n";
-									portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n\n";
-								}
-								homePortfolio.setText(portfolio);
-							}
-							homePanel.revalidate();
-						}
-						catch (Exception ex) {
-							System.out.println(ex);
-						}
-						c1.show(cards, "3"); //switch to home
-						menuBar.setVisible(true); //prevent use of menu bar when not logged in
-						
-						curUser = new User(usernameField.getText(), passwordField.getText());
-					}
-					else {
-						JOptionPane.showMessageDialog(null, "Invalid username or password.");
-					}
+					displayStockPortfolio();
 				}
 			}
 		});
@@ -1759,6 +1700,51 @@ public class UserInterface extends JFrame{
 	public void displayStockDetails(String stockID)
 	{
 		
+	}
+	
+	public void displayStockPortfolio()
+	{
+		if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
+			try {
+				//Establishes connection with database
+				Connection connection = Main.getConnection();
+
+				// Executes query and stores userID
+				ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
+																		+ " = '" + usernameField.getText() + "'");
+				rs.next();
+				int userID = rs.getInt("userID");
+
+				rs = User.viewPortfolio(userID);
+				
+				if (!rs.isBeforeFirst()) {
+					homePortfolio.setText("Your porfolio is empty.");
+				}
+				else {
+					String portfolio = "";
+					String temp;
+					while (rs.next()) {
+						temp = rs.getString("stockOwner");
+						temp = temp.substring(temp.length() - 3);
+						portfolio += "Stock Name: " + temp + "\n";
+						portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n\n";
+					}
+					homePortfolio.setText(portfolio);
+				}
+				homePanel.revalidate();
+				
+			}
+			catch (Exception ex) {
+				System.out.println(ex);
+			}
+			c1.show(cards, "3"); //switch to home
+			menuBar.setVisible(true); //prevent use of menu bar when not logged in
+			
+			curUser = new User(usernameField.getText(), passwordField.getText());
+		}
+		else {
+			JOptionPane.showMessageDialog(null, "Invalid username or password.");
+		}
 	}
 
 	public void displayTransactionsPage()
