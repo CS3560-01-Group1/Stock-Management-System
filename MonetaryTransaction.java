@@ -49,12 +49,12 @@ public class MonetaryTransaction extends Transaction {
 	}
 	
 	//remove a transaction before it has been executed (in our case it can be anytime)
-	public void cancelTransaction()
+	public void cancelTransaction(int transactionIDInput)
 	{
 		//find matching row to this objects transactionID
 		//remove row and all entries
 		//finally, remove transaction super class row
-		archiveTransaction();
+		archiveTransaction(transactionIDInput);
 	}
 	
 	
