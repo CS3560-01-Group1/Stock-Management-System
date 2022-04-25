@@ -24,14 +24,18 @@ public class MarketDelay extends TimerTask{
 		if (orderResult == null) //Order failed to complete for some reason
 		{
 			//expired order message - to be completed
-			JOptionPane.showMessageDialog(null, "Your order of " + quantity + " shares of " + stockSymbol);
+			JOptionPane.showMessageDialog(null, "Your "
+			+ openOrder.getOrderTypeDetail() + " order on " + quantity + " shares of " + stockSymbol
+			+ " has failed to complete and has expired\n(lack of shares/insufficient balance).\nTransactionID: " + this.transactionID);
 		}
 		else if (orderResult.equals("buy")) {
-			JOptionPane.showMessageDialog(null, "Successfully bought " + quantity + " shares of " + stockSymbol + " at $" + openOrder.getExecutedPrice());
+			JOptionPane.showMessageDialog(null, "\n" + "Successfully bought " + quantity + " shares of " + stockSymbol + " at $" + openOrder.getExecutedPrice()
+			+ "\nTransactionID: " + this.transactionID);
 		}
 		else if (orderResult.equals("sell"))
 		{
-			JOptionPane.showMessageDialog(null, "Successfully sold " + quantity + " shares of " + stockSymbol + " at $" + openOrder.getExecutedPrice());
+			JOptionPane.showMessageDialog(null, "Successfully sold " + quantity + " shares of " + stockSymbol + " at $" + openOrder.getExecutedPrice()
+			+ "\nTransactionID: " + this.transactionID);
 		}
 
 		

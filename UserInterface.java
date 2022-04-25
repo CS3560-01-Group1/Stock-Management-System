@@ -33,14 +33,50 @@ public class UserInterface extends JFrame{
     
     private CardLayout c1;
     private User curUser;
+    
+    private JPanel cards = new JPanel();
+    
+    //instantiate panels
+	private JPanel loginPanel = new JPanel();
+	private JPanel signUpPanel = new JPanel();
+	private	JPanel signUp2Panel = new JPanel();
+	private	JPanel homePanel = new JPanel();
+	private JPanel accountInfoPanel = new JPanel();
+	private JPanel editAccountInfoPanel = new JPanel();
+	private JPanel searchPanel = new JPanel();
+	private JPanel stockInfoPanel = new JPanel();
+	private JPanel buyStockPanel = new JPanel();
+	private JPanel sellStockPanel = new JPanel();
+	private JPanel fundsPanel = new JPanel();
+	private	JPanel withdrawPanel = new JPanel();
+	private	JPanel depositPanel = new JPanel();
+	private JPanel transactionsPanel = new JPanel();
 	
+	//Creating text fields, some with specific formats
+	JTextField usernameField = new JTextField(15);
+	JTextField passwordField = new JTextField(15);
+	JTextField searchBarField = new JTextField(15);
+	JTextField withdrawAmountField = new JTextField(5);
+	JTextField depositAmountField = new JTextField(5);
+	JTextField buyStockAmountField = new JTextField(5);
+	JTextField sellStockAmountField = new JTextField(5);
+	
+	//Creating text areas for the porfolio and transaction screens
+	JTextArea transactionsText = new JTextArea("No transactions to show at the moment.");
+	JTextArea homePortfolio = new JTextArea("Your portfolio is empty.");
+
+	//Creating scroll panes for the portfolio and transaction screens
+	JScrollPane transactionsPane = new JScrollPane(transactionsText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	JScrollPane portfolioPane = new JScrollPane(homePortfolio, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+															JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
 	public UserInterface() {
 		//Setting title and frame size
 		setTitle("Stock Management System");
 		setSize(600, 600);
 		
 		//Creating CardLayout
-		JPanel cards = new JPanel();
 		c1 = new CardLayout();
 		cards.setLayout(c1);
 				
@@ -90,33 +126,19 @@ public class UserInterface extends JFrame{
 		//Creating panels for each screen and setting the layout
 		//*****************************************************************************************
 		
-		JPanel loginPanel = new JPanel();
 		loginPanel.setLayout(new BoxLayout(loginPanel, BoxLayout.Y_AXIS));
-		JPanel signUpPanel = new JPanel();
 		signUpPanel.setLayout(new BoxLayout(signUpPanel, BoxLayout.Y_AXIS));
-		JPanel signUp2Panel = new JPanel();
 		signUp2Panel.setLayout(new BoxLayout(signUp2Panel, BoxLayout.Y_AXIS));
-		JPanel homePanel = new JPanel();
 		homePanel.setLayout(new BoxLayout(homePanel, BoxLayout.Y_AXIS));
-		JPanel accountInfoPanel = new JPanel();
 		accountInfoPanel.setLayout(new BoxLayout(accountInfoPanel, BoxLayout.Y_AXIS));
-		JPanel editAccountInfoPanel = new JPanel();
 		editAccountInfoPanel.setLayout(new BoxLayout(editAccountInfoPanel, BoxLayout.Y_AXIS));
-		JPanel searchPanel = new JPanel();
 		searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));
-		JPanel stockInfoPanel = new JPanel();
 		stockInfoPanel.setLayout(new BoxLayout(stockInfoPanel, BoxLayout.Y_AXIS));
-		JPanel buyStockPanel = new JPanel();
 		buyStockPanel.setLayout(new BoxLayout(buyStockPanel, BoxLayout.Y_AXIS));
-		JPanel sellStockPanel = new JPanel();
 		sellStockPanel.setLayout(new BoxLayout(sellStockPanel, BoxLayout.Y_AXIS));
-		JPanel fundsPanel = new JPanel();
 		fundsPanel.setLayout(new BoxLayout(fundsPanel, BoxLayout.Y_AXIS));
-		JPanel withdrawPanel = new JPanel();
 		withdrawPanel.setLayout(new BoxLayout(withdrawPanel, BoxLayout.Y_AXIS));
-		JPanel depositPanel = new JPanel();
 		depositPanel.setLayout(new BoxLayout(depositPanel, BoxLayout.Y_AXIS));
-		JPanel transactionsPanel = new JPanel();
 		transactionsPanel.setLayout(new BoxLayout(transactionsPanel, BoxLayout.Y_AXIS));
 		
 		//*****************************************************************************************
@@ -283,6 +305,7 @@ public class UserInterface extends JFrame{
 		JButton editLoginCredentialsButton = new JButton("Edit Login Credentials");
 		JButton editPersonalInformationButton = new JButton("Edit Personal Information");
 		JButton editAddressButton = new JButton("Edit Address");
+		JButton deleteExpiredOrdersButton = new JButton("Archive All Expired Orders");
 		
 		//Centering buttons
 		signInButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -315,13 +338,11 @@ public class UserInterface extends JFrame{
 		editLoginCredentialsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		editPersonalInformationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		editAddressButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		deleteExpiredOrdersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//Creating text fields, some with specific formats
-		JTextField usernameField = new JTextField(15);
 		usernameField.setMaximumSize(usernameField.getPreferredSize());
-		JTextField passwordField = new JTextField(15);
 		passwordField.setMaximumSize(passwordField.getPreferredSize());
-		JTextField searchBarField = new JTextField(15);
 		searchBarField.setMaximumSize(searchBarField.getPreferredSize());
 		JTextField creationUsernameField = new JTextField(15);
 		creationUsernameField.setMaximumSize(creationUsernameField.getPreferredSize());
@@ -405,13 +426,9 @@ public class UserInterface extends JFrame{
 		bankRoutingNumberField.setColumns(15);
 		bankRoutingNumberField.setMaximumSize(bankRoutingNumberField.getPreferredSize());
 		bankRoutingNumberField.setHorizontalAlignment(JFormattedTextField.CENTER);
-		JTextField withdrawAmountField = new JTextField(5);
 		withdrawAmountField.setMaximumSize(withdrawAmountField.getPreferredSize());
-		JTextField depositAmountField = new JTextField(5);
 		depositAmountField.setMaximumSize(depositAmountField.getPreferredSize());
-		JTextField buyStockAmountField = new JTextField(5);
 		buyStockAmountField.setMaximumSize(buyStockAmountField.getPreferredSize());
-		JTextField sellStockAmountField = new JTextField(5);
 		sellStockAmountField.setMaximumSize(sellStockAmountField.getPreferredSize());
 		
 		//Centering text fields
@@ -439,12 +456,8 @@ public class UserInterface extends JFrame{
 		JTextArea homePortfolio = new JTextArea("Your portfolio is empty.");
 
 		//Creating scroll panes for the portfolio and transaction screens
-		JScrollPane transactionsPane = new JScrollPane(transactionsText, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-																JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		transactionsPane.setPreferredSize(new Dimension(250, 300));
 		transactionsPane.setMaximumSize(new Dimension(250, 300));
-		JScrollPane portfolioPane = new JScrollPane(homePortfolio, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-																JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		portfolioPane.setPreferredSize(new Dimension(250, 300));
 		portfolioPane.setMaximumSize(new Dimension(250, 300));
 
@@ -682,6 +695,7 @@ public class UserInterface extends JFrame{
 		transactionsPanel.add(transactionsPane);
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		transactionsPanel.add(transactionsBackButton);
+		transactionsPanel.add(deleteExpiredOrdersButton);
 		
 		//*****************************************************************************************
 		//Adding panels to CardLayout
@@ -843,67 +857,11 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == myTransactions) {
-					try {
-						// Establishes connection to database
-						Connection connection = Main.getConnection();
-
-						//Executes search query
-						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`" 
-																				+ " = '" + usernameField.getText() + "'");
-						rs.next();
-						
-						// Store userID
-						int userID = rs.getInt("userID");
-
-						// Gets transactions using user ID
-						rs = Transaction.getTransactions(userID);
-
-						// Checks if result is empty
-						if (!rs.isBeforeFirst()) {
-							transactionsText.setText("No transactions to show at the moment.");
-						}
-						// Otherwise display transactions
-						else {
-							String transactionsList = "";
-							while (rs.next()) {
-								transactionsList += "Transaction ID: " + rs.getInt("transactionID") + "\n";
-								transactionsList += "Date of Transaction: " + rs.getString("transactionDate") + "\n";
-								if (rs.getString("orderType") == null) {
-									transactionsList += "Bank Name: " + rs.getString("externalBankName") + "\n";
-									transactionsList += "Bank Account Number: " + rs.getString("externalBankAct#") + "\n";
-									transactionsList += "Bank Routing Number: " + rs.getString("externalBankRoute#") + "\n";
-									transactionsList += "Activity Type: " + rs.getString("activityType") + "\n";
-									transactionsList += "Amount: " + rs.getFloat("amount") + "\n";
-									transactionsList += "\n";
-								}
-								else {
-									if (rs.getInt("orderType") == 0)
-										transactionsList += "Order Type: Buy\n";
-									else 
-										transactionsList += "Order Type: Sell\n";
-									transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
-									transactionsList += "Quantity: " + rs.getFloat("quantity") + "\n";
-									transactionsList += "Executed Price: " + rs.getFloat("executedPrice") + "\n";
-									if (rs.getInt("orderStatus") == 0)
-											transactionsList += "Order Status: Open\n";
-									else if (rs.getInt("orderStatus") == 1)
-											transactionsList += "Order Status: Completed\n";
-									else
-											transactionsList += "Order Status: Expired\n";
-										transactionsList += "\n";
-								}
-							}
-							transactionsText.setText(transactionsList);
-						}
-					}
-					catch (Exception ex) {
-						System.out.println(ex);
-					}
-					transactionsPanel.revalidate();
-					c1.show(cards, "13"); //switch to transactions
+					displayTransactionsPage();
 				}
 			}
 		});
+		
 		
 		//Switches to login screen removes menu bar
 		signOut.addActionListener(new ActionListener() {
@@ -1177,6 +1135,21 @@ public class UserInterface extends JFrame{
 					c1.show(cards, "3"); //switch to home
 				}
 			}
+		});
+		
+		//Deletes expired orders shown from the transaction tab
+		deleteExpiredOrdersButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == deleteExpiredOrdersButton)
+				{
+					Order O = new Order();
+					O.deleteAllExpiredOrders(curUser.getID());
+					displayTransactionsPage();
+				}
+	
+			}
+			
 		});
 		
 		buyStockButton.addActionListener(new ActionListener() {
@@ -1673,6 +1646,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 
+
 		//Filter search results
 		searchButton.addActionListener(new ActionListener() {
 			@Override
@@ -1722,9 +1696,8 @@ public class UserInterface extends JFrame{
 				}
 			}
 		});
-
-    }
-
+		
+}
 
 //ADDITIONAL METHODS THAT DONT BELONG TO ANY CLASS 
 //IMPLEMENT DIRECTLY INTO USER INTERFACE CLASS METHODS
@@ -1739,5 +1712,68 @@ public class UserInterface extends JFrame{
 	public void displayStockDetails(String stockID)
 	{
 		
+	}
+
+	public void displayTransactionsPage()
+	{
+		try {
+			// Establishes connection to database
+			Connection connection = Main.getConnection();
+
+			//Executes search query
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`" 
+																	+ " = '" + usernameField.getText() + "'");
+			rs.next();
+			
+			// Store userID
+			int userID = rs.getInt("userID");
+
+			// Gets transactions using user ID
+			rs = Transaction.getTransactions(userID);
+
+			// Checks if result is empty
+			if (!rs.isBeforeFirst()) {
+				transactionsText.setText("No transactions to show at the moment.");
+			}
+			// Otherwise display transactions
+			else {
+				String transactionsList = "";
+				while (rs.next()) {
+					transactionsList += "Transaction ID: " + rs.getInt("transactionID") + "\n";
+					transactionsList += "Date of Transaction: " + rs.getString("transactionDate") + "\n";
+					if (rs.getString("orderType") == null) {
+						transactionsList += "Bank Name: " + rs.getString("externalBankName") + "\n";
+						transactionsList += "Bank Account Number: " + rs.getString("externalBankAct#") + "\n";
+						transactionsList += "Bank Routing Number: " + rs.getString("externalBankRoute#") + "\n";
+						transactionsList += "Activity Type: " + rs.getString("activityType") + "\n";
+						transactionsList += "Amount: " + rs.getFloat("amount") + "\n";
+						transactionsList += "\n";
+					}
+					else {
+						if (rs.getInt("orderType") == 0)
+							transactionsList += "Order Type: Buy\n";
+						else 
+							transactionsList += "Order Type: Sell\n";
+						transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
+						transactionsList += "Quantity: " + rs.getFloat("quantity") + "\n";
+						transactionsList += "Executed Price: " + rs.getFloat("executedPrice") + "\n";
+						if (rs.getInt("orderStatus") == 0)
+								transactionsList += "Order Status: Open\n";
+						else if (rs.getInt("orderStatus") == 1)
+								transactionsList += "Order Status: Completed\n";
+						else
+								transactionsList += "Order Status: Expired\n";
+							transactionsList += "\n";
+					}
+				}
+				transactionsText.setText(transactionsList);
+			}
+		}
+		catch (Exception ex) {
+			System.out.println(ex);
+		}
+		transactionsPanel.revalidate();
+		c1.show(cards, "13"); //switch to transactions
+
 	}
 }

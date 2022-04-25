@@ -107,8 +107,8 @@ public class Order extends Transaction{
 				rs3.next();
 				//If not verified -> expireOrder and return out of method
 				if (rs3.getDouble("sharesOwned") < -1 * rs.getDouble("quantity")) {
-					System.out.println("Lack of Share's owned");
-					expireOrder();
+//					System.out.println("Lack of Share's owned");
+					expireOrder(transactionIDInput);
 
 					return null;
 				}
@@ -139,8 +139,8 @@ public class Order extends Transaction{
 				
 				//If not verified -> expireOrder and return out of method
 				if (rs3.getDouble("balance") < (rs.getDouble("quantity") * rs2.getDouble("bid"))) {
-					expireOrder();
-					System.out.println("Over BUDGET!");
+					expireOrder(transactionIDInput);
+//					System.out.println("Over BUDGET!");
 					return null;
 				}
 				
@@ -178,11 +178,56 @@ public class Order extends Transaction{
 	}
 	
 	//expire an order entry 
-	private void expireOrder()
+	private void expireOrder(int transactionIDToExpire)
 	{
+		//find matching order with transaction id = transactionIDToExpire
 		//mark orderStatus = 2 (expired) 
-		
+		try {
+		String updateStatusQuery = "UPDATE `order` SET `order`.orderStatus = 2 WHERE transactionID = "
+				+ transactionIDToExpire;
+		Connection connection = Main.getConnection();
+		PreparedStatement update = connection.prepareStatement(updateStatusQuery);
+		update.executeUpdate();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+		}
+	}
+	
+	public void deleteAllExpiredOrders(int userIDOfOrders)
+	{
+		try
+		{
+			Connection connection = Main.getConnection();
+			//select appropriate order list
+			String querySelectExpired = "SELECT * FROM stockdb.order\r\n"
+					+ "JOIN stockdb.transaction ON `order`.transactionID = `transaction`.transactionID\r\n"
+					+ "WHERE `transaction`.userID = " + userIDOfOrders + " AND `order`.orderStatus = 2";
+			ResultSet rs = connection.createStatement().executeQuery(querySelectExpired);
+			
+			//delete child (order) then parent (transaction) of matching transactionID
+			while (rs.next())
+			{
+				int tranIDToDelete = rs.getInt("transactionID");
+				//delete order
+				String queryDeleteOrder = "DELETE FROM stockdb.order WHERE transactionID = " 
+						+ tranIDToDelete;
+				PreparedStatement delete = connection.prepareStatement(queryDeleteOrder);
+				delete.executeUpdate();
+				
+				//delete transaction
+				this.archiveTransaction(tranIDToDelete);
+				
+				System.out.println("Deleted transactionID = " + tranIDToDelete);
+			}
+			
 
+			
+		}
+		catch (Exception e) {
+			System.out.println(e);
+		}
 		
 	}
 	
@@ -195,7 +240,7 @@ public class Order extends Transaction{
 		//proceed to remove row entry of order matching this objects transactionID
 		
 		//then, delete matching row in transaction superclass
-		archiveTransaction();
+//		archiveTransaction();
 		
 		//if all queries successful, remove this object's attributes
 		
