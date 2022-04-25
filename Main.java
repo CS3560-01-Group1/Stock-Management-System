@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Timer;
 
 import javax.swing.JFrame;
 
@@ -13,10 +14,15 @@ import javax.swing.JFrame;
 //Testing github push
 //Push test from Justin branch
 public class Main {
-
+	
+	public static Timer marketDelay = new Timer();
+	
 	public static void main(String[] args) throws Exception {
+
 		initialize();
 //		exampleSQLQuery();
+		
+
 
 	}
 
@@ -48,7 +54,7 @@ public class Main {
 		String url = "jdbc:mysql://127.0.0.1:3306/stockdb";
 		// if using local instance: url = "jdbc:mysql://localhost:3306/stockdb";
 		String username = "root";
-		String password = ""; 
+		String password = "Soccer44!"; 
 		
 		try 
 		{   

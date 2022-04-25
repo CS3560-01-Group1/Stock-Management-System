@@ -44,9 +44,7 @@ public abstract class Transaction {
 		{
 			System.out.println(e);
 		}
-		//this will automatically records unique transactionID and date upon creation 
-		//if insert successful, update this objects attributes 
-		retrieveTransaction(this.transactionID);
+
 	}
 	
 	
@@ -56,9 +54,20 @@ public abstract class Transaction {
 		//if search successful, update this object's attributes
 	}
 	
-	public void archiveTransaction()
+	
+	public void archiveTransaction(int transactionIDInput)
 	{
-		//"delete" entry on "stockdb.transaction" table of matching transaction ID
+		try
+		{
+			Connection connection = Main.getConnection();
+			String queryDeleteTransaction = "DELETE FROM stockdb.transaction WHERE `transaction`.transactionID = "
+					+ transactionIDInput;
+			PreparedStatement delete = connection.prepareStatement(queryDeleteTransaction);
+			delete.executeUpdate();
+		}
+		catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 
 	// Returns set of all transactions corresponding to the user
@@ -70,7 +79,7 @@ public abstract class Transaction {
 			//Query to execute in the database
 			String query = "SELECT * FROM stockdb.transaction LEFT JOIN stockdb.order "
 			+ "ON `order`.transactionID = transaction.transactionID LEFT JOIN monetarytransaction ON " + 
-			"monetarytransaction.transactionID = transaction.transactionID WHERE `userID` = " + userID + " ORDER BY transactionDate DESC";
+			"monetarytransaction.transactionID = transaction.transactionID WHERE `userID` = " + userID + " ORDER BY transactionDate ASC";
 
 			//Executes query and stores results
 			ResultSet rs = connection.createStatement().executeQuery(query);

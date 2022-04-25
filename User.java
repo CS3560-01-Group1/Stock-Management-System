@@ -181,7 +181,7 @@ public class User {
 			//return set of stocks and total shares
 			//col1 = stockOwner, col2 = sharesOwned
 			return rs;
-	      
+
 		}
 		catch (Exception e)
 		{
