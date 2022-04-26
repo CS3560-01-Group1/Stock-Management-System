@@ -213,6 +213,7 @@ public class UserInterface extends JFrame{
 		JLabel accountPhoneNumber = new JLabel("Phone Number: ");
 		JLabel accountSSN = new JLabel("Social Security Number: ");
 		JLabel accountAddress = new JLabel("Address: ");
+		JLabel bankName = new JLabel("Bank Name: ");
 		JLabel bankAccountNumber = new JLabel("Bank Account Number: ");
 		JLabel bankRoutingNumber = new JLabel("Bank Routing Number: ");
 		JLabel withdrawAmount = new JLabel("Amount to Withdraw: ");
@@ -270,6 +271,7 @@ public class UserInterface extends JFrame{
 		stockInfoPE.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoTotalShares.setAlignmentX(Component.CENTER_ALIGNMENT);
 		manageFundsBalance.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bankName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		bankAccountNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		bankRoutingNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		withdrawAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -415,6 +417,9 @@ public class UserInterface extends JFrame{
 		creationZipCodeField.setColumns(15);
 		creationZipCodeField.setMaximumSize(creationZipCodeField.getPreferredSize());
 		creationZipCodeField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField bankNameField = new JTextField(15);
+		bankNameField.setMaximumSize(bankNameField.getPreferredSize());
+		bankNameField.setHorizontalAlignment(JFormattedTextField.CENTER);
 		try {
 			mask = new MaskFormatter("##########");
 			mask.setPlaceholderCharacter('_');
@@ -459,10 +464,6 @@ public class UserInterface extends JFrame{
 		bankRoutingNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		withdrawAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
-		//Creating text areas for the porfolio and transaction screens
-		JTextArea transactionsText = new JTextArea("No transactions to show at the moment.");
-		JTextArea homePortfolio = new JTextArea("Your portfolio is empty.");
 
 		//Creating scroll panes for the portfolio and transaction screens
 		transactionsPane.setPreferredSize(new Dimension(250, 300));
@@ -666,6 +667,9 @@ public class UserInterface extends JFrame{
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(manageFundsBalance);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		fundsPanel.add(bankName);
+		fundsPanel.add(bankNameField);
+		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(bankAccountNumber);
 		fundsPanel.add(bankAccountNumberField);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -1213,12 +1217,13 @@ public class UserInterface extends JFrame{
 							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 0*1000);
 							//After delay, if order is not interrupted, it is completed!
 						}
+						c1.show(cards, "7"); //switch to stock info
 					}
 					catch (Exception ex)
 					{
+						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
-					c1.show(cards, "7"); //switch to stock info
 				}
 			}
 		});
@@ -1327,12 +1332,13 @@ public class UserInterface extends JFrame{
 						Main.marketDelay.schedule(new MarketDelay(sellStockAmountField.getText(), rs.getString("stockSymbol"), sellOrder.getTransactionID()), 0*1000);
 						//After delay, if order is not interrupted, it is completed!
 					}
+					c1.show(cards, "7"); //switch to stock info
 				}
 				catch (Exception ex)
 				{
+					JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 					System.out.println(ex);
 				}
-				c1.show(cards, "7"); //switch to stock info
 			}
 		});
 		
@@ -1350,10 +1356,10 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawButton) {
 					//Make sure the fields are not empty
-					if (bankAccountNumberField.getText().equals("__________") ||
+					if (bankNameField.getText().equals("") || 
+							bankAccountNumberField.getText().equals("__________") ||
 							bankRoutingNumberField.getText().equals("_________")) {
-						JOptionPane.showMessageDialog(null, "Please enter bank account number\n"
-															+ "and bank routing number.");
+						JOptionPane.showMessageDialog(null, "Please enter bank information.");
 					}
 					else {
 						c1.show(cards, "11"); //switch to withdraw
@@ -1374,6 +1380,7 @@ public class UserInterface extends JFrame{
 						c1.show(cards, "10"); //switch to funds
 					}
 					catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
 				}
@@ -1393,7 +1400,8 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositButton) {
-					if (bankAccountNumberField.getText().equals("__________") ||
+					if (bankNameField.getText().equals("") ||
+							bankAccountNumberField.getText().equals("__________") ||
 							bankRoutingNumberField.getText().equals("_________")) {
 						JOptionPane.showMessageDialog(null, "Please enter bank account number\n"
 															+ "and bank routing number.");
@@ -1429,6 +1437,7 @@ public class UserInterface extends JFrame{
 						}
 					}
 					catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
 				}
