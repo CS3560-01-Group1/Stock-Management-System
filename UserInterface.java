@@ -1820,12 +1820,16 @@ public class UserInterface extends JFrame{
 						transactionsList += "\n";
 					}
 					else {
-						if (rs.getInt("orderType") == 0)
+						if (rs.getInt("orderType") == 0) {
 							transactionsList += "Order Type: Buy\n";
-						else 
+							transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
+							transactionsList += "Quantity: " + rs.getFloat("quantity") + "\n";
+						}
+						else {
 							transactionsList += "Order Type: Sell\n";
-						transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
-						transactionsList += "Quantity: " + rs.getFloat("quantity") + "\n";
+							transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
+							transactionsList += "Quantity: " + -1 * rs.getFloat("quantity") + "\n";
+						}
 						transactionsList += "Executed Price: " + rs.getFloat("executedPrice") + "\n";
 						if (rs.getInt("orderStatus") == 0)
 								transactionsList += "Order Status: Open\n";

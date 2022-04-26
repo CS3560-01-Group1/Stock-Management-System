@@ -124,7 +124,7 @@ public class Order extends Transaction{
 				
 				double balanceChange = -1 * (rs2.getDouble("ask") * rs.getDouble("quantity"));
 				String userBalanceUpdate = "UPDATE `user` SET `user`.balance = `user`.balance + " 
-						+ balanceChange;		
+						+ balanceChange + " WHERE userID = " + rs.getInt("userID");		
 				update = connection.prepareStatement(userBalanceUpdate);
 				update.executeUpdate();
 				
@@ -157,7 +157,7 @@ public class Order extends Transaction{
 				
 				double balanceChange = (rs2.getDouble("bid") * rs.getDouble("quantity"));
 				String userBalanceUpdate = "UPDATE `user` SET `user`.balance = `user`.balance - " 
-						+ balanceChange;
+						+ balanceChange + " WHERE userID = " + rs.getInt("userID");		;
 				update = connection.prepareStatement(userBalanceUpdate);
 				update.executeUpdate();
 			}	
