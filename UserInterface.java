@@ -205,6 +205,7 @@ public class UserInterface extends JFrame{
 		JLabel creationCity = new JLabel("City");
 		JLabel creationState = new JLabel("State");
 		JLabel creationZipCode = new JLabel("Zip/Postal Code");
+		JLabel accountID = new JLabel("User ID: ");
 		JLabel accountUsername = new JLabel("Username: ");
 		JLabel accountPassword = new JLabel("Password: ");
 		JLabel accountFirstName = new JLabel("First Name: ");
@@ -255,6 +256,7 @@ public class UserInterface extends JFrame{
 		creationCity.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationState.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationZipCode.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountID.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountUsername.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountFirstName.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -572,6 +574,7 @@ public class UserInterface extends JFrame{
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		accountInfoPanel.add(accountInfo);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		accountInfoPanel.add(accountID);
 		accountInfoPanel.add(accountFirstName);
 		accountInfoPanel.add(accountLastName);
 		accountInfoPanel.add(accountUsername);
@@ -757,6 +760,7 @@ public class UserInterface extends JFrame{
 
 						accountFirstName.setText("First Name: " + rs.getString("fName"));
 						accountLastName.setText("Last Name: " + rs.getString("lName"));
+						accountID.setText("User ID: " + rs.getInt("userID"));
 						accountUsername.setText("Username: " + rs.getString("username"));
 						accountPassword.setText("Password: " + rs.getString("password"));
 						accountEmail.setText("Email Address: " + rs.getString("email"));
@@ -868,7 +872,8 @@ public class UserInterface extends JFrame{
 				if (e.getSource() == signOut) {
 					c1.show(cards, "1"); //switch to login
 					menuBar.setVisible(false); //prevent use of menu bar when not logged in
-					
+					usernameField.setText("");
+					passwordField.setText("");
 					curUser.logoff();
 				}
 			}
@@ -1003,6 +1008,24 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editAccountInfoBackButton) {
+					//Loads account information
+					try {
+						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						rs.next();
+
+						accountFirstName.setText("First Name: " + rs.getString("fName"));
+						accountLastName.setText("Last Name: " + rs.getString("lName"));
+						accountID.setText("User ID: " + rs.getInt("userID"));
+						accountUsername.setText("Username: " + rs.getString("username"));
+						accountPassword.setText("Password: " + rs.getString("password"));
+						accountEmail.setText("Email Address: " + rs.getString("email"));
+						accountPhoneNumber.setText("Phone Number: " + rs.getString("phone#"));
+						accountSSN.setText("Social Security Number: " + rs.getString("ssn"));
+						accountAddress.setText("Address: " + rs.getString("address"));
+						accountInfoPanel.revalidate();
+					} catch (SQLException ex) {
+						System.out.println(ex);
+					}
 					c1.show(cards, "4"); //switch to account info
 				}
 			}
@@ -1500,6 +1523,8 @@ public class UserInterface extends JFrame{
 								User.updateLoginCredentials(usernameField.getText(), field1.getText(), field2.getText());
 								accountUsername.setText("Username: " + field1.getText());
 								accountPassword.setText("Password: " + field2.getText());
+								usernameField.setText(field1.getText());
+								passwordField.setText(field2.getText());
 								accountInfoPanel.revalidate();			
 							}
 							
