@@ -29,6 +29,7 @@ public class Main {
 	//Starts up program user interface
 	public static void initialize() {
 		UserInterface cardLayout = new UserInterface();
+		cardLayout.setLocationRelativeTo(null);
 		cardLayout.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		cardLayout.setVisible(true);
 	}
