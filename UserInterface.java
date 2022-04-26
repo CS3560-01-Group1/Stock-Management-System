@@ -887,6 +887,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signInButton) {
+					curUser = new User(usernameField.getText(), passwordField.getText());
 					displayStockPortfolio();
 				}
 			}
@@ -1023,6 +1024,7 @@ public class UserInterface extends JFrame{
 						accountSSN.setText("Social Security Number: " + rs.getString("ssn"));
 						accountAddress.setText("Address: " + rs.getString("address"));
 						accountInfoPanel.revalidate();
+	
 					} catch (SQLException ex) {
 						System.out.println(ex);
 					}
@@ -1171,6 +1173,8 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() ==buyStockButton) {
+					
+					 System.out.println(curUser.getID());
 					try
 					{
 						Connection connection = Main.getConnection();
@@ -1525,7 +1529,8 @@ public class UserInterface extends JFrame{
 								accountPassword.setText("Password: " + field2.getText());
 								usernameField.setText(field1.getText());
 								passwordField.setText(field2.getText());
-								accountInfoPanel.revalidate();			
+								accountInfoPanel.revalidate();	
+								curUser.login(usernameField.getText(), passwordField.getText());
 							}
 							
 						}
@@ -1773,8 +1778,6 @@ public class UserInterface extends JFrame{
 			}
 			c1.show(cards, "3"); //switch to home
 			menuBar.setVisible(true); //prevent use of menu bar when not logged in
-			
-			curUser = new User(usernameField.getText(), passwordField.getText());
 		}
 		else {
 			JOptionPane.showMessageDialog(null, "Invalid username or password.");

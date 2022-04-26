@@ -120,6 +120,8 @@ public class Order extends Transaction{
 				PreparedStatement update = connection.prepareStatement(orderStatusUpdate);
 				update.executeUpdate();
 				
+				this.executedPrice = rs2.getDouble("ask");
+				
 				double balanceChange = -1 * (rs2.getDouble("ask") * rs.getDouble("quantity"));
 				String userBalanceUpdate = "UPDATE `user` SET `user`.balance = `user`.balance + " 
 						+ balanceChange;		
@@ -151,12 +153,16 @@ public class Order extends Transaction{
 				PreparedStatement update = connection.prepareStatement(orderStatusUpdate);
 				update.executeUpdate();
 				
+				this.executedPrice = rs2.getDouble("bid");
+				
 				double balanceChange = (rs2.getDouble("bid") * rs.getDouble("quantity"));
 				String userBalanceUpdate = "UPDATE `user` SET `user`.balance = `user`.balance - " 
 						+ balanceChange;
 				update = connection.prepareStatement(userBalanceUpdate);
 				update.executeUpdate();
 			}	
+			//status change after completed
+			this.orderStatus = 1;
 			
 			//transaction date timestamp renew
 			String transactionUpdate = "UPDATE `stockdb`.transaction SET transactionDate = CURRENT_TIMESTAMP "
