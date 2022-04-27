@@ -64,7 +64,7 @@ public class MonetaryTransaction extends Transaction {
 	{
 		try {
 			//get orders from userIDInput
-			String selectMonetaryTransQuery = "SELECT monetarytransaction.transactionID, transaction.userID FROM stockdb.order"
+			String selectMonetaryTransQuery = "SELECT monetarytransaction.transactionID, transaction.userID FROM stockdb.monetarytransaction"
 					+ " JOIN stockdb.transaction ON monetarytransaction.transactionID = transaction.transactionID"
 					+ " WHERE userID = " + idOfUser;
 			Connection connection = Main.getConnection();
