@@ -18,9 +18,15 @@ public class Main {
 	public static Timer marketDelay = new Timer();
 	
 	public static void main(String[] args) throws Exception {
-
+		Order a = new Order();
+		MonetaryTransaction b = new MonetaryTransaction();
+		
+		a.deleteAllUserOrders(2);
+//		b.deleteAllUserMonTransactions(2);
+		
 		initialize();
 //		exampleSQLQuery();
+
 		
 
 

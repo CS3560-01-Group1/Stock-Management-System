@@ -60,13 +60,13 @@ public class MonetaryTransaction extends Transaction {
 	}
 	
 	//only use when deleting user account
-	private void deleteAllMonTransactionsOfUser(int idOfUser)
+	public void deleteAllUserMonTransactions(int idOfUser)
 	{
 		try {
 			//get orders from userIDInput
 			String selectMonetaryTransQuery = "SELECT monetarytransaction.transactionID, transaction.userID FROM stockdb.order"
-					+ "JOIN stockdb.transaction ON monetarytransaction.transactionID = transaction.transactionID"
-					+ "WHERE userID = " + idOfUser;
+					+ " JOIN stockdb.transaction ON monetarytransaction.transactionID = transaction.transactionID"
+					+ " WHERE userID = " + idOfUser;
 			Connection connection = Main.getConnection();
 			ResultSet transactionsToDelete = connection.createStatement().executeQuery(selectMonetaryTransQuery);
 			
@@ -85,7 +85,7 @@ public class MonetaryTransaction extends Transaction {
 				archiveTransaction(tempTransactionID);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e);
 		}
 		
 		

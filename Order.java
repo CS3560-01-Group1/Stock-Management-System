@@ -238,16 +238,16 @@ public class Order extends Transaction{
 	}
 	
 	//only use when deleting user account
-	private void deleteAllUserOrders(int idOfUser)
+	public void deleteAllUserOrders(int idOfUser)
 	{
 		try {
 			//get orders from userIDInput
 			String selectOrdersQuery = "SELECT `order`.transactionID, transaction.userID FROM stockdb.order"
-					+ "JOIN stockdb.transaction ON `order`.transactionID = transaction.transactionID"
-					+ "WHERE userID = " + idOfUser;
+					+ " JOIN stockdb.transaction ON `order`.transactionID = transaction.transactionID"
+					+ " WHERE userID = " + idOfUser;
 			Connection connection = Main.getConnection();
 			ResultSet ordersToDelete = connection.createStatement().executeQuery(selectOrdersQuery);
-			
+
 			//delete each order from each result
 			while (ordersToDelete.next())
 			{
@@ -263,7 +263,7 @@ public class Order extends Transaction{
 				archiveTransaction(tempTransactionID);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(e);
 		}
 		
 		
