@@ -92,6 +92,7 @@ public abstract class Transaction {
 		}
 		return null;
 	}
+	
 
 	//Getter functions
 	public int getTransactionID() {
