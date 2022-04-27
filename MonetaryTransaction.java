@@ -1,3 +1,5 @@
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class MonetaryTransaction extends Transaction {
@@ -57,8 +59,37 @@ public class MonetaryTransaction extends Transaction {
 		archiveTransaction(transactionIDInput);
 	}
 	
-	
-	
+	//only use when deleting user account
+	public static void deleteAllUserMonTransactions(int idOfUser)
+	{
+		try {
+			//get orders from userIDInput
+			String selectMonetaryTransQuery = "SELECT monetarytransaction.transactionID, transaction.userID FROM stockdb.order"
+					+ " JOIN stockdb.transaction ON monetarytransaction.transactionID = transaction.transactionID"
+					+ " WHERE userID = " + idOfUser;
+			Connection connection = Main.getConnection();
+			ResultSet transactionsToDelete = connection.createStatement().executeQuery(selectMonetaryTransQuery);
+			
+			//delete each order from each result
+			while (transactionsToDelete.next())
+			{
+				//save transaction id
+				int tempTransactionID = transactionsToDelete.getInt("transactionID");
+				//delete order child first
+				String deleteMonetaryTransactionsQuery = "DELETE FROM stockdb.order WHERE `order`.transactionID = "
+						+ tempTransactionID;
+				PreparedStatement deleteQuery = connection.prepareStatement(deleteMonetaryTransactionsQuery);
+				deleteQuery.executeUpdate();
+				
+				//then delete transaction parent based on transaction id
+				archiveTransaction(tempTransactionID);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		
+	}	
 
 	//Getter functions
 	public double getFundsTransferred() {

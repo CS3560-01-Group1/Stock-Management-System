@@ -237,6 +237,38 @@ public class Order extends Transaction{
 		
 	}
 	
+	//only used when deleting a user
+	public static void deleteAllUserOrders(int idOfUser)
+	{
+		try {
+			//get orders from userIDInput
+			String selectOrdersQuery = "SELECT `order`.transactionID, transaction.userID FROM stockdb.order"
+					+ " JOIN stockdb.transaction ON `order`.transactionID = transaction.transactionID"
+					+ " WHERE userID = " + idOfUser;
+			Connection connection = Main.getConnection();
+			ResultSet ordersToDelete = connection.createStatement().executeQuery(selectOrdersQuery);
+
+			//delete each order from each result
+			while (ordersToDelete.next())
+			{
+				//save transaction id
+				int tempTransactionID = ordersToDelete.getInt("transactionID");
+				//delete order child first
+				String deleteOrderQuery = "DELETE FROM stockdb.order WHERE `order`.transactionID = "
+						+ tempTransactionID;
+				PreparedStatement deleteQuery = connection.prepareStatement(deleteOrderQuery);
+				deleteQuery.executeUpdate();
+				
+				//then delete transaction parent based on transaction id
+				archiveTransaction(tempTransactionID);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		
+	}
+
 	//only use if an order is still open or is expired
 	private void deleteOrder()
 	{

@@ -55,7 +55,7 @@ public abstract class Transaction {
 	}
 	
 	
-	public void archiveTransaction(int transactionIDInput)
+	public static void archiveTransaction(int transactionIDInput)
 	{
 		try
 		{

@@ -277,7 +277,7 @@ public class User {
 	}
 
 	//Allows user to update address
-	public static void updateaddress(String userName, String newAddress) {
+	public static void updateAddress(int idOfUser, String newAddress) {
 
 		try{
 		Connection connection = Main.getConnection();
@@ -285,8 +285,8 @@ public class User {
 		
 		//Updates the address in database
 		connection.createStatement().executeUpdate("UPDATE `user` SET `address` = '" 
-														+ newAddress + "' WHERE `username` = '" 
-														+ userName + "'");	
+														+ newAddress + "' WHERE `userID` = " 
+														+ idOfUser);	
 
 		}
 		catch (Exception ex) {
@@ -353,14 +353,18 @@ public class User {
 	}
 	
 	//Deletes user account and all information regarding this user
-	public void deleteAccount()
+	public static void deleteAccount(int idOfUser)
 	{
-		//Initiate query to "delete" all data regarding this user
-		//Select query across all tables (transaction -> monetarytransaction, transaction -> order, user)
-		//delete all matching content
-		//finally, remove the attributes of this object
-		logoff();
-		
+		try {
+			//get user from userIDInput
+			String selectUserQuery = "DELETE FROM `user` WHERE `userID` = " + idOfUser;
+			Connection connection = Main.getConnection();
+			PreparedStatement userToDelete = connection.prepareStatement(selectUserQuery);
+			userToDelete.executeUpdate();
+			System.out.println("Successfully deleted a user.");
+		} catch (Exception e) {
+			System.out.println(e);
+		}	
 	}
 
 	//Get account information
