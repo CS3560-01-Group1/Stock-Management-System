@@ -64,7 +64,7 @@ public class MonetaryTransaction extends Transaction {
 	{
 		try {
 			//get orders from userIDInput
-			String selectMonetaryTransQuery = "SELECT monetarytransaction.transactionID, transaction.userID FROM stockdb.order"
+			String selectMonetaryTransQuery = "SELECT monetarytransaction.transactionID, transaction.userID FROM stockdb.monetarytransaction"
 					+ " JOIN stockdb.transaction ON monetarytransaction.transactionID = transaction.transactionID"
 					+ " WHERE userID = " + idOfUser;
 			Connection connection = Main.getConnection();
@@ -76,7 +76,7 @@ public class MonetaryTransaction extends Transaction {
 				//save transaction id
 				int tempTransactionID = transactionsToDelete.getInt("transactionID");
 				//delete order child first
-				String deleteMonetaryTransactionsQuery = "DELETE FROM stockdb.order WHERE `order`.transactionID = "
+				String deleteMonetaryTransactionsQuery = "DELETE FROM stockdb.monetarytransaction WHERE `monetarytransaction`.transactionID = "
 						+ tempTransactionID;
 				PreparedStatement deleteQuery = connection.prepareStatement(deleteMonetaryTransactionsQuery);
 				deleteQuery.executeUpdate();
