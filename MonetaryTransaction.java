@@ -17,15 +17,27 @@ public class MonetaryTransaction extends Transaction {
 	}
 
 	public void newMonetaryTransaction(int idOfUser, String routingNum, String bankName, String bankAccountNum,
-			String transactionActivity)
+			String transactionActivity, float amount)
 	{
 		//verify input (outside scope of method)
 		//create new transaction (superclass) 
-		newTransactionRecord(idOfUser);
+		this.newTransactionRecord(idOfUser);
 		
 		//query insert into "stockdb.monetarytransaction" with given input (including transactionID)
 		//if insert successful, populate attributes of this object
 		//remember to update user's balance (outside scope of this method)
+		try {
+			String query = "INSERT INTO stockdb.monetarytransaction (`transactionID`, `externalBankRoute#`, "
+				+ "`externalBankName`, `externalBankAct#`, `activityType`, `amount`) VALUES"
+				+ "(" + this.getTransactionID() + ", '" + routingNum + "', '" + bankName + "', '" + bankAccountNum 
+				+ "', '" + transactionActivity + "', " + amount +")";
+			Connection connection = Main.getConnection();
+			PreparedStatement createQuery = connection.prepareStatement(query);
+			createQuery.executeUpdate();
+		}
+		catch (Exception ex) {
+			System.out.println(ex);
+		}
 	}
 	
 	//give user chance to change a transaction they just made in case they made a mistake 

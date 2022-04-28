@@ -227,7 +227,6 @@ public class UserInterface extends JFrame{
 		JLabel sellStockAmountAvailable = new JLabel("Total Shares Owned: ");
 		JLabel sellStockAmountPrice = new JLabel("Current Price Per Share: ");
 		JLabel sellStockAmount = new JLabel("Amount of Shares to Sell:");
-		JLabel deleteTransaction = new JLabel("Delete Transaction");
 		
 		//Centering labels
 		login.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -287,7 +286,6 @@ public class UserInterface extends JFrame{
 		sellStockAmountAvailable.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sellStockAmountPrice.setAlignmentX(Component.CENTER_ALIGNMENT);
 		sellStockAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
-		deleteTransaction.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		//Creating buttons for functions and navigation
 		JButton signInButton = new JButton("Sign In");
@@ -322,7 +320,6 @@ public class UserInterface extends JFrame{
 		JButton editPersonalInformationButton = new JButton("Edit Personal Information");
 		JButton editAddressButton = new JButton("Edit Address");
 		JButton deleteExpiredOrdersButton = new JButton("Archive All Expired Orders");
-		JButton deleteTransactionButton = new JButton("Delete A Transaction");
 		
 		//Centering buttons
 		signInButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -357,7 +354,6 @@ public class UserInterface extends JFrame{
 		editPersonalInformationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		editAddressButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		deleteExpiredOrdersButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-		deleteTransactionButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		//Creating text fields, some with specific formats
 		usernameField.setMaximumSize(usernameField.getPreferredSize());
@@ -452,9 +448,6 @@ public class UserInterface extends JFrame{
 		depositAmountField.setMaximumSize(depositAmountField.getPreferredSize());
 		buyStockAmountField.setMaximumSize(buyStockAmountField.getPreferredSize());
 		sellStockAmountField.setMaximumSize(sellStockAmountField.getPreferredSize());
-		JTextField deleteTransactionField = new JTextField(5);
-		deleteTransactionField.setMaximumSize(deleteTransactionField.getPreferredSize());
-		deleteTransactionField.setHorizontalAlignment(JFormattedTextField.CENTER);
 		
 		//Centering text fields
 		usernameField.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -475,7 +468,6 @@ public class UserInterface extends JFrame{
 		bankRoutingNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		withdrawAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
-		deleteTransactionField.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		//Creating scroll panes for the portfolio and transaction screens
 		transactionsPane.setPreferredSize(new Dimension(250, 300));
@@ -723,11 +715,6 @@ public class UserInterface extends JFrame{
 		transactionsPanel.add(transactionsPane);
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		transactionsPanel.add(deleteExpiredOrdersButton);
-		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		transactionsPanel.add(deleteTransaction);
-		transactionsPanel.add(deleteTransactionField);
-		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-		transactionsPanel.add(deleteTransactionButton);
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		transactionsPanel.add(transactionsBackButton);
 		
@@ -1420,6 +1407,10 @@ public class UserInterface extends JFrame{
 					try {
 						float newBalance;
 						newBalance = User.updateBalance1(usernameField.getText(), Float.parseFloat(withdrawAmountField.getText()));
+						MonetaryTransaction withdrawTransaction = new MonetaryTransaction();
+						withdrawTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
+														bankNameField.getText(), bankAccountNumberField.getText(), 
+														"WITHDRAW", Float.parseFloat(withdrawAmountField.getText()));
 						manageFundsBalance.setText("Balance: " + newBalance);
 						fundsPanel.revalidate();
 						c1.show(cards, "10"); //switch to funds
@@ -1448,8 +1439,7 @@ public class UserInterface extends JFrame{
 					if (bankNameField.getText().equals("") ||
 							bankAccountNumberField.getText().equals("__________") ||
 							bankRoutingNumberField.getText().equals("_________")) {
-						JOptionPane.showMessageDialog(null, "Please enter bank account number\n"
-															+ "and bank routing number.");
+						JOptionPane.showMessageDialog(null, "Please enter bank account information.");
 					}
 					else {
 						c1.show(cards, "12"); //switch to deposit
@@ -1474,8 +1464,11 @@ public class UserInterface extends JFrame{
 							JOptionPane.showMessageDialog(null, "You cannot deposit more than your current balance!");
 						}
 						else {
-							fundsPanel.revalidate();
 							newBalance = User.updateBalance1(usernameField.getText(), -Float.parseFloat(depositAmountField.getText()));
+							MonetaryTransaction depositTransaction = new MonetaryTransaction();
+							depositTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
+														bankNameField.getText(), bankAccountNumberField.getText(), 
+														"DEPOSIT", Float.parseFloat(depositAmountField.getText()));
 							manageFundsBalance.setText("Balance: " + newBalance);
 							fundsPanel.revalidate();
 							c1.show(cards, "10"); //switch to funds
@@ -1719,33 +1712,12 @@ public class UserInterface extends JFrame{
 			}
 		});
 
-		deleteTransactionButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == deleteTransactionButton) {
-					try {
-						int transactionIDInput = Integer.parseInt(deleteTransactionField.getText());
-						//if valid transaction id and the userid is a match
-						//insert delete monetary/order transaction function here
-
-						//else
-						JOptionPane.showMessageDialog(null, "Please enter a valid transaction ID.");
-
-					}
-					catch (Exception ex) {
-						JOptionPane.showMessageDialog(null, "Please enter a valid transaction ID.");
-						System.out.println(ex);
-					}
-				}
-			}
-		});
-
 		//Filter search results
 		searchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == searchButton) {
-					
+					//Filters stocks depending on search bar field input
 					if(!searchBarField.getText().equals("")) {
 
 						stockListModel.clear();
@@ -1771,20 +1743,31 @@ public class UserInterface extends JFrame{
 							System.out.println(ex);
 						}
 
-						searchPanel.removeAll();
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-						searchPanel.add(search);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-						searchPanel.add(searchBarField);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-						searchPanel.add(searchButton);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-						searchPanel.add(scrollStockList);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-						searchPanel.add(stockInfoButton);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						searchPanel.add(searchStocksBackButton);
 						searchPanel.revalidate();
+					}
+					//Displays all stocks if search bar field is empty
+					else {
+						stockListModel.clear();
+
+						try
+						{
+							Connection connection = Main.getConnection();
+							// create the java statement
+						
+							// execute the query, and get a java resultset
+							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock`");
+
+							// iterate through the java resultset
+							while (rs.next())
+							{
+								stockListModel.addElement(rs.getString("stockSymbol"));
+							}
+							
+						}
+						catch (Exception ex)
+						{
+							System.out.println(ex);
+						}
 					}
 				}
 			}
