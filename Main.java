@@ -19,12 +19,8 @@ public class Main {
 	public static Timer marketDelay = new Timer();
 	
 	public static void main(String[] args) throws Exception {
-
 		initialize();
-//		exampleSQLQuery();
-		
-
-
+		//exampleSQLQuery();
 	}
 
 	//Starts up program user interface
