@@ -848,7 +848,11 @@ public class UserInterface extends JFrame{
 
 						// Get user balance
 						manageFundsBalance.setText("Balance: " + rs.getDouble("balance"));
-
+						
+						bankAccountNumberField.setValue(null);
+						bankRoutingNumberField.setValue(null);
+						bankNameField.setText(null);
+						
 						fundsPanel.revalidate();
 					}
 					catch (Exception ex) {
@@ -1246,7 +1250,7 @@ public class UserInterface extends JFrame{
 							//market delay timer...
 							
 							
-							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 30*1000);
+							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 0*1000);
 							//After delay, if order is not interrupted, it is completed!
 						}
 						c1.show(cards, "7"); //switch to stock info
@@ -1412,6 +1416,12 @@ public class UserInterface extends JFrame{
 														bankNameField.getText(), bankAccountNumberField.getText(), 
 														"WITHDRAW", Float.parseFloat(withdrawAmountField.getText()));
 						manageFundsBalance.setText("Balance: " + newBalance);
+						
+						//reset fields
+						bankAccountNumberField.setValue(null);
+						bankRoutingNumberField.setValue(null);
+						bankNameField.setText(null);
+						
 						fundsPanel.revalidate();
 						c1.show(cards, "10"); //switch to funds
 					}
@@ -1470,6 +1480,12 @@ public class UserInterface extends JFrame{
 														bankNameField.getText(), bankAccountNumberField.getText(), 
 														"DEPOSIT", Float.parseFloat(depositAmountField.getText()));
 							manageFundsBalance.setText("Balance: " + newBalance);
+							
+							//reset fields
+							bankAccountNumberField.setValue(null);
+							bankRoutingNumberField.setValue(null);
+							bankNameField.setText(null);
+							
 							fundsPanel.revalidate();
 							c1.show(cards, "10"); //switch to funds
 						}
@@ -1569,6 +1585,7 @@ public class UserInterface extends JFrame{
 					try {
 						mask = new MaskFormatter("(###)-###-####");
 						mask.setPlaceholderCharacter('_');
+						mask.setValueContainsLiteralCharacters(false);
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
@@ -1577,6 +1594,7 @@ public class UserInterface extends JFrame{
 					try {
 						mask = new MaskFormatter("###-##-####");
 						mask.setPlaceholderCharacter('_');
+						mask.setValueContainsLiteralCharacters(false);
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
@@ -1611,6 +1629,7 @@ public class UserInterface extends JFrame{
 								accountPhoneNumber.setText("Phone Number: " + field4.getText());
 								accountSSN.setText("Social Security Number: " + field5.getText());
 								accountInfoPanel.revalidate();			
+								
 							}	
 						}
 						catch (Exception ex)

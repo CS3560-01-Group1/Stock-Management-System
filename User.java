@@ -208,7 +208,8 @@ public class User {
 	{
 		try
 		{
-			String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + userIDInput; 
+			String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + userIDInput
+					+ " AND sharesOwned != 0"; 
 			
 			Connection connection = Main.getConnection();
 			ResultSet rs = connection.createStatement().executeQuery(query);
