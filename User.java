@@ -16,11 +16,6 @@ public class User {
 	private String phoneNumber; //optional
 	
 	//Constructor
-	public User(int idNum) {
-		id = idNum;
-		//fill in all the attributes of User using information of row where idNum = user.userID from database
-	}
-	
 	public User(String usernameIn, String passwordIn) 
 	{
 		try
@@ -51,7 +46,6 @@ public class User {
 	
 	//Alternative constructor where user is not defined yet
 	public User() {
-		
 	}
 	
 	
@@ -122,6 +116,34 @@ public class User {
 		phoneNumber = null; 
 	}
 	
+	public void login(String usernameIn, String passwordIn) 
+	{
+		try
+		{
+			Connection connection = Main.getConnection();
+			String query = "SELECT * FROM stockdb.user WHERE username = \"" + usernameIn + "\" AND password = \"" + passwordIn + "\"";
+			ResultSet rs = connection.createStatement().executeQuery(query);
+	      
+			rs.next();
+			
+			this.username = usernameIn;
+			this.password = passwordIn;
+			this.id = rs.getInt("userID");
+			this.ssn = rs.getString("ssn");
+			this.address = rs.getString("address");
+			this.firstName = rs.getString("fName");
+			this.lastName = rs.getString("lName");
+			this.balance = rs.getDouble("balance");
+			this.email = rs.getString("email");
+			this.phoneNumber = rs.getString("phone#");
+			
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+		}
+	}
+	
 	//method to register new users
 	public static void createUserAccount(String usernameInput, String passwordInput, String ssnInput,
 			String addressInput, String fNameInput, String lNameInput, String emailInput, String phoneNumInput)
@@ -157,23 +179,37 @@ public class User {
 		
 	}
 
-	//Brings up a list of past transactions under this User
-	public ResultSet viewAllTransactions() {
-		//query join with transaction table and monetarytransaction and order tables from database
-		//grab row elements matching the same ID of THIS user only
-		//return the set of results (for each row)
+	// Returns set of all transactions corresponding to the user
+	public static ResultSet getTransactions(int userID) {
+		try {
+			//Establishes connection to database
+			Connection connection = Main.getConnection();
+
+			//Query to execute in the database
+			String query = "SELECT * FROM stockdb.transaction LEFT JOIN stockdb.order "
+			+ "ON `order`.transactionID = transaction.transactionID LEFT JOIN monetarytransaction ON " + 
+			"monetarytransaction.transactionID = transaction.transactionID WHERE `userID` = " + userID + " ORDER BY transactionDate ASC";
+
+			//Executes query and stores results
+			ResultSet rs = connection.createStatement().executeQuery(query);
+
+			//Returns the result set
+			return rs;
+		}
+		catch (Exception ex) {
+			System.out.println(ex);
+		}
 		return null;
 	}
-	
-	
-
+		
 	//Returns the total amount of shares of each stock owned by this user
 	//(Does not include expired or open orders)
 	public static ResultSet viewPortfolio(int userIDInput)
 	{
 		try
 		{
-			String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + userIDInput; 
+			String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + userIDInput
+					+ " AND sharesOwned != 0"; 
 			
 			Connection connection = Main.getConnection();
 			ResultSet rs = connection.createStatement().executeQuery(query);
@@ -189,20 +225,6 @@ public class User {
 		}
 		//if query didn't succeed, return nothing
 		return null;
-	}
-	
-	//Makes a MonetaryTransaction
-	public void placeTransaction(double amount, String date, String targetBankAcct, boolean deposit) {
-		//create new monetary transaction object 
-		//use constructor method to insert new row into "stockdb.monetarytransaction" table 
-		//update this object's balance if transaction was inserted successfully
-	}
-	
-	//User places an order for a specified stock and quantity.
-	//type (1/0) = (buy/sell)
-	public void placeOrder(String stockSymbol, int quantity, int type) {
-		//create new order object
-		//user constructor method to insert new row into "stockdb.order" table
 	}
 
 	//Allows user to update login information
@@ -249,7 +271,7 @@ public class User {
 	}
 
 	//Allows user to update address
-	public static void updateaddress(String userName, String newAddress) {
+	public static void updateAddress(int idOfUser, String newAddress) {
 
 		try{
 		Connection connection = Main.getConnection();
@@ -257,37 +279,12 @@ public class User {
 		
 		//Updates the address in database
 		connection.createStatement().executeUpdate("UPDATE `user` SET `address` = '" 
-														+ newAddress + "' WHERE `username` = '" 
-														+ userName + "'");	
+														+ newAddress + "' WHERE `userID` = " 
+														+ idOfUser);	
 
 		}
 		catch (Exception ex) {
 			System.out.println(ex);
-		}
-	}
-	
-	public void updateBalance(int changeInBalance)
-	{
-		//query change in user's balance
-		//happens after a transaction (stock or monetary) is created
-		//if successful, update this object's balance attribute
-		balance = balance + changeInBalance;
-		try
-		{
-			//establishing connection to database
-			Connection connection = Main.getConnection();
-			//A SQL query that updates the balance inside of the user table
-			String str = "UPDATE stockdb.user set " + balance + " WHERE userID = " + id;
-			PreparedStatement query = connection.prepareStatement(str);
-			query.executeUpdate();
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-		}
-		finally
-		{
-			System.out.println("Query Complete: Updated Balance");
 		}
 	}
 
@@ -325,14 +322,18 @@ public class User {
 	}
 	
 	//Deletes user account and all information regarding this user
-	public void deleteAccount()
+	public static void deleteAccount(int idOfUser)
 	{
-		//Initiate query to "delete" all data regarding this user
-		//Select query across all tables (transaction -> monetarytransaction, transaction -> order, user)
-		//delete all matching content
-		//finally, remove the attributes of this object
-		logoff();
-		
+		try {
+			//get user from userIDInput
+			String selectUserQuery = "DELETE FROM `user` WHERE `userID` = " + idOfUser;
+			Connection connection = Main.getConnection();
+			PreparedStatement userToDelete = connection.prepareStatement(selectUserQuery);
+			userToDelete.executeUpdate();
+			System.out.println("Successfully deleted a user.");
+		} catch (Exception e) {
+			System.out.println(e);
+		}	
 	}
 
 	//Get account information

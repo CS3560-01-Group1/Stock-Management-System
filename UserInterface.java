@@ -205,6 +205,7 @@ public class UserInterface extends JFrame{
 		JLabel creationCity = new JLabel("City");
 		JLabel creationState = new JLabel("State");
 		JLabel creationZipCode = new JLabel("Zip/Postal Code");
+		JLabel accountID = new JLabel("User ID: ");
 		JLabel accountUsername = new JLabel("Username: ");
 		JLabel accountPassword = new JLabel("Password: ");
 		JLabel accountFirstName = new JLabel("First Name: ");
@@ -213,6 +214,7 @@ public class UserInterface extends JFrame{
 		JLabel accountPhoneNumber = new JLabel("Phone Number: ");
 		JLabel accountSSN = new JLabel("Social Security Number: ");
 		JLabel accountAddress = new JLabel("Address: ");
+		JLabel bankName = new JLabel("Bank Name: ");
 		JLabel bankAccountNumber = new JLabel("Bank Account Number: ");
 		JLabel bankRoutingNumber = new JLabel("Bank Routing Number: ");
 		JLabel withdrawAmount = new JLabel("Amount to Withdraw: ");
@@ -254,6 +256,7 @@ public class UserInterface extends JFrame{
 		creationCity.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationState.setAlignmentX(Component.CENTER_ALIGNMENT);
 		creationZipCode.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountID.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountUsername.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountFirstName.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -270,6 +273,7 @@ public class UserInterface extends JFrame{
 		stockInfoPE.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoTotalShares.setAlignmentX(Component.CENTER_ALIGNMENT);
 		manageFundsBalance.setAlignmentX(Component.CENTER_ALIGNMENT);
+		bankName.setAlignmentX(Component.CENTER_ALIGNMENT);
 		bankAccountNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		bankRoutingNumber.setAlignmentX(Component.CENTER_ALIGNMENT);
 		withdrawAmount.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -294,6 +298,7 @@ public class UserInterface extends JFrame{
 		JButton accountInfoBackButton = new JButton("Back");
 		JButton searchStocksBackButton = new JButton("Back");
 		JButton accountInfoEditButton = new JButton("Edit Information");
+		JButton accountInfoDeleteButton = new JButton("Delete Account");
 		JButton editAccountInfoBackButton = new JButton("Back");
 		JButton searchButton = new JButton("Search");
 		JButton stockInfoButton = new JButton("View Stock");
@@ -327,6 +332,7 @@ public class UserInterface extends JFrame{
 		accountInfoBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		searchStocksBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		accountInfoEditButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		accountInfoDeleteButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		editAccountInfoBackButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		searchButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stockInfoButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -415,6 +421,9 @@ public class UserInterface extends JFrame{
 		creationZipCodeField.setColumns(15);
 		creationZipCodeField.setMaximumSize(creationZipCodeField.getPreferredSize());
 		creationZipCodeField.setHorizontalAlignment(JFormattedTextField.CENTER);
+		JTextField bankNameField = new JTextField(15);
+		bankNameField.setMaximumSize(bankNameField.getPreferredSize());
+		bankNameField.setHorizontalAlignment(JFormattedTextField.CENTER);
 		try {
 			mask = new MaskFormatter("##########");
 			mask.setPlaceholderCharacter('_');
@@ -459,10 +468,6 @@ public class UserInterface extends JFrame{
 		bankRoutingNumberField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		withdrawAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		depositAmountField.setAlignmentX(Component.CENTER_ALIGNMENT);
-		
-		//Creating text areas for the porfolio and transaction screens
-		JTextArea transactionsText = new JTextArea("No transactions to show at the moment.");
-		JTextArea homePortfolio = new JTextArea("Your portfolio is empty.");
 
 		//Creating scroll panes for the portfolio and transaction screens
 		transactionsPane.setPreferredSize(new Dimension(250, 300));
@@ -571,6 +576,7 @@ public class UserInterface extends JFrame{
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		accountInfoPanel.add(accountInfo);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		accountInfoPanel.add(accountID);
 		accountInfoPanel.add(accountFirstName);
 		accountInfoPanel.add(accountLastName);
 		accountInfoPanel.add(accountUsername);
@@ -581,6 +587,8 @@ public class UserInterface extends JFrame{
 		accountInfoPanel.add(accountAddress);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 		accountInfoPanel.add(accountInfoEditButton);
+		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		accountInfoPanel.add(accountInfoDeleteButton);
 		accountInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		accountInfoPanel.add(accountInfoBackButton);
 		
@@ -666,6 +674,9 @@ public class UserInterface extends JFrame{
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(manageFundsBalance);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		fundsPanel.add(bankName);
+		fundsPanel.add(bankNameField);
+		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		fundsPanel.add(bankAccountNumber);
 		fundsPanel.add(bankAccountNumberField);
 		fundsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -703,8 +714,9 @@ public class UserInterface extends JFrame{
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 		transactionsPanel.add(transactionsPane);
 		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-		transactionsPanel.add(transactionsBackButton);
 		transactionsPanel.add(deleteExpiredOrdersButton);
+		transactionsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+		transactionsPanel.add(transactionsBackButton);
 		
 		//*****************************************************************************************
 		//Adding panels to CardLayout
@@ -753,6 +765,7 @@ public class UserInterface extends JFrame{
 
 						accountFirstName.setText("First Name: " + rs.getString("fName"));
 						accountLastName.setText("Last Name: " + rs.getString("lName"));
+						accountID.setText("User ID: " + rs.getInt("userID"));
 						accountUsername.setText("Username: " + rs.getString("username"));
 						accountPassword.setText("Password: " + rs.getString("password"));
 						accountEmail.setText("Email Address: " + rs.getString("email"));
@@ -834,8 +847,12 @@ public class UserInterface extends JFrame{
 						rs.next();
 
 						// Get user balance
-						manageFundsBalance.setText("Balance: " + rs.getString("balance"));
-
+						manageFundsBalance.setText("Balance: " + rs.getDouble("balance"));
+						
+						bankAccountNumberField.setValue(null);
+						bankRoutingNumberField.setValue(null);
+						bankNameField.setText(null);
+						
 						fundsPanel.revalidate();
 					}
 					catch (Exception ex) {
@@ -864,7 +881,8 @@ public class UserInterface extends JFrame{
 				if (e.getSource() == signOut) {
 					c1.show(cards, "1"); //switch to login
 					menuBar.setVisible(false); //prevent use of menu bar when not logged in
-					
+					usernameField.setText("");
+					passwordField.setText("");
 					curUser.logoff();
 				}
 			}
@@ -878,6 +896,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signInButton) {
+					curUser = new User(usernameField.getText(), passwordField.getText());
 					displayStockPortfolio();
 				}
 			}
@@ -999,6 +1018,25 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editAccountInfoBackButton) {
+					//Loads account information
+					try {
+						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						rs.next();
+
+						accountFirstName.setText("First Name: " + rs.getString("fName"));
+						accountLastName.setText("Last Name: " + rs.getString("lName"));
+						accountID.setText("User ID: " + rs.getInt("userID"));
+						accountUsername.setText("Username: " + rs.getString("username"));
+						accountPassword.setText("Password: " + rs.getString("password"));
+						accountEmail.setText("Email Address: " + rs.getString("email"));
+						accountPhoneNumber.setText("Phone Number: " + rs.getString("phone#"));
+						accountSSN.setText("Social Security Number: " + rs.getString("ssn"));
+						accountAddress.setText("Address: " + rs.getString("address"));
+						accountInfoPanel.revalidate();
+	
+					} catch (SQLException ex) {
+						System.out.println(ex);
+					}
 					c1.show(cards, "4"); //switch to account info
 				}
 			}
@@ -1144,6 +1182,8 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() ==buyStockButton) {
+					
+					 System.out.println(curUser.getID());
 					try
 					{
 						Connection connection = Main.getConnection();
@@ -1213,12 +1253,13 @@ public class UserInterface extends JFrame{
 							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 0*1000);
 							//After delay, if order is not interrupted, it is completed!
 						}
+						c1.show(cards, "7"); //switch to stock info
 					}
 					catch (Exception ex)
 					{
+						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
-					c1.show(cards, "7"); //switch to stock info
 				}
 			}
 		});
@@ -1327,12 +1368,13 @@ public class UserInterface extends JFrame{
 						Main.marketDelay.schedule(new MarketDelay(sellStockAmountField.getText(), rs.getString("stockSymbol"), sellOrder.getTransactionID()), 0*1000);
 						//After delay, if order is not interrupted, it is completed!
 					}
+					c1.show(cards, "7"); //switch to stock info
 				}
 				catch (Exception ex)
 				{
+					JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 					System.out.println(ex);
 				}
-				c1.show(cards, "7"); //switch to stock info
 			}
 		});
 		
@@ -1350,10 +1392,10 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawButton) {
 					//Make sure the fields are not empty
-					if (bankAccountNumberField.getText().equals("__________") ||
+					if (bankNameField.getText().equals("") || 
+							bankAccountNumberField.getText().equals("__________") ||
 							bankRoutingNumberField.getText().equals("_________")) {
-						JOptionPane.showMessageDialog(null, "Please enter bank account number\n"
-															+ "and bank routing number.");
+						JOptionPane.showMessageDialog(null, "Please enter bank information.");
 					}
 					else {
 						c1.show(cards, "11"); //switch to withdraw
@@ -1369,11 +1411,22 @@ public class UserInterface extends JFrame{
 					try {
 						float newBalance;
 						newBalance = User.updateBalance1(usernameField.getText(), Float.parseFloat(withdrawAmountField.getText()));
+						MonetaryTransaction withdrawTransaction = new MonetaryTransaction();
+						withdrawTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
+														bankNameField.getText(), bankAccountNumberField.getText(), 
+														"WITHDRAW", Float.parseFloat(withdrawAmountField.getText()));
 						manageFundsBalance.setText("Balance: " + newBalance);
+						
+						//reset fields
+						bankAccountNumberField.setValue(null);
+						bankRoutingNumberField.setValue(null);
+						bankNameField.setText(null);
+						
 						fundsPanel.revalidate();
 						c1.show(cards, "10"); //switch to funds
 					}
 					catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
 				}
@@ -1393,10 +1446,10 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositButton) {
-					if (bankAccountNumberField.getText().equals("__________") ||
+					if (bankNameField.getText().equals("") ||
+							bankAccountNumberField.getText().equals("__________") ||
 							bankRoutingNumberField.getText().equals("_________")) {
-						JOptionPane.showMessageDialog(null, "Please enter bank account number\n"
-															+ "and bank routing number.");
+						JOptionPane.showMessageDialog(null, "Please enter bank account information.");
 					}
 					else {
 						c1.show(cards, "12"); //switch to deposit
@@ -1421,14 +1474,24 @@ public class UserInterface extends JFrame{
 							JOptionPane.showMessageDialog(null, "You cannot deposit more than your current balance!");
 						}
 						else {
-							fundsPanel.revalidate();
 							newBalance = User.updateBalance1(usernameField.getText(), -Float.parseFloat(depositAmountField.getText()));
+							MonetaryTransaction depositTransaction = new MonetaryTransaction();
+							depositTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
+														bankNameField.getText(), bankAccountNumberField.getText(), 
+														"DEPOSIT", Float.parseFloat(depositAmountField.getText()));
 							manageFundsBalance.setText("Balance: " + newBalance);
+							
+							//reset fields
+							bankAccountNumberField.setValue(null);
+							bankRoutingNumberField.setValue(null);
+							bankNameField.setText(null);
+							
 							fundsPanel.revalidate();
 							c1.show(cards, "10"); //switch to funds
 						}
 					}
 					catch (Exception ex) {
+						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
 				}
@@ -1491,7 +1554,10 @@ public class UserInterface extends JFrame{
 								User.updateLoginCredentials(usernameField.getText(), field1.getText(), field2.getText());
 								accountUsername.setText("Username: " + field1.getText());
 								accountPassword.setText("Password: " + field2.getText());
-								accountInfoPanel.revalidate();			
+								usernameField.setText(field1.getText());
+								passwordField.setText(field2.getText());
+								accountInfoPanel.revalidate();	
+								curUser.login(usernameField.getText(), passwordField.getText());
 							}
 							
 						}
@@ -1519,6 +1585,7 @@ public class UserInterface extends JFrame{
 					try {
 						mask = new MaskFormatter("(###)-###-####");
 						mask.setPlaceholderCharacter('_');
+						mask.setValueContainsLiteralCharacters(false);
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
@@ -1527,6 +1594,7 @@ public class UserInterface extends JFrame{
 					try {
 						mask = new MaskFormatter("###-##-####");
 						mask.setPlaceholderCharacter('_');
+						mask.setValueContainsLiteralCharacters(false);
 					} catch (ParseException e1) {
 						e1.printStackTrace();
 					}
@@ -1561,6 +1629,7 @@ public class UserInterface extends JFrame{
 								accountPhoneNumber.setText("Phone Number: " + field4.getText());
 								accountSSN.setText("Social Security Number: " + field5.getText());
 								accountInfoPanel.revalidate();			
+								
 							}	
 						}
 						catch (Exception ex)
@@ -1622,6 +1691,7 @@ public class UserInterface extends JFrame{
 													+ field3.getText() + ", " 
 													+ field4.getText();
 								accountAddress.setText("Address: " + address);
+								User.updateAddress(curUser.getID(), address);
 								accountInfoPanel.revalidate();			
 							}	
 						}
@@ -1634,13 +1704,39 @@ public class UserInterface extends JFrame{
 			}
 		});
 
+		accountInfoDeleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == accountInfoDeleteButton) {
+					int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this account?", 
+																				"Delete Account", JOptionPane.YES_NO_OPTION);
+
+					if (n == JOptionPane.YES_OPTION) {
+						try
+						{
+							Order.deleteAllUserOrders(curUser.getID());
+							MonetaryTransaction.deleteAllUserMonTransactions(curUser.getID());
+							User.deleteAccount(curUser.getID());
+							menuBar.setVisible(false);
+							usernameField.setText("");
+							passwordField.setText("");
+							c1.show(cards, "1"); //switch to login
+						}
+						catch (Exception ex)
+						{
+							System.out.println(ex);
+						}
+					}
+				}
+			}
+		});
 
 		//Filter search results
 		searchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == searchButton) {
-					
+					//Filters stocks depending on search bar field input
 					if(!searchBarField.getText().equals("")) {
 
 						stockListModel.clear();
@@ -1666,41 +1762,37 @@ public class UserInterface extends JFrame{
 							System.out.println(ex);
 						}
 
-						searchPanel.removeAll();
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-						searchPanel.add(search);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-						searchPanel.add(searchBarField);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-						searchPanel.add(searchButton);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-						searchPanel.add(scrollStockList);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-						searchPanel.add(stockInfoButton);
-						searchPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						searchPanel.add(searchStocksBackButton);
 						searchPanel.revalidate();
+					}
+					//Displays all stocks if search bar field is empty
+					else {
+						stockListModel.clear();
+
+						try
+						{
+							Connection connection = Main.getConnection();
+							// create the java statement
+						
+							// execute the query, and get a java resultset
+							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock`");
+
+							// iterate through the java resultset
+							while (rs.next())
+							{
+								stockListModel.addElement(rs.getString("stockSymbol"));
+							}
+							
+						}
+						catch (Exception ex)
+						{
+							System.out.println(ex);
+						}
 					}
 				}
 			}
 		});
 		
 }
-
-//ADDITIONAL METHODS THAT DONT BELONG TO ANY CLASS 
-//IMPLEMENT DIRECTLY INTO USER INTERFACE CLASS METHODS
-	
-	//retrieve table of stocks and their basic information 
-	public void displayStockListings()
-	{
-		
-	}
-	
-	//retrieve a stock and return all informations (detailed view)
-	public void displayStockDetails(String stockID)
-	{
-		
-	}
 	
 	public void displayStockPortfolio()
 	{
@@ -1739,8 +1831,6 @@ public class UserInterface extends JFrame{
 			}
 			c1.show(cards, "3"); //switch to home
 			menuBar.setVisible(true); //prevent use of menu bar when not logged in
-			
-			curUser = new User(usernameField.getText(), passwordField.getText());
 		}
 		else {
 			JOptionPane.showMessageDialog(null, "Invalid username or password.");
@@ -1762,7 +1852,7 @@ public class UserInterface extends JFrame{
 			int userID = rs.getInt("userID");
 
 			// Gets transactions using user ID
-			rs = Transaction.getTransactions(userID);
+			rs = User.getTransactions(userID);
 
 			// Checks if result is empty
 			if (!rs.isBeforeFirst()) {
@@ -1783,12 +1873,16 @@ public class UserInterface extends JFrame{
 						transactionsList += "\n";
 					}
 					else {
-						if (rs.getInt("orderType") == 0)
+						if (rs.getInt("orderType") == 0) {
 							transactionsList += "Order Type: Buy\n";
-						else 
+							transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
+							transactionsList += "Quantity: " + rs.getFloat("quantity") + "\n";
+						}
+						else {
 							transactionsList += "Order Type: Sell\n";
-						transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
-						transactionsList += "Quantity: " + rs.getFloat("quantity") + "\n";
+							transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
+							transactionsList += "Quantity: " + -1 * rs.getFloat("quantity") + "\n";
+						}
 						transactionsList += "Executed Price: " + rs.getFloat("executedPrice") + "\n";
 						if (rs.getInt("orderStatus") == 0)
 								transactionsList += "Order Status: Open\n";
