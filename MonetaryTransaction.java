@@ -76,7 +76,7 @@ public class MonetaryTransaction extends Transaction {
 				//save transaction id
 				int tempTransactionID = transactionsToDelete.getInt("transactionID");
 				//delete order child first
-				String deleteMonetaryTransactionsQuery = "DELETE FROM stockdb.order WHERE `order`.transactionID = "
+				String deleteMonetaryTransactionsQuery = "DELETE FROM stockdb.monetarytransaction WHERE monetarytransaction.transactionID = "
 						+ tempTransactionID;
 				PreparedStatement deleteQuery = connection.prepareStatement(deleteMonetaryTransactionsQuery);
 				deleteQuery.executeUpdate();

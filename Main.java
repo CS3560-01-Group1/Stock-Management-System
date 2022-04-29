@@ -21,8 +21,8 @@ public class Main {
 		Order a = new Order();
 		MonetaryTransaction b = new MonetaryTransaction();
 		
-		a.deleteAllUserOrders(2);
-//		b.deleteAllUserMonTransactions(2);
+//		a.deleteAllUserOrders(2);
+		b.deleteAllUserMonTransactions(2);
 		
 		initialize();
 //		exampleSQLQuery();
