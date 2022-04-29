@@ -40,37 +40,6 @@ public class MonetaryTransaction extends Transaction {
 		}
 	}
 	
-	//give user chance to change a transaction they just made in case they made a mistake 
-	public void rewriteMonetaryTransaction(String routingNum, String bankName, String bankAccountNum,
-				String transactionActivity)
-		{
-			//transaction record already exists
-			//update query onto same monetarytransaction record matching this.transactionID
-			//check for new data 
-				//if new input, update the fields. 
-				//update timestamp 
-				//"UPDATE `stockdb`.`transaction` SET 
-				//transactionDate = CURRENT_TIMESTAMP WHERE (`transactionID` = 'ID')"
-					//make sure "ID" is this object's transactionID
-		}
-	
-	//retrieve the details of an existing monetaryTransaction based on a given ID
-	public void retrieveMonetaryTransaction(int transactionIDInput)
-	{
-		//query select on the monetarytransaction table (and transaction super class) that match the given transactionID
-		retrieveTransaction(transactionIDInput); //populates attributes of superclass
-		//if successful, populate attributes of subclass (this one) from attributes of matching row
-	}
-	
-	//remove a transaction before it has been executed (in our case it can be anytime)
-	public void cancelTransaction(int transactionIDInput)
-	{
-		//find matching row to this objects transactionID
-		//remove row and all entries
-		//finally, remove transaction super class row
-		archiveTransaction(transactionIDInput);
-	}
-	
 	//only use when deleting user account
 	public static void deleteAllUserMonTransactions(int idOfUser)
 	{
@@ -117,7 +86,7 @@ public class MonetaryTransaction extends Transaction {
 	}
 	
 	public String getBankAcntNum() {
-		return this.externalBankRouteNum;
+		return this.externalBankActNum;
 	}
 	
 	//return if this was a deposit or withdrawl

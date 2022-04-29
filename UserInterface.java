@@ -847,7 +847,7 @@ public class UserInterface extends JFrame{
 						rs.next();
 
 						// Get user balance
-						manageFundsBalance.setText("Balance: " + rs.getString("balance"));
+						manageFundsBalance.setText("Balance: " + rs.getDouble("balance"));
 
 						fundsPanel.revalidate();
 					}
@@ -1246,7 +1246,7 @@ public class UserInterface extends JFrame{
 							//market delay timer...
 							
 							
-							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 0*1000);
+							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 30*1000);
 							//After delay, if order is not interrupted, it is completed!
 						}
 						c1.show(cards, "7"); //switch to stock info
@@ -1774,21 +1774,6 @@ public class UserInterface extends JFrame{
 		});
 		
 }
-
-//ADDITIONAL METHODS THAT DONT BELONG TO ANY CLASS 
-//IMPLEMENT DIRECTLY INTO USER INTERFACE CLASS METHODS
-	
-	//retrieve table of stocks and their basic information 
-	public void displayStockListings()
-	{
-		
-	}
-	
-	//retrieve a stock and return all informations (detailed view)
-	public void displayStockDetails(String stockID)
-	{
-		
-	}
 	
 	public void displayStockPortfolio()
 	{
@@ -1848,7 +1833,7 @@ public class UserInterface extends JFrame{
 			int userID = rs.getInt("userID");
 
 			// Gets transactions using user ID
-			rs = Transaction.getTransactions(userID);
+			rs = User.getTransactions(userID);
 
 			// Checks if result is empty
 			if (!rs.isBeforeFirst()) {

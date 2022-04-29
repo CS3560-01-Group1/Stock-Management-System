@@ -57,19 +57,6 @@ public class Order extends Transaction{
 		{
 			System.out.println("Query Complete: recorded a new Order. Transaction ID: " + this.getTransactionID());
 		}
-			
-		//if successful, update this object's attributes accordingly
-		retrieveOrder(this.getTransactionID());
-		
-		//As soon as the order goes through, the order is completed
-//		completeOrder(0); do this outside this method's scope 
-	}
-	
-	//retrieve details of existing an order based on matching orderID
-	public void retrieveOrder(int transactionIDInput)
-	{
-		//query select on "stockdb.order" table where order.transactionID = transactionIDInput
-		//update attributes of this object with data of matching row
 	}
 	
 	//occurs when the order is "completed" and the shares have been sold/bought
@@ -183,7 +170,7 @@ public class Order extends Transaction{
 		return null;
 	}
 	
-	//expire an order entry 
+	//expire an order entry (for when an order fails to complete properly) 
 	private void expireOrder(int transactionIDToExpire)
 	{
 		//find matching order with transaction id = transactionIDToExpire
@@ -215,20 +202,9 @@ public class Order extends Transaction{
 			//delete child (order) then parent (transaction) of matching transactionID
 			while (rs.next())
 			{
-				int tranIDToDelete = rs.getInt("transactionID");
-				//delete order
-				String queryDeleteOrder = "DELETE FROM stockdb.order WHERE transactionID = " 
-						+ tranIDToDelete;
-				PreparedStatement delete = connection.prepareStatement(queryDeleteOrder);
-				delete.executeUpdate();
-				
-				//delete transaction
-				this.archiveTransaction(tranIDToDelete);
-				
-				System.out.println("Deleted transactionID = " + tranIDToDelete);
+				//go through proper process to delete each order from the result set
+				deleteOrder(rs.getInt("transactionID"));
 			}
-			
-
 			
 		}
 		catch (Exception e) {
@@ -237,7 +213,7 @@ public class Order extends Transaction{
 		
 	}
 	
-	//only used when deleting a user
+	//only used when deleting a user (deletes ALL orders)
 	public static void deleteAllUserOrders(int idOfUser)
 	{
 		try {
@@ -251,16 +227,8 @@ public class Order extends Transaction{
 			//delete each order from each result
 			while (ordersToDelete.next())
 			{
-				//save transaction id
-				int tempTransactionID = ordersToDelete.getInt("transactionID");
-				//delete order child first
-				String deleteOrderQuery = "DELETE FROM stockdb.order WHERE `order`.transactionID = "
-						+ tempTransactionID;
-				PreparedStatement deleteQuery = connection.prepareStatement(deleteOrderQuery);
-				deleteQuery.executeUpdate();
-				
-				//then delete transaction parent based on transaction id
-				archiveTransaction(tempTransactionID);
+				//Go through proper process to delete each order
+				deleteOrder(ordersToDelete.getInt("transactionID"));
 			}
 		} catch (Exception e) {
 			System.out.println(e);
@@ -269,18 +237,24 @@ public class Order extends Transaction{
 		
 	}
 
-	//only use if an order is still open or is expired
-	private void deleteOrder()
+	//only use if an order is still open or is expired 
+	public static void deleteOrder(int transactionToDelete)
 	{
-		//verify if order status = 2 (expired) = 0 (open)
-			//if true, the order is eligible to be deleted
+		try
+		{
+		//delete order (child) first
+		String deleteOrderQuery = "DELETE FROM stockdb.order WHERE `order`.transactionID = "
+				+ transactionToDelete;
+		Connection connection = Main.getConnection();
+		PreparedStatement deleteQuery = connection.prepareStatement(deleteOrderQuery);
+		deleteQuery.executeUpdate();
 		
-		//proceed to remove row entry of order matching this objects transactionID
-		
-		//then, delete matching row in transaction superclass
-//		archiveTransaction();
-		
-		//if all queries successful, remove this object's attributes
+		//then delete transaction (parent) based on transaction id
+		archiveTransaction(transactionToDelete);
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		
 	}
 	

@@ -47,14 +47,6 @@ public abstract class Transaction {
 
 	}
 	
-	
-	public void retrieveTransaction(int transactionIDInput)
-	{
-		//search database for transaction matching given ID input
-		//if search successful, update this object's attributes
-	}
-	
-	
 	public static void archiveTransaction(int transactionIDInput)
 	{
 		try
@@ -68,29 +60,6 @@ public abstract class Transaction {
 		catch (Exception e) {
 			System.out.println(e);
 		}
-	}
-
-	// Returns set of all transactions corresponding to the user
-	public static ResultSet getTransactions(int userID) {
-		try {
-			//Establishes connection to database
-			Connection connection = Main.getConnection();
-
-			//Query to execute in the database
-			String query = "SELECT * FROM stockdb.transaction LEFT JOIN stockdb.order "
-			+ "ON `order`.transactionID = transaction.transactionID LEFT JOIN monetarytransaction ON " + 
-			"monetarytransaction.transactionID = transaction.transactionID WHERE `userID` = " + userID + " ORDER BY transactionDate ASC";
-
-			//Executes query and stores results
-			ResultSet rs = connection.createStatement().executeQuery(query);
-
-			//Returns the result set
-			return rs;
-		}
-		catch (Exception ex) {
-			System.out.println(ex);
-		}
-		return null;
 	}
 
 	//Getter functions

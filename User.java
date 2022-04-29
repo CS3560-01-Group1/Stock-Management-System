@@ -16,11 +16,6 @@ public class User {
 	private String phoneNumber; //optional
 	
 	//Constructor
-	public User(int idNum) {
-		id = idNum;
-		//fill in all the attributes of User using information of row where idNum = user.userID from database
-	}
-	
 	public User(String usernameIn, String passwordIn) 
 	{
 		try
@@ -51,7 +46,6 @@ public class User {
 	
 	//Alternative constructor where user is not defined yet
 	public User() {
-		
 	}
 	
 	
@@ -185,16 +179,29 @@ public class User {
 		
 	}
 
-	//Brings up a list of past transactions under this User
-	public ResultSet viewAllTransactions() {
-		//query join with transaction table and monetarytransaction and order tables from database
-		//grab row elements matching the same ID of THIS user only
-		//return the set of results (for each row)
+	// Returns set of all transactions corresponding to the user
+	public static ResultSet getTransactions(int userID) {
+		try {
+			//Establishes connection to database
+			Connection connection = Main.getConnection();
+
+			//Query to execute in the database
+			String query = "SELECT * FROM stockdb.transaction LEFT JOIN stockdb.order "
+			+ "ON `order`.transactionID = transaction.transactionID LEFT JOIN monetarytransaction ON " + 
+			"monetarytransaction.transactionID = transaction.transactionID WHERE `userID` = " + userID + " ORDER BY transactionDate ASC";
+
+			//Executes query and stores results
+			ResultSet rs = connection.createStatement().executeQuery(query);
+
+			//Returns the result set
+			return rs;
+		}
+		catch (Exception ex) {
+			System.out.println(ex);
+		}
 		return null;
 	}
-	
-	
-
+		
 	//Returns the total amount of shares of each stock owned by this user
 	//(Does not include expired or open orders)
 	public static ResultSet viewPortfolio(int userIDInput)
@@ -217,20 +224,6 @@ public class User {
 		}
 		//if query didn't succeed, return nothing
 		return null;
-	}
-	
-	//Makes a MonetaryTransaction
-	public void placeTransaction(double amount, String date, String targetBankAcct, boolean deposit) {
-		//create new monetary transaction object 
-		//use constructor method to insert new row into "stockdb.monetarytransaction" table 
-		//update this object's balance if transaction was inserted successfully
-	}
-	
-	//User places an order for a specified stock and quantity.
-	//type (1/0) = (buy/sell)
-	public void placeOrder(String stockSymbol, int quantity, int type) {
-		//create new order object
-		//user constructor method to insert new row into "stockdb.order" table
 	}
 
 	//Allows user to update login information
@@ -291,31 +284,6 @@ public class User {
 		}
 		catch (Exception ex) {
 			System.out.println(ex);
-		}
-	}
-	
-	public void updateBalance(int changeInBalance)
-	{
-		//query change in user's balance
-		//happens after a transaction (stock or monetary) is created
-		//if successful, update this object's balance attribute
-		balance = balance + changeInBalance;
-		try
-		{
-			//establishing connection to database
-			Connection connection = Main.getConnection();
-			//A SQL query that updates the balance inside of the user table
-			String str = "UPDATE stockdb.user set " + balance + " WHERE userID = " + id;
-			PreparedStatement query = connection.prepareStatement(str);
-			query.executeUpdate();
-		}
-		catch(Exception e)
-		{
-			System.out.println(e);
-		}
-		finally
-		{
-			System.out.println("Query Complete: Updated Balance");
 		}
 	}
 
