@@ -228,7 +228,7 @@ public class User {
 	}
 
 	//Allows user to update login information
-	public static void updateLoginCredentials(String oldUsername, String newUsername, String newPassword) {
+	public static void updateLoginCredentials(int userIDInput, String newUsername, String newPassword) {
 
 		try{
 		Connection connection = Main.getConnection();
@@ -236,9 +236,9 @@ public class User {
 
 		//Updates the login credentials information in database
 		connection.createStatement().executeUpdate("UPDATE `user` SET `password` = '" 
-													+ newPassword + "' WHERE `username` = '" + oldUsername + "'");	
+													+ newPassword + "' WHERE `userID` = " + userIDInput);	
 		connection.createStatement().executeUpdate("UPDATE `user` SET `username` = '" 
-													+ newUsername + "' WHERE `username` = '" + oldUsername + "'");
+													+ newUsername + "' WHERE `userID` = " + userIDInput);
 		}
 		catch (Exception ex) {
 			System.out.println(ex);
@@ -246,7 +246,7 @@ public class User {
 	}
 
 	//Allows user to update personal information
-	public static void updatePersonalInformation(String userName, String newFName, String newLName, String newEmail, 
+	public static void updatePersonalInformation(int userIDInput, String newFName, String newLName, String newEmail, 
 													String newPhoneNum, String newSSN) {
 
 		try{
@@ -255,15 +255,15 @@ public class User {
 
 		//Updates the personal information attribute in database
 		connection.createStatement().executeUpdate("UPDATE `user` SET `fName` = '" 
-												+ newFName + "' WHERE `username` = '" + userName + "'");	
+												+ newFName + "' WHERE `userID` = " + userIDInput);	
 		connection.createStatement().executeUpdate("UPDATE `user` SET `lName` = '" 
-												+ newLName + "' WHERE `username` = '" + userName + "'");
+												+ newLName + "' WHERE `userID` = " + userIDInput);
 		connection.createStatement().executeUpdate("UPDATE `user` SET `email` = '" 
-												+ newEmail + "' WHERE `username` = '" + userName + "'");
+												+ newEmail + "' WHERE `userID` = " + userIDInput);
 		connection.createStatement().executeUpdate("UPDATE `user` SET `phone#` = '" 
-												+ newPhoneNum + "' WHERE `username` = '" + userName + "'");
+												+ newPhoneNum + "' WHERE `userID` = " + userIDInput);
 		connection.createStatement().executeUpdate("UPDATE `user` SET `ssn` = '" 
-												+ newSSN + "' WHERE `username` = '" + userName + "'");
+												+ newSSN + "' WHERE `userID` = " + userIDInput);
 		}
 		catch (Exception ex) {
 			System.out.println(ex);
@@ -271,7 +271,7 @@ public class User {
 	}
 
 	//Allows user to update address
-	public static void updateAddress(int idOfUser, String newAddress) {
+	public static void updateAddress(int userIDInput, String newAddress) {
 
 		try{
 		Connection connection = Main.getConnection();
@@ -280,7 +280,7 @@ public class User {
 		//Updates the address in database
 		connection.createStatement().executeUpdate("UPDATE `user` SET `address` = '" 
 														+ newAddress + "' WHERE `userID` = " 
-														+ idOfUser);	
+														+ userIDInput);	
 
 		}
 		catch (Exception ex) {
@@ -289,7 +289,7 @@ public class User {
 	}
 
 	//Alternate version of update balance
-	public static float updateBalance1(String username, float changeInBalance) {
+	public static float updateBalance(int userIDInput, float changeInBalance) {
 		try
 		{
 			float balance;
@@ -298,8 +298,7 @@ public class User {
 			Connection connection = Main.getConnection();
 
 			//Execute query
-			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username` = '" 
-																	+ username + "'");	
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `userID` = " + userIDInput);	
 			rs.next();
 
 			//Get balance
@@ -310,7 +309,7 @@ public class User {
 
 			//Update balance in database
 			connection.createStatement().executeUpdate("UPDATE `user` SET `balance` = " 
-														+ balance + " WHERE `username` = '" + username + "'");
+														+ balance + " WHERE `userID` = " + userIDInput);
 
 			return balance;
 		}
@@ -337,15 +336,15 @@ public class User {
 	}
 
 	//Get account information
-	public static ResultSet getAccountInfo(String usernameInput) {
+	public static ResultSet getAccountInfo(int userIDInput) {
 		try
 		{
 			Connection connection = Main.getConnection();
 			// create the java statement
 
 			// execute the query
-			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM user WHERE `username` = '" 
-																	+ usernameInput + "'");
+			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `userID` = " 
+																	+ userIDInput);
 			return rs;
 		}
 		catch (Exception ex)
