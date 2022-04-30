@@ -20,6 +20,23 @@ public class Main {
 	public static Timer marketDelay = new Timer();
 	
 	public static void main(String[] args) throws Exception {
+		//Creation of thread objects, needs to happen before initialize() 
+		MultiThreadStocks abcThread = new MultiThreadStocks("ABC");
+		MultiThreadStocks defThread = new MultiThreadStocks("DEF");
+		MultiThreadStocks ghiThread = new MultiThreadStocks("GHI");
+		MultiThreadStocks jklThread = new MultiThreadStocks("JKL");
+		MultiThreadStocks memThread = new MultiThreadStocks("MEM");
+		MultiThreadStocks mnoThread = new MultiThreadStocks("MNO");
+		MultiThreadStocks pqrThread = new MultiThreadStocks("PQR");
+		MultiThreadStocks qqqThread = new MultiThreadStocks("QQQ");
+		MultiThreadStocks stuThread = new MultiThreadStocks("STU");
+		MultiThreadStocks vwxThread = new MultiThreadStocks("VWX");
+		MultiThreadStocks yzThread = new MultiThreadStocks("YZ");
+		//Start all the threads, these will run forever until the program is closed (See MultiThreadStocks for details on how this happens)
+		abcThread.start(); defThread.start(); ghiThread.start(); jklThread.start();
+		memThread.start(); mnoThread.start(); pqrThread.start(); qqqThread.start();
+		stuThread.start(); vwxThread.start(); yzThread.start();
+
 		initialize();
 	}
 
@@ -53,59 +70,5 @@ public class Main {
 		    throw new IllegalStateException("Cannot connect the database!", e);
 
 		}
-
-
 	}
-//	
-//	//example for how to execute database queries from application
-//	public static void exampleSQLQuery() throws Exception
-//	{
-//		try
-//		{
-//			//establishing connection to database
-//			Connection connection = getConnection();
-//			//A SQL query that creates a new table called 'new_table' within database 'stockdb'
-//			PreparedStatement query = connection.prepareStatement("CREATE TABLE `stockdb`.`new_table` (`testAtt` INT NOT NULL)");
-//			query.executeUpdate();
-//			
-//
-//		}
-//		catch(Exception e)
-//		{
-//			System.out.println(e);
-//		}
-//		finally
-//		{
-//			System.out.println("Query Complete: created 'new table'");
-//		}
-//		
-//		
-//		try
-//		{
-//			Connection connection = getConnection();
-//		 // create the java statement
-//	      
-//	      // execute the query, and get a java resultset
-//			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stockdb.stock");
-//	      
-//	      // iterate through the java resultset
-//	      while (rs.next())
-//	      {
-//	    	//select "stocksymbol" attribute column  
-//	    	System.out.println(rs.getString("stockSymbol"));
-//	    	System.out.println("People are buying this stock at: $" + rs.getDouble("bid"));
-//	    	System.out.println("People are selling this stock at: $" + rs.getDouble("ask"));
-//	      }
-//	      
-//		}
-//		catch (Exception e)
-//		{
-//			System.out.println(e);
-//		}
-//		finally
-//		{
-//			System.out.println("Query Complete: Selected all stock symbols");
-//		}
-//	}
-
 }
