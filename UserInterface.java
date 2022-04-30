@@ -5,12 +5,9 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.TimerTask;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -609,6 +606,8 @@ public class UserInterface extends JFrame{
 		searchPanel.add(searchBarField);
 		searchPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 		searchPanel.add(searchButton);
+		searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+		searchPanel.add(scrollStockList);
 		searchPanel.add(Box.createRigidArea(new Dimension(0, 30)));
 		searchPanel.add(stockInfoButton);
 		searchPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -760,9 +759,11 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == viewAccount) {
 					try {
-						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						//Gets user info by using current user's ID
+						ResultSet rs = User.getAccountInfo(curUser.getID());
 						rs.next();
 
+						//Updates account information labels
 						accountFirstName.setText("First Name: " + rs.getString("fName"));
 						accountLastName.setText("Last Name: " + rs.getString("lName"));
 						accountID.setText("User ID: " + rs.getInt("userID"));
@@ -799,6 +800,7 @@ public class UserInterface extends JFrame{
 					c1.show(cards, "6"); //switch to search stocks
 					stockListModel.clear();
 
+					//Attempts to load all stocks from the database's stock table and displays in a list
 					try
 					{
 						Connection connection = Main.getConnection();
@@ -810,6 +812,7 @@ public class UserInterface extends JFrame{
 						// iterate through the java resultset
 						while (rs.next())
 						{
+							//Adds stock to the stock list
 							stockListModel.addElement(rs.getString("stockSymbol"));
 						}	
 					}
@@ -818,19 +821,7 @@ public class UserInterface extends JFrame{
 						System.out.println(ex);
 					}
 
-					searchPanel.removeAll();
-					searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-					searchPanel.add(search);
-					searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-					searchPanel.add(searchBarField);
-					searchPanel.add(Box.createRigidArea(new Dimension(0, 5)));
-					searchPanel.add(searchButton);
-					searchPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-					searchPanel.add(scrollStockList);
-					searchPanel.add(Box.createRigidArea(new Dimension(0, 30)));
-					searchPanel.add(stockInfoButton);
-					searchPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-					searchPanel.add(searchStocksBackButton);
+					//Updates the panel
 					searchPanel.revalidate();
 				}
 			}
@@ -842,17 +833,19 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == myFunds) {
 					try {
-						// execute the query, and get a java resultset
-						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						// Gets user's account info in order to access the user's balance
+						ResultSet rs = User.getAccountInfo(curUser.getID());
 						rs.next();
 
 						// Get user balance
 						manageFundsBalance.setText("Balance: " + rs.getDouble("balance"));
 						
+						//Clears the text fields before loading the panel
 						bankAccountNumberField.setValue(null);
 						bankRoutingNumberField.setValue(null);
 						bankNameField.setText(null);
 						
+						//Updates the panel
 						fundsPanel.revalidate();
 					}
 					catch (Exception ex) {
@@ -881,8 +874,12 @@ public class UserInterface extends JFrame{
 				if (e.getSource() == signOut) {
 					c1.show(cards, "1"); //switch to login
 					menuBar.setVisible(false); //prevent use of menu bar when not logged in
+
+					//Clears the text fields before loading panel
 					usernameField.setText("");
 					passwordField.setText("");
+
+					//Clears the curUser object's data
 					curUser.logoff();
 				}
 			}
@@ -892,16 +889,22 @@ public class UserInterface extends JFrame{
 		//Assigning functionalities to navigation buttons
 		//*****************************************************************************************
 		
+		//Login panel's sign in button functionality
 		signInButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signInButton) {
+
+					//Initializes a new user object using the username and password
 					curUser = new User(usernameField.getText(), passwordField.getText());
+
+					//Loads the user's existing stock portfolio information, if any
 					displayStockPortfolio();
 				}
 			}
 		});
 		
+		//Login panel's sign up button functionality
 		signUpButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -911,6 +914,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Sign up panel's back button functionality
 		signUpBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -920,15 +924,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 
-		signUp2BackButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == signUp2BackButton) {
-					c1.show(cards, "1"); //switch to login for 2nd sign up
-				}
-			}
-		});
-
+		//Sign up panel's next button functionality
 		signUpNextButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -948,6 +944,7 @@ public class UserInterface extends JFrame{
 						// iterate through the java resultset
 						while (rs.next())
 						{
+							//If username is already in use, the username is NOT valid
 							if (rs.getString("username").equals(creationUsernameField.getText()))
 								usernameValid = false;
 						}	
@@ -976,16 +973,20 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Second page of sign up panel's create account button functionality
 		createAccountButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == createAccountButton) {
+
+					//Check if any required fields are empty
 					if (creationSSNField.getText().equals("") ||
 						creationStreetAddressField.getText().equals("") ||
 						creationCityField.getText().equals("") ||
 						creationStateField.getText().equals("") ||
 						creationZipCodeField.getText().equals(""))
 						JOptionPane.showMessageDialog(null, "Please fill in all non-optional fields.");
+					//If all required fields are filled out create user account
 					else {
 						String address = creationStreetAddressField.getText() + ", " 
 										+ creationCityField.getText() + ", "
@@ -999,12 +1000,24 @@ public class UserInterface extends JFrame{
 												creationLastNameField.getText(), 
 												creationEmailField.getText(), 
 												creationPhoneNumberField.getText());
+						JOptionPane.showMessageDialog(null, "Account created successfully!");
 						c1.show(cards, "1"); //switch to login
 					}
 				}
 			}
 		});
 		
+		//Second page of the sign up panel's back button
+		signUp2BackButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == signUp2BackButton) {
+					c1.show(cards, "1"); //switch to login for 2nd sign up
+				}
+			}
+		});
+
+		//Account information panel's edit account button functionality
 		accountInfoEditButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1013,16 +1026,28 @@ public class UserInterface extends JFrame{
 				}
 			}
 		});
+
+		//Account information panel's back button functionality
+		accountInfoBackButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e.getSource() == accountInfoBackButton) {
+					c1.show(cards, "3"); //switch to home
+				}
+			}
+		});
 		
+		//Edit account information panel's back button functionality
 		editAccountInfoBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editAccountInfoBackButton) {
-					//Loads account information
 					try {
-						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						//Loads account information using the user's ID
+						ResultSet rs = User.getAccountInfo(curUser.getID());
 						rs.next();
 
+						//Updates the account information panel before loading it
 						accountFirstName.setText("First Name: " + rs.getString("fName"));
 						accountLastName.setText("Last Name: " + rs.getString("lName"));
 						accountID.setText("User ID: " + rs.getInt("userID"));
@@ -1042,22 +1067,29 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		accountInfoBackButton.addActionListener(new ActionListener() {
+		//Trade stocks panel's back button functionality
+		searchStocksBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == accountInfoBackButton) {
+				if (e.getSource() == searchStocksBackButton) {
 					c1.show(cards, "3"); //switch to home
 				}
 			}
 		});
-		
+
+		//Trade stocks panel's view stock information button functionality
 		stockInfoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == stockInfoButton) {
+					
+					//Check if no stocks are selected
 					if (stockList.isSelectionEmpty())
 						JOptionPane.showMessageDialog(null, "Please select a stock.");
+
+					//Retrieves all of the selected stock's information from database
 					else {
+						//Instantiating variables to hold values
 						String stockName = "";
 						float askPrice = 0;
 						float bidPrice = 0;
@@ -1075,6 +1107,8 @@ public class UserInterface extends JFrame{
 							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
 																						+ stockList.getSelectedValue() + "'");
 							rs.next();
+							
+							//Storing the values from the database into the variables
 							stockName = rs.getString("stockSymbol");
 							askPrice = rs.getFloat("ask");
 							bidPrice = rs.getFloat("bid");
@@ -1088,6 +1122,7 @@ public class UserInterface extends JFrame{
 							System.out.println(ex);
 						}
 
+						//Updating the stock information panel before loading it
 						stockInfoName.setText("Name: " + stockName);
 						stockInfoAsk.setText("Ask Price: " + askPrice);
 						stockInfoBid.setText("Bid Price: " + bidPrice);
@@ -1095,30 +1130,6 @@ public class UserInterface extends JFrame{
 						stockInfoQuarterly.setText("Quarterly Dividend Percent: " + quarterlyDividendPercent);
 						stockInfoPE.setText("PE Ratio: " + peRatio);
 						stockInfoTotalShares.setText("Total Shares: " + totalShares);
-
-						stockInfoPanel.removeAll();
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-						stockInfoPanel.add(stockInfo);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(stockInfoName);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(stockInfoAsk);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(stockInfoBid);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(stockInfoWeek);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(stockInfoQuarterly);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(stockInfoPE);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(stockInfoTotalShares);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 20)));
-						stockInfoPanel.add(buyStockButton);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(sellStockButton);
-						stockInfoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-						stockInfoPanel.add(stockInfoBackButton);
 						stockInfoPanel.revalidate();
 
 						c1.show(cards, "7"); //switch to stock info
@@ -1127,6 +1138,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Stock information panel's back button functionality
 		stockInfoBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1136,15 +1148,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		searchStocksBackButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (e.getSource() == searchStocksBackButton) {
-					c1.show(cards, "3"); //switch to home
-				}
-			}
-		});
-		
+		//Manage funds panel's back button functionality
 		fundsBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1154,6 +1158,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Transactions panel's back button functionality
 		transactionsBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1163,12 +1168,13 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		//Deletes expired orders shown from the transaction tab
+		//Transactions panel's delete expired orders button functionality
 		deleteExpiredOrdersButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == deleteExpiredOrdersButton)
 				{
+					//Deletes expired orders shown from the transaction tab and updates panel
 					Order O = new Order();
 					O.deleteAllExpiredOrders(curUser.getID());
 					displayTransactionsPage();
@@ -1178,12 +1184,13 @@ public class UserInterface extends JFrame{
 			
 		});
 		
+		//Stock information panel's buy stock button functionality
 		buyStockButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() ==buyStockButton) {
 					
-					 System.out.println(curUser.getID());
+					//Loads the stock's information that is relevant to buying stocks
 					try
 					{
 						Connection connection = Main.getConnection();
@@ -1193,6 +1200,8 @@ public class UserInterface extends JFrame{
 						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
 																						+ stockList.getSelectedValue() + "'");
 						rs.next();
+
+						//Updates buy stock panel before loading it
 						buyStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
 						buyStockAmountAvailable.setText("Total Shares Available: " + rs.getFloat("totalShares"));
 						buyStockAmountPrice.setText("Price Per Share: " + rs.getFloat("bid"));
@@ -1207,31 +1216,37 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Buy stock panel's confirm purchase button functionality
 		buyStockConfirmButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == buyStockConfirmButton) {
+
+					//Gets desired stock's information and user's balance to allow user to review 
+					//their order before a purchase is made
 					try
 					{
 						Connection connection = Main.getConnection();
 						// create the java statement
 						
-						//get stock information
+						//Gets stock information
 						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` where stockSymbol = '" 
 																						+ stockList.getSelectedValue() + "'");
 						rs.next();
-						//get user information
-						ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
-																					+ " = '" + usernameField.getText() + "'");
+
+						//Gets user's information to get access to the user's balance
+						ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `userID` = " + curUser.getID());
 						rs1.next();
-						//calculate total cost
+
+						//Calculate total cost of purchase
 						float total = Float.parseFloat(buyStockAmountField.getText()) * rs.getFloat("bid");
 						
+						//Instantiating variables to make an Order object later on
 						String stockName = rs.getString("stockSymbol");
 						int orderType = 0; 
 						double shareAmnt = Double.parseDouble(buyStockAmountField.getText());
 						
-
+						//Making a string to display in the pop-up dialog/window with all the order's information
 						String reviewOrder = "Review Order:\n";
 						reviewOrder += "Stock Name: " + stockName + "\n";
 						reviewOrder += "Order Type: Buy\n";
@@ -1240,16 +1255,16 @@ public class UserInterface extends JFrame{
 						reviewOrder += "Current Balance: " + rs1.getFloat("balance") + "\n";
 						reviewOrder += "Total Price: " + total;
 						
-						//show order review window
+						//Show order review window
 						int n = JOptionPane.showConfirmDialog(null, reviewOrder, "Confirm Purchase", JOptionPane.OK_CANCEL_OPTION);
 
-						if (n == JOptionPane.OK_OPTION) { //after confirm, place open order in database
-							//create new open order
+						//After confirm, place open order in database
+						if (n == JOptionPane.OK_OPTION) { 
+							//Create new open order
 							Order buyOrder = new Order();
 							buyOrder.newOrder(curUser.getID(), stockName, orderType, shareAmnt);
-							//market delay timer...
-							
-							
+
+							//Market delay timer
 							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 0*1000);
 							//After delay, if order is not interrupted, it is completed!
 						}
@@ -1257,6 +1272,7 @@ public class UserInterface extends JFrame{
 					}
 					catch (Exception ex)
 					{
+						//If invalid amount is entered into amount text field, display error pop up dialog
 						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
@@ -1264,6 +1280,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Buy stock panel's back button functionality
 		buyStockBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1273,11 +1290,14 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Stock information panel's sell stock button
 		sellStockButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == sellStockButton) {
 					sellStockConfirmButton.setEnabled(true);
+
+					//Gets and loads the information of the stock the user wishes to sell before loading the panel
 					try
 					{
 						Connection connection = Main.getConnection();
@@ -1287,9 +1307,12 @@ public class UserInterface extends JFrame{
 						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
 																						+ stockList.getSelectedValue() + "'");
 						rs.next();
+
+						//Instantiating variables to hold the values of the query
 						String stockSym = rs.getString("stockSymbol");
 						double askPrice = rs.getDouble("ask");
 						
+						//Attempts to show the stock information and how many shares the user owns
 						try
 						{
 							String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
@@ -1301,8 +1324,8 @@ public class UserInterface extends JFrame{
 							sellStockAmountPrice.setText("Value Per Share: " + askPrice);
 							sellStockPanel.revalidate();
 						}
-						catch (Exception ex) //tries to show how many shares the users owns but 
-											//they own none so there is nothing to show
+						//If the user does not have any shares of that stock, then display 0 and disable the sell button
+						catch (Exception ex) 
 						{
 							sellStockAmountName.setText("Stock Name: " + stockSym);
 							sellStockAmountAvailable.setText("Your Shares: " + 0);
@@ -1323,30 +1346,35 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Sell stock's confirm sale button functionality
 		sellStockConfirmButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
+				//
 				try
 				{
 					Connection connection = Main.getConnection();
 					// create the java statement
 					
-					//get stock information
+					//Gets desired stock's information
 					ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` where stockSymbol = '" 
 																					+ stockList.getSelectedValue() + "'");
 					rs.next();
-					//get user information
-					ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
-																				+ " = '" + usernameField.getText() + "'");
+
+					//Gets user information to access their balance
+					ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `userID` = " + curUser.getID());
 					rs1.next();
-					//calculate total cost
+
+					//Calculate total profit
 					float total = Float.parseFloat(sellStockAmountField.getText()) * rs.getFloat("ask");
 					
+					//Instantiating variables to make an Order object later on
 					String stockName = rs.getString("stockSymbol");
 					int orderType = 1; 
 					double shareAmnt = Double.parseDouble(sellStockAmountField.getText());
 					
-
+					//Creates a string for the order details
 					String reviewOrder = "Review Order:\n";
 					reviewOrder += "Stock Name: " + stockName + "\n";
 					reviewOrder += "Order Type: Buy\n";
@@ -1355,16 +1383,17 @@ public class UserInterface extends JFrame{
 					reviewOrder += "Current Balance: " + rs1.getFloat("balance") + "\n";
 					reviewOrder += "Total Value: " + total;
 					
-					//show order review window
+					//Shows order review window
 					int n = JOptionPane.showConfirmDialog(null, reviewOrder, "Confirm Sale", JOptionPane.OK_CANCEL_OPTION);
 
-					if (n == JOptionPane.OK_OPTION) { //after confirm, place open order in database
+					//After confirm, place open order in database
+					if (n == JOptionPane.OK_OPTION) {
+
 						//create new open order
 						Order sellOrder = new Order();
 						sellOrder.newOrder(curUser.getID(), stockName, orderType, shareAmnt);
-						//market delay timer...
 						
-						
+						//Market delay timer
 						Main.marketDelay.schedule(new MarketDelay(sellStockAmountField.getText(), rs.getString("stockSymbol"), sellOrder.getTransactionID()), 0*1000);
 						//After delay, if order is not interrupted, it is completed!
 					}
@@ -1372,12 +1401,14 @@ public class UserInterface extends JFrame{
 				}
 				catch (Exception ex)
 				{
+					//If invalid amount is entered, display error pop up dialog
 					JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 					System.out.println(ex);
 				}
 			}
 		});
 		
+		//Sell stock panel's back button functionality
 		sellStockBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1387,14 +1418,18 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Manage funds panel's withdraw button functionality
 		withdrawButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawButton) {
-					//Make sure the fields are not empty
+
+					//Make sure the bank information fields are not empty
 					if (bankNameField.getText().equals("") || 
 							bankAccountNumberField.getText().equals("__________") ||
 							bankRoutingNumberField.getText().equals("_________")) {
+
+						//Pop up error if any of the fields are empty
 						JOptionPane.showMessageDialog(null, "Please enter bank information.");
 					}
 					else {
@@ -1404,28 +1439,39 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Withdraw panel's confirm withdrawal button functionality
 		withdrawConfirmButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawConfirmButton) {
+
+					//Adds to the user's balance
 					try {
+						//Calculates the user's new balance and stores it in the database
 						float newBalance;
-						newBalance = User.updateBalance1(usernameField.getText(), Float.parseFloat(withdrawAmountField.getText()));
+						newBalance = User.updateBalance(curUser.getID(), Float.parseFloat(withdrawAmountField.getText()));
+
+						//Records a monetary transaction
 						MonetaryTransaction withdrawTransaction = new MonetaryTransaction();
 						withdrawTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
 														bankNameField.getText(), bankAccountNumberField.getText(), 
 														"WITHDRAW", Float.parseFloat(withdrawAmountField.getText()));
+
+						//Updates the balance label to display the user's new balance
 						manageFundsBalance.setText("Balance: " + newBalance);
 						
-						//reset fields
+						//Clears the bank information text fields
 						bankAccountNumberField.setValue(null);
 						bankRoutingNumberField.setValue(null);
 						bankNameField.setText(null);
 						
+						//Updates the manage funds panel
 						fundsPanel.revalidate();
+
 						c1.show(cards, "10"); //switch to funds
 					}
 					catch (Exception ex) {
+						//Displays error dialog when user enters invalid amount
 						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
@@ -1433,6 +1479,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Withdraw panel's back button functionality
 		withdrawBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1442,14 +1489,19 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Manage funds panel's deposit button functionality
 		depositButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositButton) {
+
+					//Check if any bank information text fields are empty
 					if (bankNameField.getText().equals("") ||
 							bankAccountNumberField.getText().equals("__________") ||
 							bankRoutingNumberField.getText().equals("_________")) {
-						JOptionPane.showMessageDialog(null, "Please enter bank account information.");
+
+						//If any are empty, display error pop up dialog
+						JOptionPane.showMessageDialog(null, "Please enter bank information.");
 					}
 					else {
 						c1.show(cards, "12"); //switch to deposit
@@ -1458,39 +1510,51 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Deposit panel's confirm deposit button functionality
 		depositConfirmButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositConfirmButton) {
+
+					//Subtracts from the user's balance
 					try {
 						float newBalance;
 
-						// execute the query, and get a java resultset
-						ResultSet rs = User.getAccountInfo(usernameField.getText());
+						// Gets user information to gain access to their balance
+						ResultSet rs = User.getAccountInfo(curUser.getID());
 						rs.next();
 
-						// Make sure the user has enough money to deposit;
+						// Make sure the user has enough money to deposit
 						if (Float.parseFloat(depositAmountField.getText()) > rs.getFloat("balance")) {
+
+							//Displays error pop up if balance is insufficient
 							JOptionPane.showMessageDialog(null, "You cannot deposit more than your current balance!");
 						}
 						else {
-							newBalance = User.updateBalance1(usernameField.getText(), -Float.parseFloat(depositAmountField.getText()));
+							// Calculates the user's new balance and stores it in the database
+							newBalance = User.updateBalance(curUser.getID(), -Float.parseFloat(depositAmountField.getText()));
+
+							//Records a monetary transaction in the database
 							MonetaryTransaction depositTransaction = new MonetaryTransaction();
 							depositTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
 														bankNameField.getText(), bankAccountNumberField.getText(), 
 														"DEPOSIT", Float.parseFloat(depositAmountField.getText()));
+
+							//Updates balance label to new balance
 							manageFundsBalance.setText("Balance: " + newBalance);
 							
-							//reset fields
+							//Clears bank information text fields
 							bankAccountNumberField.setValue(null);
 							bankRoutingNumberField.setValue(null);
 							bankNameField.setText(null);
 							
+							//Updates manage fund panel before loading it
 							fundsPanel.revalidate();
 							c1.show(cards, "10"); //switch to funds
 						}
 					}
 					catch (Exception ex) {
+						//Diplays error pop up dialog if invalid amount was entered
 						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
@@ -1498,6 +1562,7 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
+		//Deposit panel's back button functionality
 		depositBackButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -1511,19 +1576,23 @@ public class UserInterface extends JFrame{
 		//Other button functionalities
 		//*****************************************************************************************
 
+		//Edit account information panel's edit login credentials button functionality
 		editLoginCredentialsButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editLoginCredentialsButton) {
-					//Text fields for new username and password
+
+					//Text fields for new username and password to be displayed in pop up window
 					JTextField field1 = new JTextField(15);
 					JTextField field2 = new JTextField(15);
 
-					//An array for the output of the JOptionPane
+					//An array for the output of the pop up window
 					Object[] fields = {"Username", field1, "Password", field2};
 
+					//Displays pop up window with the text fields created above
 					int n = JOptionPane.showConfirmDialog(null, fields, "Enter new login credentials.", JOptionPane.OK_CANCEL_OPTION);
 
+					//After confirming, updates login credentials if input was valid
 					if (n == JOptionPane.OK_OPTION) {
 						try
 						{
@@ -1531,16 +1600,23 @@ public class UserInterface extends JFrame{
 							Connection connection = Main.getConnection();
 							// create the java statement
 						
-							// execute the query, and get a java resultset
+							// Gets all user information and current user's information
 							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user`");
+							ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `userID` = " + curUser.getID());
+							rs1.next();
 
-							// iterate through the java resultset
+							// Iterate through all users to ensure the usernames do not match
 							while (rs.next())
 							{
 								if (rs.getString("username").equals(field1.getText())) {
 									validUsername = false;
 								}
 							}
+							//Check if username is the same as current
+							if (rs1.getString("username").equals(field1.getText())) {
+								validUsername = true;
+							}
+
 							//Check if both fields are filled in
 							if (field1.getText().equals("") || field2.getText().equals("")) {
 								JOptionPane.showMessageDialog(null, "Please fill in all fields.");
@@ -1551,7 +1627,7 @@ public class UserInterface extends JFrame{
 							}
 							//Update password and username
 							else {
-								User.updateLoginCredentials(usernameField.getText(), field1.getText(), field2.getText());
+								User.updateLoginCredentials(curUser.getID(), field1.getText(), field2.getText());
 								accountUsername.setText("Username: " + field1.getText());
 								accountPassword.setText("Password: " + field2.getText());
 								usernameField.setText(field1.getText());
@@ -1571,16 +1647,18 @@ public class UserInterface extends JFrame{
 			}
 		});
 
+		//Edit account information panel's edit personal information button functionality
 		editPersonalInformationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editPersonalInformationButton) {
-					//Text fields for new first name, last name, and email address
+
+					//Text fields for new first name, last name, and email address to be displayed in pop up dialog
 					JTextField field1 = new JTextField(15);
 					JTextField field2 = new JTextField(15);
 					JTextField field3 = new JTextField(15);
 
-					//Formatted textfields for new phone number and ssn
+					//Formatted textfields for new phone number and ssn to be displayed in pop up dislog
 					MaskFormatter mask = null;
 					try {
 						mask = new MaskFormatter("(###)-###-####");
@@ -1601,26 +1679,30 @@ public class UserInterface extends JFrame{
 					JFormattedTextField field5 = new JFormattedTextField(mask);
 					field4.setColumns(15);
 	
-					//An array for the output of the JOptionPane
+					//An array for the output of the pop up dialog
 					Object[] fields = {"First Name", field1, 
 									   "Last Name", field2,
 									   "Email (Optional)", field3,
 									   "Phone Number (Optional)", field4,
 									   "Social Security Number", field5};
 	
+					//Displays the pop up dialog with all the text fields created above
 					int n = JOptionPane.showConfirmDialog(null, fields, "Enter new personal information.", JOptionPane.OK_CANCEL_OPTION);
 
+					//After confirm, updates user's personal information if input is valid
 					if (n == JOptionPane.OK_OPTION) {
 						try
 						{
 							//Check if required fields are filled in
 							if (field1.getText().equals("") || field2.getText().equals("")
 									|| field5.getText().equals("")) {
+
+								//Displays error pop up if not all required fields are filled
 								JOptionPane.showMessageDialog(null, "Please fill in all fields.");
 							}
-							//Update all attributes
+							//Updates personal information
 							else {
-								User.updatePersonalInformation(usernameField.getText(), field1.getText(), 
+								User.updatePersonalInformation(curUser.getID(), field1.getText(), 
 															   field2.getText(), field3.getText(), 
 															   field4.getText(), field5.getText());	
 								accountFirstName.setText("First Name: " + field1.getText());
@@ -1641,15 +1723,17 @@ public class UserInterface extends JFrame{
 			}
 		});
 
+		//Edit account information panel's edit address button functionality
 		editAddressButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editAddressButton) {
-					//Text fields for new streetAddress and city
+
+					//Text fields for new streetAddress and city to be displayed in pop up window
 					JTextField field1 = new JTextField(15);
 					JTextField field2 = new JTextField(15);
 
-					//Formatted textfields for new state and zip/postal code
+					//Formatted textfields for new state and zip/postal code to be displayed in pop up window
 					MaskFormatter mask = null;
 					try {
 						mask = new MaskFormatter("UU");
@@ -1668,23 +1752,27 @@ public class UserInterface extends JFrame{
 					JFormattedTextField field4 = new JFormattedTextField(mask);
 					field4.setColumns(15);
 	
-					//An array for the output of the JOptionPane
+					//An array for the output of the pop up window
 					Object[] fields = {"Street Address", field1, 
 									   "City", field2,
 									   "State", field3,
 									   "Zip/Postal Code", field4};
 	
+					//Displays pop up window with the text fields created above
 					int n = JOptionPane.showConfirmDialog(null, fields, "Enter new address.", JOptionPane.OK_CANCEL_OPTION);
 
+					//After confirm, updates user's address if input is valid
 					if (n == JOptionPane.OK_OPTION) {
 						try
 						{
 							//Check if required fields are filled in
 							if (field1.getText().equals("") || field2.getText().equals("")
 									|| field3.getText().equals("") || field4.getText().equals("")) {
+
+								//Displays error pop up window if not all fields are filled
 								JOptionPane.showMessageDialog(null, "Please fill in all fields.");
 							}
-							//Create address string and update address value in database
+							//Create address string and update user's address
 							else {
 								String address = "" + field1.getText() + ", " 
 													+ field2.getText() + ", " 
@@ -1704,22 +1792,37 @@ public class UserInterface extends JFrame{
 			}
 		});
 
+		//Account information panel's delete account button functionality
 		accountInfoDeleteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == accountInfoDeleteButton) {
+
+					//Displays a pop up window to confirm account deletion
 					int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this account?", 
 																				"Delete Account", JOptionPane.YES_NO_OPTION);
 
+					//After confirm, deletes all orders and monetary transactions, before deleting the account and signing out
 					if (n == JOptionPane.YES_OPTION) {
 						try
 						{
+							//Deletes all the user's order transactions
 							Order.deleteAllUserOrders(curUser.getID());
+
+							//Deletes all the user's monetary transactions
 							MonetaryTransaction.deleteAllUserMonTransactions(curUser.getID());
+
+							//Deletes the user's account
 							User.deleteAccount(curUser.getID());
+
+							//Signs out
+							curUser.logoff();
 							menuBar.setVisible(false);
+
+							//Clears login credential text fields
 							usernameField.setText("");
 							passwordField.setText("");
+
 							c1.show(cards, "1"); //switch to login
 						}
 						catch (Exception ex)
@@ -1731,14 +1834,18 @@ public class UserInterface extends JFrame{
 			}
 		});
 
-		//Filter search results
+		//Trade stocks panel's search button functionality
 		searchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == searchButton) {
+
 					//Filters stocks depending on search bar field input
+
+					//Check that search bar field is not empty
 					if(!searchBarField.getText().equals("")) {
 
+						//Clears whatever stocks were already in the list
 						stockListModel.clear();
 
 						try
@@ -1746,11 +1853,11 @@ public class UserInterface extends JFrame{
 							Connection connection = Main.getConnection();
 							// create the java statement
 						
-							// execute the query, and get a java resultset
+							// Searches for matching stocks
 							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` WHERE `stockSymbol` LIKE '%" 
 																						+ searchBarField.getText().toUpperCase() + "%';");
 
-							// iterate through the java resultset
+							// Iterates through all matches and adds them to the list
 							while (rs.next())
 							{
 								stockListModel.addElement(rs.getString("stockSymbol"));
@@ -1762,6 +1869,7 @@ public class UserInterface extends JFrame{
 							System.out.println(ex);
 						}
 
+						//Updates the trade stocks panel
 						searchPanel.revalidate();
 					}
 					//Displays all stocks if search bar field is empty
@@ -1773,10 +1881,10 @@ public class UserInterface extends JFrame{
 							Connection connection = Main.getConnection();
 							// create the java statement
 						
-							// execute the query, and get a java resultset
+							// Gets all stock information
 							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock`");
 
-							// iterate through the java resultset
+							// Iterates through and adds all stocks to the list
 							while (rs.next())
 							{
 								stockListModel.addElement(rs.getString("stockSymbol"));
@@ -1793,36 +1901,51 @@ public class UserInterface extends JFrame{
 		});
 		
 }
-	
+
+	//*****************************************************************************************
+	//Helper methods
+	//*****************************************************************************************
+
+	//Method to display the user's stock portfolio
 	public void displayStockPortfolio()
 	{
+		//Confirms the user's login credentials
 		if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
 			try {
-				//Establishes connection with database
-				Connection connection = Main.getConnection();
-
-				// Executes query and stores userID
-				ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`"
-																		+ " = '" + usernameField.getText() + "'");
-				rs.next();
-				int userID = rs.getInt("userID");
-
-				rs = User.viewPortfolio(userID);
 				
+				// Gets the user's portfolio information using their user ID
+				ResultSet rs = User.viewPortfolio(curUser.getID());
+				
+				//Prints the following if the user owns no stocks
 				if (!rs.isBeforeFirst()) {
 					homePortfolio.setText("Your porfolio is empty.");
 				}
+				//Prints the user's portfolio
 				else {
 					String portfolio = "";
 					String temp;
+
+					//Establishes connection to database to search stocks ask and bid prices
+					Connection connection = Main.getConnection();
+					ResultSet rs1;
+
+					//Creates a string that contains portfolio information
 					while (rs.next()) {
 						temp = rs.getString("stockOwner");
-						temp = temp.substring(temp.length() - 3);
+						temp = temp.substring(temp.length() - 3); //Gets the last 3 chars of string, which is the stockSymbol
 						portfolio += "Stock Name: " + temp + "\n";
-						portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n\n";
+						portfolio += "Shares Owned: " + rs.getFloat("sharesOwned") + "\n";
+						rs1 = connection.createStatement().executeQuery("SELECT * FROM `stock` WHERE `stockSymbol` = '" + temp + "'");
+						rs1.next();
+						portfolio += "Ask Price: " + rs1.getFloat("ask") + "\n";
+						portfolio += "Bid Price: " + rs1.getFloat("bid") + "\n\n";
 					}
+
+					//Updates the portfolio text
 					homePortfolio.setText(portfolio);
 				}
+
+				//Updates the portfolio/home panel
 				homePanel.revalidate();
 				
 			}
@@ -1830,31 +1953,23 @@ public class UserInterface extends JFrame{
 				System.out.println(ex);
 			}
 			c1.show(cards, "3"); //switch to home
-			menuBar.setVisible(true); //prevent use of menu bar when not logged in
+			menuBar.setVisible(true); //shows menu bar when user logs in
 		}
 		else {
+			//Displays error pop up window if login credentials are invalid
 			JOptionPane.showMessageDialog(null, "Invalid username or password.");
 		}
 	}
 
+	//Methods to display the user's transactions
 	public void displayTransactionsPage()
 	{
 		try {
-			// Establishes connection to database
-			Connection connection = Main.getConnection();
 
-			//Executes search query
-			ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `username`" 
-																	+ " = '" + usernameField.getText() + "'");
-			rs.next();
-			
-			// Store userID
-			int userID = rs.getInt("userID");
+			//Executes search query to get user's transactions
+			ResultSet rs =  User.getTransactions(curUser.getID());
 
-			// Gets transactions using user ID
-			rs = User.getTransactions(userID);
-
-			// Checks if result is empty
+			// Checks if result is empty and prints the following if so
 			if (!rs.isBeforeFirst()) {
 				transactionsText.setText("No transactions to show at the moment.");
 			}
@@ -1862,8 +1977,12 @@ public class UserInterface extends JFrame{
 			else {
 				String transactionsList = "";
 				while (rs.next()) {
+
+					//Prints basic transaction information
 					transactionsList += "Transaction ID: " + rs.getInt("transactionID") + "\n";
 					transactionsList += "Date of Transaction: " + rs.getString("transactionDate") + "\n";
+					
+					//Prints monetary transaction specific information
 					if (rs.getString("orderType") == null) {
 						transactionsList += "Bank Name: " + rs.getString("externalBankName") + "\n";
 						transactionsList += "Bank Account Number: " + rs.getString("externalBankAct#") + "\n";
@@ -1873,16 +1992,19 @@ public class UserInterface extends JFrame{
 						transactionsList += "\n";
 					}
 					else {
+						//Prints buy order transaction specific information
 						if (rs.getInt("orderType") == 0) {
 							transactionsList += "Order Type: Buy\n";
 							transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
 							transactionsList += "Quantity: " + rs.getFloat("quantity") + "\n";
 						}
+						//Prints sell order transaction specific information
 						else {
 							transactionsList += "Order Type: Sell\n";
 							transactionsList += "Stock Type: " + rs.getString("stockSymbol") + "\n";
 							transactionsList += "Quantity: " + -1 * rs.getFloat("quantity") + "\n";
 						}
+						//Print order transaction specific information
 						transactionsList += "Executed Price: " + rs.getFloat("executedPrice") + "\n";
 						if (rs.getInt("orderStatus") == 0)
 								transactionsList += "Order Status: Open\n";
@@ -1893,14 +2015,18 @@ public class UserInterface extends JFrame{
 							transactionsList += "\n";
 					}
 				}
+
+				//Updates transactions text
 				transactionsText.setText(transactionsList);
 			}
 		}
 		catch (Exception ex) {
 			System.out.println(ex);
 		}
-		transactionsPanel.revalidate();
-		c1.show(cards, "13"); //switch to transactions
 
+		//Updates transactions panel
+		transactionsPanel.revalidate();
+
+		c1.show(cards, "13"); //switch to transactions
 	}
 }
