@@ -1235,6 +1235,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == stockInfoBackButton) {
+					stockTimer.stop();
 					c1.show(cards, "6"); //switch to search stocks
 				}
 			}
