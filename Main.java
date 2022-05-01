@@ -31,11 +31,11 @@ public class Main {
 		MultiThreadStocks qqqThread = new MultiThreadStocks("QQQ");
 		MultiThreadStocks stuThread = new MultiThreadStocks("STU");
 		MultiThreadStocks vwxThread = new MultiThreadStocks("VWX");
-		MultiThreadStocks yzThread = new MultiThreadStocks("YZ");
+		MultiThreadStocks yzyThread = new MultiThreadStocks("YZY");
 		//Start all the threads, these will run forever until the program is closed (See MultiThreadStocks for details on how this happens)
 		abcThread.start(); defThread.start(); ghiThread.start(); jklThread.start();
 		memThread.start(); mnoThread.start(); pqrThread.start(); qqqThread.start();
-		stuThread.start(); vwxThread.start(); yzThread.start();
+		stuThread.start(); vwxThread.start(); yzyThread.start();
 
 		initialize();
 	}
