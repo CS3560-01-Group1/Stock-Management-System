@@ -13,13 +13,13 @@ public class MultiThreadStocks extends Thread {
         boolean loop = true;    //keep simulator going forever
         Random rand = new Random();     //rand number initialization
         int upperbound = 11;    //Upper bound of 11 to give 11 options in the potential stockChange
-        double ogPrice, askPrice, bidPrice;     //Value of stock that will be referenced in stockChange  //new value that will be the current price and actual value of selling
+        double ogPrice, askPrice, bidPrice, FiftyTwoWeekHigh;     //Value of stock that will be referenced in stockChange  //new value that will be the current price and actual value of selling
         double todaysChangePercent = 0;     //stat tracker that will keep track of the summation of percentage change
         try{
             //Connect to Database
             Connection connection = Main.getConnection();
         
-            String selectString = "SELECT ask, bid, ogPrice FROM stockdb.stock WHERE stockSymbol = ?";   //updateString that we allows us to use variables instead of declaring a query all at once. Replaces ? with appropiate parameter
+            String selectString = "SELECT ask, bid, ogPrice, 52_Week FROM stockdb.stock WHERE stockSymbol = ?";   //updateString that we allows us to use variables instead of declaring a query all at once. Replaces ? with appropiate parameter
             PreparedStatement selectStatement = connection.prepareStatement(selectString);       //Prepared statements are used when wanting to Modify, Update, or Insert values from our DB
             selectStatement.setString(1, tickerSymbol);      //First ? will be our askPrice that we created
             ResultSet rs = selectStatement.executeQuery();         
@@ -27,6 +27,7 @@ public class MultiThreadStocks extends Thread {
             rs.next();
             ogPrice = rs.getDouble("ogPrice");  //Grab the ogPrice from the database; values will go up or down a certain percentage based off of this value
             askPrice = rs.getDouble("ask"); //constantly grabbing the ask price
+            FiftyTwoWeekHigh = rs.getDouble("52_Week");
 
             System.out.println(tickerSymbol + "'s Original Value: " + ogPrice);
             while(loop){
@@ -165,11 +166,19 @@ public class MultiThreadStocks extends Thread {
                 }
                 System.out.println();
                 bidPrice = askPrice * 0.9952;   //quick google search as to what the average spread is for stocks (amount between ask and bid) 
-                String updateString = "UPDATE stockdb.stock SET ask = ?, bid = ? WHERE stockSymbol = ?";   //updateString that we allows us to use variables instead of declaring a query all at once. Replaces ? with appropiate parameter
+                String updateString = "UPDATE stockdb.stock SET ask = ?, bid = ?, 52_Week = ? WHERE stockSymbol = ?";   //updateString that we allows us to use variables instead of declaring a query all at once. Replaces ? with appropiate parameter
                 PreparedStatement updateAskPrice = connection.prepareStatement(updateString);       //Prepared statements are used when wanting to Modify, Update, or Insert values from our DB
                 updateAskPrice.setDouble(1, askPrice);      //First ? will be our askPrice that we created
                 updateAskPrice.setDouble(2, bidPrice);      //Second ? will be our new bid price that is updated
-                updateAskPrice.setString(3, tickerSymbol);      //Third ? will be the stock name of our choice
+                updateAskPrice.setDouble(3, FiftyTwoWeekHigh); //default 52_Week price assuming nothing changed
+                updateAskPrice.setString(4, tickerSymbol);      //Third ? will be the stock name of our choice
+                if (FiftyTwoWeekHigh < ((askPrice + bidPrice)/2)) 
+                {
+                	//if 52_week high is surpassed by average trading price, change it too. 
+                	FiftyTwoWeekHigh = (askPrice + bidPrice)/2;
+                	updateAskPrice.setDouble(3, ((askPrice+ bidPrice)/2));
+            	}
+                	
                 updateAskPrice.executeUpdate();                           //Giving the greenlight to execute our update query
                 TimeUnit.SECONDS.sleep(3);  //stocks will change values every x seconds
             }
