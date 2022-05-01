@@ -19,7 +19,7 @@ public class MultiThreadStocks extends Thread {
             //Connect to Database
             Connection connection = Main.getConnection();
         
-            String selectString = "SELECT ask, bid, ogPrice FROM stocktest.stock WHERE stockSymbol = ?";   //updateString that we allows us to use variables instead of declaring a query all at once. Replaces ? with appropiate parameter
+            String selectString = "SELECT ask, bid, ogPrice FROM stockdb.stock WHERE stockSymbol = ?";   //updateString that we allows us to use variables instead of declaring a query all at once. Replaces ? with appropiate parameter
             PreparedStatement selectStatement = connection.prepareStatement(selectString);       //Prepared statements are used when wanting to Modify, Update, or Insert values from our DB
             selectStatement.setString(1, tickerSymbol);      //First ? will be our askPrice that we created
             ResultSet rs = selectStatement.executeQuery();         
@@ -41,7 +41,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Extreme Loss!! %.2f", askPrice + "\n");     //Debug Log and ne w value, two decimal points from right
+                        System.out.printf("Extreme Loss!! %.2f\n", askPrice);     //Debug Log and ne w value, two decimal points from right
                         System.out.println("Daily Change: " + todaysChangePercent + "%");       //Console log to see the change
                         break;
                     //Large Loss -10% of original value
@@ -52,7 +52,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Large Loss! %.2f", askPrice + "\n");
+                        System.out.printf("Large Loss! %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //Medium Loss -5% of original value
@@ -63,7 +63,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Medium Loss: %.2f", askPrice + "\n");
+                        System.out.printf("Medium Loss: %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //Small Loss -2% of original value
@@ -74,7 +74,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Small Loss: %.2f", askPrice + "\n");
+                        System.out.printf("Small Loss: %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //Mini Loss -%1 of original value, honetly just padding to prevent Extreme Loss/Gain from happening too often
@@ -85,12 +85,12 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Mini Loss: %.2f", askPrice + "\n");
+                        System.out.printf("Mini Loss: %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //No change +-%0 
                     case 5:
-                        System.out.printf("No Change: %.2f", askPrice + "\n");
+                        System.out.printf("No Change: %.2f\n", askPrice);
                         todaysChangePercent += 0;
                         if(askPrice < 0) {
                             askPrice = 0;
@@ -106,7 +106,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Mini Gain: %.2f", askPrice + "\n");
+                        System.out.printf("Mini Gain: %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //Small Gain +2% of original value
@@ -117,7 +117,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Small Gain: %.2f", askPrice + "\n");
+                        System.out.printf("Small Gain: %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //Medium Gain +5% of original value
@@ -128,7 +128,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Medium Gain: %.2f", askPrice + "\n");
+                        System.out.printf("Medium Gain: %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //Large Gain +10% of original value
@@ -139,7 +139,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Large Gain! %.2f", askPrice + "\n");
+                        System.out.printf("Large Gain! %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //Extreme Gain +20% of original value
@@ -150,7 +150,7 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("Extreme Gain!! %.2f", askPrice + "\n");
+                        System.out.printf("Extreme Gain!! %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                     //Default in case something breaks, just returns the same value ie No Change
@@ -159,12 +159,12 @@ public class MultiThreadStocks extends Thread {
                             askPrice = 0;
                             todaysChangePercent = -100;
                         }
-                        System.out.printf("No Change: %.2f", askPrice + "\n");
+                        System.out.printf("No Change: %.2f\n", askPrice);
                         System.out.println("Daily Change: " + todaysChangePercent + "%");
                         break;
                 }
                 bidPrice = askPrice * 0.9952;   //quick google search as to what the average spread is for stocks (amount between ask and bid) 
-                String updateString = "UPDATE stocktest.stock SET ask = ?, bid = ? WHERE stockSymbol = ?";   //updateString that we allows us to use variables instead of declaring a query all at once. Replaces ? with appropiate parameter
+                String updateString = "UPDATE stockdb.stock SET ask = ?, bid = ? WHERE stockSymbol = ?";   //updateString that we allows us to use variables instead of declaring a query all at once. Replaces ? with appropiate parameter
                 PreparedStatement updateAskPrice = connection.prepareStatement(updateString);       //Prepared statements are used when wanting to Modify, Update, or Insert values from our DB
                 updateAskPrice.setDouble(1, askPrice);      //First ? will be our askPrice that we created
                 updateAskPrice.setDouble(2, bidPrice);      //Second ? will be our new bid price that is updated

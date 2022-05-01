@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.text.MaskFormatter;
 
 public class UserInterface extends JFrame{
@@ -743,6 +744,143 @@ public class UserInterface extends JFrame{
 		//Assigning functionalities to menu buttons
 		//*****************************************************************************************
 		
+		//ActionListener initilization for stockInfoButton, allows this to be called and repeated with a timer
+		ActionListener stockInfoRefresher = new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Check if no stocks are selected
+                if (stockList.isSelectionEmpty())
+                    JOptionPane.showMessageDialog(null, "Please select a stock.");
+
+                //Retrieves all of the selected stock's information from database
+                else {
+                    //Instantiating variables to hold values
+                    String stockName = "";
+                    float askPrice = 0;
+                    float bidPrice = 0;
+                    float week = 0;
+                    float quarterlyDividendPercent = 0;
+                    float peRatio = 0;
+                    int totalShares = 0;
+                    
+                    try{
+                        // create the java statement
+                        Connection connection = Main.getConnection();
+                        
+                        // execute the query, and get a java resultset
+                        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+                                                                                    + stockList.getSelectedValue() + "'");
+                        rs.next();
+                        
+                        //Storing the values from the database into the variables
+                        stockName = rs.getString("stockSymbol");
+                        askPrice = rs.getFloat("ask");
+                        bidPrice = rs.getFloat("bid");
+                        week = rs.getFloat("52_Week");
+                        quarterlyDividendPercent = rs.getFloat("quarterlyDividendPerc");
+                        peRatio = rs.getFloat("PEratio");
+                        totalShares = rs.getInt("totalShares");
+                    }
+                    catch (Exception ex){
+                        System.out.println(ex);
+                    }
+
+                    //Updating the stock information panel before loading it
+                    stockInfoName.setText("Name: " + stockName);
+                    stockInfoAsk.setText("Ask Price: " + askPrice);
+                    stockInfoBid.setText("Bid Price: " + bidPrice);
+                    stockInfoWeek.setText("52-Week: " + week);
+                    stockInfoQuarterly.setText("Quarterly Dividend Percent: " + quarterlyDividendPercent);
+                    stockInfoPE.setText("PE Ratio: " + peRatio);
+                    stockInfoTotalShares.setText("Total Shares: " + totalShares);
+                    stockInfoPanel.revalidate();
+                }
+            }
+        };
+
+		ActionListener buyStockRefresher = new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//Loads the stock's information that is relevant to buying stocks
+				try
+				{
+					Connection connection = Main.getConnection();
+					// create the java statement
+					
+					// execute the query, and get a java resultset
+					ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																					+ stockList.getSelectedValue() + "'");
+					rs.next();
+
+					//Updates buy stock panel before loading it
+					buyStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
+					buyStockAmountAvailable.setText("Total Shares Available: " + rs.getFloat("totalShares"));
+					buyStockAmountPrice.setText("Price Per Share: " + rs.getFloat("bid"));
+					buyStockPanel.revalidate();
+				}
+				catch (Exception ex)
+				{
+					System.out.println(ex);
+				}
+			}
+		};
+
+		ActionListener sellStockRefresher = new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sellStockConfirmButton.setEnabled(true);
+
+				//Gets and loads the information of the stock the user wishes to sell before loading the panel
+				try
+				{
+					Connection connection = Main.getConnection();
+					// create the java statement
+
+					// execute the query, and get a java resultset
+					ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																					+ stockList.getSelectedValue() + "'");
+					rs.next();
+
+					//Instantiating variables to hold the values of the query
+					String stockSym = rs.getString("stockSymbol");
+					double askPrice = rs.getDouble("ask");
+					
+					//Attempts to show the stock information and how many shares the user owns
+					try
+					{
+						String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
+						rs = connection.createStatement().executeQuery(query);
+						rs.next();
+						
+						sellStockAmountName.setText("Stock Name: " + stockSym);
+						sellStockAmountAvailable.setText("Your Shares: " + rs.getString("sharesOwned"));
+						sellStockAmountPrice.setText("Value Per Share: " + askPrice);
+						sellStockPanel.revalidate();
+					}
+					//If the user does not have any shares of that stock, then display 0 and disable the sell button
+					catch (Exception ex) 
+					{
+						sellStockAmountName.setText("Stock Name: " + stockSym);
+						sellStockAmountAvailable.setText("Your Shares: " + 0);
+						sellStockAmountPrice.setText("Value Per Share: " + askPrice);
+						sellStockConfirmButton.setEnabled(false); //can't sell if own nothing
+						sellStockPanel.revalidate();
+					}
+				}
+				catch (Exception ex)
+				{
+					System.out.println(ex);
+				}
+			}
+		};
+		
+		//Creating timers that allow the methods above to be repeated and controlled through other action performers (buttons)
+		//Timers needs to be created only once and outside the button action listener, otherwise a timer will be created with 
+		//every button press. 
+		Timer stockTimer = new Timer(3000, stockInfoRefresher);
+		Timer buyTimer = new Timer(3000, buyStockRefresher);
+		Timer sellTimer = new Timer(3000, sellStockRefresher);
+
 		//Switches to stock portfolio screen
 		goHome.addActionListener(new ActionListener() {
 			@Override
@@ -894,7 +1032,6 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signInButton) {
-
 					//Initializes a new user object using the username and password
 					curUser = new User(usernameField.getText(), passwordField.getText());
 
@@ -929,7 +1066,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signUpNextButton) {
-
+					
 					boolean usernameValid = true;
 
 					//Check if username is already in use
@@ -978,7 +1115,6 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == createAccountButton) {
-
 					//Check if any required fields are empty
 					if (creationSSNField.getText().equals("") ||
 						creationStreetAddressField.getText().equals("") ||
@@ -1042,6 +1178,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editAccountInfoBackButton) {
+				
 					try {
 						//Loads account information using the user's ID
 						ResultSet rs = User.getAccountInfo(curUser.getID());
@@ -1077,63 +1214,18 @@ public class UserInterface extends JFrame{
 			}
 		});
 
+		
+		
 		//Trade stocks panel's view stock information button functionality
 		stockInfoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == stockInfoButton) {
-					
-					//Check if no stocks are selected
-					if (stockList.isSelectionEmpty())
-						JOptionPane.showMessageDialog(null, "Please select a stock.");
+					stockTimer.setRepeats(true);
+					stockTimer.setInitialDelay(0);
+					stockTimer.start();
 
-					//Retrieves all of the selected stock's information from database
-					else {
-						//Instantiating variables to hold values
-						String stockName = "";
-						float askPrice = 0;
-						float bidPrice = 0;
-						float week = 0;
-						float quarterlyDividendPercent = 0;
-						float peRatio = 0;
-						int totalShares = 0;
-
-						try
-						{
-							Connection connection = Main.getConnection();
-							// create the java statement
-						
-							// execute the query, and get a java resultset
-							ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
-																						+ stockList.getSelectedValue() + "'");
-							rs.next();
-							
-							//Storing the values from the database into the variables
-							stockName = rs.getString("stockSymbol");
-							askPrice = rs.getFloat("ask");
-							bidPrice = rs.getFloat("bid");
-							week = rs.getFloat("52_Week");
-							quarterlyDividendPercent = rs.getFloat("quarterlyDividendPerc");
-							peRatio = rs.getFloat("PEratio");
-							totalShares = rs.getInt("totalShares");
-						}
-						catch (Exception ex)
-						{
-							System.out.println(ex);
-						}
-
-						//Updating the stock information panel before loading it
-						stockInfoName.setText("Name: " + stockName);
-						stockInfoAsk.setText("Ask Price: " + askPrice);
-						stockInfoBid.setText("Bid Price: " + bidPrice);
-						stockInfoWeek.setText("52-Week: " + week);
-						stockInfoQuarterly.setText("Quarterly Dividend Percent: " + quarterlyDividendPercent);
-						stockInfoPE.setText("PE Ratio: " + peRatio);
-						stockInfoTotalShares.setText("Total Shares: " + totalShares);
-						stockInfoPanel.revalidate();
-
-						c1.show(cards, "7"); //switch to stock info
-					}
+					c1.show(cards, "7"); //switch to stock info
 				}
 			}
 		});
@@ -1189,29 +1281,11 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() ==buyStockButton) {
-					
-					//Loads the stock's information that is relevant to buying stocks
-					try
-					{
-						Connection connection = Main.getConnection();
-						// create the java statement
-						
-						// execute the query, and get a java resultset
-						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
-																						+ stockList.getSelectedValue() + "'");
-						rs.next();
+					buyTimer.setRepeats(true);
+					buyTimer.setInitialDelay(0);
+					buyTimer.start();
 
-						//Updates buy stock panel before loading it
-						buyStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
-						buyStockAmountAvailable.setText("Total Shares Available: " + rs.getFloat("totalShares"));
-						buyStockAmountPrice.setText("Price Per Share: " + rs.getFloat("bid"));
-						buyStockPanel.revalidate();
-					}
-					catch (Exception ex)
-					{
-						System.out.println(ex);
-					}
-				c1.show(cards, "8"); //switch to buy stock
+					c1.show(cards, "8"); //switch to buy stock
 				}
 			}
 		});
@@ -1221,23 +1295,19 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == buyStockConfirmButton) {
-
-					//Gets desired stock's information and user's balance to allow user to review 
-					//their order before a purchase is made
-					try
-					{
-						Connection connection = Main.getConnection();
+					try{
 						// create the java statement
+						Connection connection = Main.getConnection();
 						
 						//Gets stock information
 						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM `stock` where stockSymbol = '" 
 																						+ stockList.getSelectedValue() + "'");
 						rs.next();
-
+	
 						//Gets user's information to get access to the user's balance
 						ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `userID` = " + curUser.getID());
 						rs1.next();
-
+	
 						//Calculate total cost of purchase
 						float total = Float.parseFloat(buyStockAmountField.getText()) * rs.getFloat("bid");
 						
@@ -1257,18 +1327,17 @@ public class UserInterface extends JFrame{
 						
 						//Show order review window
 						int n = JOptionPane.showConfirmDialog(null, reviewOrder, "Confirm Purchase", JOptionPane.OK_CANCEL_OPTION);
-
+	
 						//After confirm, place open order in database
 						if (n == JOptionPane.OK_OPTION) { 
 							//Create new open order
 							Order buyOrder = new Order();
 							buyOrder.newOrder(curUser.getID(), stockName, orderType, shareAmnt);
-
+	
 							//Market delay timer
 							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 0*1000);
 							//After delay, if order is not interrupted, it is completed!
 						}
-						c1.show(cards, "7"); //switch to stock info
 					}
 					catch (Exception ex)
 					{
@@ -1276,6 +1345,8 @@ public class UserInterface extends JFrame{
 						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
+
+					c1.show(cards, "7"); //switch to stock info
 				}
 			}
 		});
@@ -1295,52 +1366,10 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == sellStockButton) {
-					sellStockConfirmButton.setEnabled(true);
+					sellTimer.setRepeats(true);
+					sellTimer.setInitialDelay(0);
+					sellTimer.start();
 
-					//Gets and loads the information of the stock the user wishes to sell before loading the panel
-					try
-					{
-						Connection connection = Main.getConnection();
-						// create the java statement
-
-						// execute the query, and get a java resultset
-						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
-																						+ stockList.getSelectedValue() + "'");
-						rs.next();
-
-						//Instantiating variables to hold the values of the query
-						String stockSym = rs.getString("stockSymbol");
-						double askPrice = rs.getDouble("ask");
-						
-						//Attempts to show the stock information and how many shares the user owns
-						try
-						{
-							String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
-							rs = connection.createStatement().executeQuery(query);
-							rs.next();
-							
-							sellStockAmountName.setText("Stock Name: " + stockSym);
-							sellStockAmountAvailable.setText("Your Shares: " + rs.getString("sharesOwned"));
-							sellStockAmountPrice.setText("Value Per Share: " + askPrice);
-							sellStockPanel.revalidate();
-						}
-						//If the user does not have any shares of that stock, then display 0 and disable the sell button
-						catch (Exception ex) 
-						{
-							sellStockAmountName.setText("Stock Name: " + stockSym);
-							sellStockAmountAvailable.setText("Your Shares: " + 0);
-							sellStockAmountPrice.setText("Value Per Share: " + askPrice);
-							sellStockConfirmButton.setEnabled(false); //can't sell if own nothing
-							sellStockPanel.revalidate();
-							
-							
-						}
-						
-					}
-					catch (Exception ex)
-					{
-						System.out.println(ex);
-					}
 					c1.show(cards, "9"); //switch to sell stock
 				}
 			}
@@ -1350,8 +1379,6 @@ public class UserInterface extends JFrame{
 		sellStockConfirmButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
-				//
 				try
 				{
 					Connection connection = Main.getConnection();
@@ -1423,7 +1450,6 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawButton) {
-
 					//Make sure the bank information fields are not empty
 					if (bankNameField.getText().equals("") || 
 							bankAccountNumberField.getText().equals("__________") ||
@@ -1444,7 +1470,6 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawConfirmButton) {
-
 					//Adds to the user's balance
 					try {
 						//Calculates the user's new balance and stores it in the database
@@ -1484,6 +1509,8 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawBackButton) {
+					
+					
 					c1.show(cards, "10"); //switch to funds
 				}
 			}
@@ -1494,7 +1521,6 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositButton) {
-
 					//Check if any bank information text fields are empty
 					if (bankNameField.getText().equals("") ||
 							bankAccountNumberField.getText().equals("__________") ||
@@ -1515,7 +1541,6 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositConfirmButton) {
-
 					//Subtracts from the user's balance
 					try {
 						float newBalance;
@@ -1581,7 +1606,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editLoginCredentialsButton) {
-
+					
 					//Text fields for new username and password to be displayed in pop up window
 					JTextField field1 = new JTextField(15);
 					JTextField field2 = new JTextField(15);
@@ -1652,7 +1677,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editPersonalInformationButton) {
-
+					
 					//Text fields for new first name, last name, and email address to be displayed in pop up dialog
 					JTextField field1 = new JTextField(15);
 					JTextField field2 = new JTextField(15);
@@ -1728,7 +1753,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == editAddressButton) {
-
+					
 					//Text fields for new streetAddress and city to be displayed in pop up window
 					JTextField field1 = new JTextField(15);
 					JTextField field2 = new JTextField(15);
@@ -1797,7 +1822,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == accountInfoDeleteButton) {
-
+				
 					//Displays a pop up window to confirm account deletion
 					int n = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete this account?", 
 																				"Delete Account", JOptionPane.YES_NO_OPTION);
@@ -1839,7 +1864,7 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == searchButton) {
-
+				
 					//Filters stocks depending on search bar field input
 
 					//Check that search bar field is not empty
@@ -1906,13 +1931,12 @@ public class UserInterface extends JFrame{
 	//Helper methods
 	//*****************************************************************************************
 
-	//Method to display the user's stock portfolio
-	public void displayStockPortfolio()
-	{
-		//Confirms the user's login credentials
-		if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
+	ActionListener portfolioRefresher = new ActionListener(){
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
 			try {
-				
+			
 				// Gets the user's portfolio information using their user ID
 				ResultSet rs = User.viewPortfolio(curUser.getID());
 				
@@ -1952,6 +1976,20 @@ public class UserInterface extends JFrame{
 			catch (Exception ex) {
 				System.out.println(ex);
 			}
+		}	
+	};
+
+	Timer portfolioTimer = new Timer(3000, portfolioRefresher);
+	
+	//Method to display the user's stock portfolio
+	public void displayStockPortfolio()
+	{
+		//Confirms the user's login credentials
+		if (User.loginConfirmation(usernameField.getText(), passwordField.getText())) {
+			portfolioTimer.setRepeats(true);
+			portfolioTimer.setInitialDelay(0);
+			portfolioTimer.start();
+
 			c1.show(cards, "3"); //switch to home
 			menuBar.setVisible(true); //shows menu bar when user logs in
 		}
