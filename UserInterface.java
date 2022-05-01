@@ -1465,44 +1465,58 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		//Withdraw panel's confirm withdrawal button functionality
+		//withdraw panel's confirm withdraw button functionality
 		withdrawConfirmButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == withdrawConfirmButton) {
 					//Adds to the user's balance
+					//Subtracts from the user's balance
 					try {
-						//Calculates the user's new balance and stores it in the database
 						float newBalance;
-						newBalance = User.updateBalance(curUser.getID(), Float.parseFloat(withdrawAmountField.getText()));
 
-						//Records a monetary transaction
-						MonetaryTransaction withdrawTransaction = new MonetaryTransaction();
-						withdrawTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
+						// Gets user information to gain access to their balance
+						ResultSet rs = User.getAccountInfo(curUser.getID());
+						rs.next();
+
+						// Make sure the user has enough money to deposit
+						if (Float.parseFloat(withdrawAmountField.getText()) > rs.getFloat("balance")) {
+
+							//Displays error pop up if balance is insufficient
+							JOptionPane.showMessageDialog(null, "You cannot withdraw more than your current balance!");
+						}
+						else {
+							// Calculates the user's new balance and stores it in the database
+							newBalance = User.updateBalance(curUser.getID(), -Float.parseFloat(withdrawAmountField.getText()));
+
+							//Records a monetary transaction in the database
+							MonetaryTransaction withdrawTransaction = new MonetaryTransaction();
+							withdrawTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
 														bankNameField.getText(), bankAccountNumberField.getText(), 
 														"WITHDRAW", Float.parseFloat(withdrawAmountField.getText()));
 
-						//Updates the balance label to display the user's new balance
-						manageFundsBalance.setText("Balance: " + newBalance);
-						
-						//Clears the bank information text fields
-						bankAccountNumberField.setValue(null);
-						bankRoutingNumberField.setValue(null);
-						bankNameField.setText(null);
-						
-						//Updates the manage funds panel
-						fundsPanel.revalidate();
-
-						c1.show(cards, "10"); //switch to funds
+							//Updates balance label to new balance
+							manageFundsBalance.setText("Balance: " + newBalance);
+							
+							//Clears bank information text fields
+							bankAccountNumberField.setValue(null);
+							bankRoutingNumberField.setValue(null);
+							bankNameField.setText(null);
+							
+							//Updates manage fund panel before loading it
+							fundsPanel.revalidate();
+							c1.show(cards, "10"); //switch to funds
+						}
 					}
 					catch (Exception ex) {
-						//Displays error dialog when user enters invalid amount
+						//Diplays error pop up dialog if invalid amount was entered
 						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
 				}
 			}
 		});
+			
 		
 		//Withdraw panel's back button functionality
 		withdrawBackButton.addActionListener(new ActionListener() {
@@ -1536,56 +1550,47 @@ public class UserInterface extends JFrame{
 			}
 		});
 		
-		//Deposit panel's confirm deposit button functionality
+		//deposit panel's confirm deposit button functionality
 		depositConfirmButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == depositConfirmButton) {
+
 					//Subtracts from the user's balance
+					//Adds to the user's balance
 					try {
+						//Calculates the user's new balance and stores it in the database
 						float newBalance;
+						newBalance = User.updateBalance(curUser.getID(), Float.parseFloat(depositAmountField.getText()));
 
-						// Gets user information to gain access to their balance
-						ResultSet rs = User.getAccountInfo(curUser.getID());
-						rs.next();
-
-						// Make sure the user has enough money to deposit
-						if (Float.parseFloat(depositAmountField.getText()) > rs.getFloat("balance")) {
-
-							//Displays error pop up if balance is insufficient
-							JOptionPane.showMessageDialog(null, "You cannot deposit more than your current balance!");
-						}
-						else {
-							// Calculates the user's new balance and stores it in the database
-							newBalance = User.updateBalance(curUser.getID(), -Float.parseFloat(depositAmountField.getText()));
-
-							//Records a monetary transaction in the database
-							MonetaryTransaction depositTransaction = new MonetaryTransaction();
-							depositTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
+						//Records a monetary transaction
+						MonetaryTransaction depositTransaction = new MonetaryTransaction();
+						depositTransaction.newMonetaryTransaction(curUser.getID(), bankRoutingNumberField.getText(), 
 														bankNameField.getText(), bankAccountNumberField.getText(), 
 														"DEPOSIT", Float.parseFloat(depositAmountField.getText()));
 
-							//Updates balance label to new balance
-							manageFundsBalance.setText("Balance: " + newBalance);
-							
-							//Clears bank information text fields
-							bankAccountNumberField.setValue(null);
-							bankRoutingNumberField.setValue(null);
-							bankNameField.setText(null);
-							
-							//Updates manage fund panel before loading it
-							fundsPanel.revalidate();
-							c1.show(cards, "10"); //switch to funds
-						}
+						//Updates the balance label to display the user's new balance
+						manageFundsBalance.setText("Balance: " + newBalance);
+						
+						//Clears the bank information text fields
+						bankAccountNumberField.setValue(null);
+						bankRoutingNumberField.setValue(null);
+						bankNameField.setText(null);
+						
+						//Updates the manage funds panel
+						fundsPanel.revalidate();
+
+						c1.show(cards, "10"); //switch to funds
 					}
 					catch (Exception ex) {
-						//Diplays error pop up dialog if invalid amount was entered
+						//Displays error dialog when user enters invalid amount
 						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
 				}
 			}
 		});
+		
 		
 		//Deposit panel's back button functionality
 		depositBackButton.addActionListener(new ActionListener() {
@@ -1980,7 +1985,7 @@ public class UserInterface extends JFrame{
 	};
 
 	Timer portfolioTimer = new Timer(3000, portfolioRefresher);
-	
+
 	//Method to display the user's stock portfolio
 	public void displayStockPortfolio()
 	{
