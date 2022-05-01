@@ -180,7 +180,7 @@ public class MultiThreadStocks extends Thread {
             	}
                 	
                 updateAskPrice.executeUpdate();                           //Giving the greenlight to execute our update query
-                TimeUnit.SECONDS.sleep(3);  //stocks will change values every x seconds
+                TimeUnit.SECONDS.sleep(15);  //stocks will change values every x seconds
             }
         }catch(Exception e){
             System.out.println(e);

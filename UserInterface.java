@@ -748,12 +748,9 @@ public class UserInterface extends JFrame{
 		ActionListener stockInfoRefresher = new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Check if no stocks are selected
-                if (stockList.isSelectionEmpty())
-                    JOptionPane.showMessageDialog(null, "Please select a stock.");
-
+				
                 //Retrieves all of the selected stock's information from database
-                else {
+                if (!stockList.isSelectionEmpty()) {
                     //Instantiating variables to hold values
                     String stockName = "";
                     float askPrice = 0;
@@ -1225,7 +1222,10 @@ public class UserInterface extends JFrame{
 					stockTimer.setInitialDelay(0);
 					stockTimer.start();
 
-					c1.show(cards, "7"); //switch to stock info
+					if (stockList.isSelectionEmpty())
+                    	JOptionPane.showMessageDialog(null, "Please select a stock.");
+					else
+						c1.show(cards, "7"); //switch to stock info
 				}
 			}
 		});
@@ -1346,8 +1346,6 @@ public class UserInterface extends JFrame{
 						JOptionPane.showMessageDialog(null, "Please enter a valid amount.");
 						System.out.println(ex);
 					}
-
-					c1.show(cards, "7"); //switch to stock info
 				}
 			}
 		});
@@ -1425,7 +1423,6 @@ public class UserInterface extends JFrame{
 						Main.marketDelay.schedule(new MarketDelay(sellStockAmountField.getText(), rs.getString("stockSymbol"), sellOrder.getTransactionID()), 0*1000);
 						//After delay, if order is not interrupted, it is completed!
 					}
-					c1.show(cards, "7"); //switch to stock info
 				}
 				catch (Exception ex)
 				{
