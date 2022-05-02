@@ -1416,7 +1416,7 @@ public class UserInterface extends JFrame{
 					//Creates a string for the order details
 					String reviewOrder = "Review Order:\n";
 					reviewOrder += "Stock Name: " + stockName + "\n";
-					reviewOrder += "Order Type: Buy\n";
+					reviewOrder += "Order Type: Sale\n";
 					reviewOrder += "Shares: " + shareAmnt + "\n";
 					reviewOrder += "Value per Share: " + rs.getFloat("ask") + "\n\n";
 					reviewOrder += "Current Balance: " + rs1.getFloat("balance") + "\n";
