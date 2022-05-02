@@ -798,26 +798,30 @@ public class UserInterface extends JFrame{
 		ActionListener buyStockRefresher = new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//Loads the stock's information that is relevant to buying stocks
-				try
-				{
-					Connection connection = Main.getConnection();
-					// create the java statement
-					
-					// execute the query, and get a java resultset
-					ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
-																					+ stockList.getSelectedValue() + "'");
-					rs.next();
 
-					//Updates buy stock panel before loading it
-					buyStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
-					buyStockAmountAvailable.setText("Total Shares Available: " + rs.getFloat("totalShares"));
-					buyStockAmountPrice.setText("Price Per Share: " + rs.getFloat("bid"));
-					buyStockPanel.revalidate();
-				}
-				catch (Exception ex)
-				{
-					System.out.println(ex);
+				//Make sure the selection is not empty
+				if (!stockList.isSelectionEmpty()) {
+					//Loads the stock's information that is relevant to buying stocks
+					try
+					{
+						Connection connection = Main.getConnection();
+						// create the java statement
+						
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
+						rs.next();
+
+						//Updates buy stock panel before loading it
+						buyStockAmountName.setText("Stock Name: " + rs.getString("stockSymbol"));
+						buyStockAmountAvailable.setText("Total Shares Available: " + rs.getFloat("totalShares"));
+						buyStockAmountPrice.setText("Price Per Share: " + rs.getFloat("bid"));
+						buyStockPanel.revalidate();
+					}
+					catch (Exception ex)
+					{
+						System.out.println(ex);
+					}
 				}
 			}
 		};
@@ -827,46 +831,49 @@ public class UserInterface extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				sellStockConfirmButton.setEnabled(true);
 
-				//Gets and loads the information of the stock the user wishes to sell before loading the panel
-				try
-				{
-					Connection connection = Main.getConnection();
-					// create the java statement
-
-					// execute the query, and get a java resultset
-					ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
-																					+ stockList.getSelectedValue() + "'");
-					rs.next();
-
-					//Instantiating variables to hold the values of the query
-					String stockSym = rs.getString("stockSymbol");
-					double askPrice = rs.getDouble("ask");
-					
-					//Attempts to show the stock information and how many shares the user owns
+				//Make sure the selection is not empty
+				if (!stockList.isSelectionEmpty()) {
+					//Gets and loads the information of the stock the user wishes to sell before loading the panel
 					try
 					{
-						String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
-						rs = connection.createStatement().executeQuery(query);
+						Connection connection = Main.getConnection();
+						// create the java statement
+
+						// execute the query, and get a java resultset
+						ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM stock where stockSymbol = '" 
+																						+ stockList.getSelectedValue() + "'");
 						rs.next();
+
+						//Instantiating variables to hold the values of the query
+						String stockSym = rs.getString("stockSymbol");
+						double askPrice = rs.getDouble("ask");
 						
-						sellStockAmountName.setText("Stock Name: " + stockSym);
-						sellStockAmountAvailable.setText("Your Shares: " + rs.getString("sharesOwned"));
-						sellStockAmountPrice.setText("Value Per Share: " + askPrice);
-						sellStockPanel.revalidate();
+						//Attempts to show the stock information and how many shares the user owns
+						try
+						{
+							String query = "SELECT `stockOwner`, sharesOwned FROM usersShareTotal WHERE `stockOwner` = " + "\"" + curUser.getID() + "_" + stockSym + "\""; 			
+							rs = connection.createStatement().executeQuery(query);
+							rs.next();
+							
+							sellStockAmountName.setText("Stock Name: " + stockSym);
+							sellStockAmountAvailable.setText("Your Shares: " + rs.getString("sharesOwned"));
+							sellStockAmountPrice.setText("Value Per Share: " + askPrice);
+							sellStockPanel.revalidate();
+						}
+						//If the user does not have any shares of that stock, then display 0 and disable the sell button
+						catch (Exception ex) 
+						{
+							sellStockAmountName.setText("Stock Name: " + stockSym);
+							sellStockAmountAvailable.setText("Your Shares: " + 0);
+							sellStockAmountPrice.setText("Value Per Share: " + askPrice);
+							sellStockConfirmButton.setEnabled(false); //can't sell if own nothing
+							sellStockPanel.revalidate();
+						}
 					}
-					//If the user does not have any shares of that stock, then display 0 and disable the sell button
-					catch (Exception ex) 
+					catch (Exception ex)
 					{
-						sellStockAmountName.setText("Stock Name: " + stockSym);
-						sellStockAmountAvailable.setText("Your Shares: " + 0);
-						sellStockAmountPrice.setText("Value Per Share: " + askPrice);
-						sellStockConfirmButton.setEnabled(false); //can't sell if own nothing
-						sellStockPanel.revalidate();
+						System.out.println(ex);
 					}
-				}
-				catch (Exception ex)
-				{
-					System.out.println(ex);
 				}
 			}
 		};
