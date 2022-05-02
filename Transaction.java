@@ -25,7 +25,7 @@ public abstract class Transaction {
 			//this will automatically records unique transactionID and date upon creation 
 			//if insert successful, update this objects attributes
 			
-			//get ID transaction we just created
+			//get ID transaction we just created (auto incremented so we dont know it intrinsically)
 			ResultSet rs = connection.createStatement().executeQuery("SELECT LAST_INSERT_ID()");
 			rs.next();
 			

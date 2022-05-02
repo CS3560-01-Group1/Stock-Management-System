@@ -77,7 +77,7 @@ public class Order extends Transaction{
 			this.orderTypeDesc = rs.getString("typeOfOrder");
 			this.quantity = rs.getDouble("quantity");
 			
-			//Also get current stock price for late user
+			//Also get current stock price for later use
 			String queryStockPrices = "SELECT * FROM stockdb.stock WHERE stockSymbol = \"" + rs.getString("stockSymbol") + "\"";
 			ResultSet rs2 = connection.createStatement().executeQuery(queryStockPrices);
 			rs2.next();
