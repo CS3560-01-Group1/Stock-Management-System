@@ -78,7 +78,7 @@ public class MultiThreadStocks extends Thread {
                         System.out.printf(tickerSymbol + " Small Loss: %.2f\n", askPrice);
                         System.out.println(tickerSymbol + " Daily Change: " + todaysChangePercent + "%");
                         break;
-                    //Mini Loss -%1 of original value, honetly just padding to prevent Extreme Loss/Gain from happening too often
+                    //Mini Loss -1% of original value, honetly just padding to prevent Extreme Loss/Gain from happening too often
                     case 4:
                         askPrice -= ogPrice * 0.01;
                         todaysChangePercent -= 1;
@@ -89,7 +89,7 @@ public class MultiThreadStocks extends Thread {
                         System.out.printf(tickerSymbol + " Mini Loss: %.2f\n", askPrice);
                         System.out.println(tickerSymbol + " Daily Change: " + todaysChangePercent + "%");
                         break;
-                    //No change +-%0 
+                    //No change +-0% 
                     case 5:
                         System.out.printf(tickerSymbol + " No Change: %.2f\n", askPrice);
                         todaysChangePercent += 0;
