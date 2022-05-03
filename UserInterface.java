@@ -197,7 +197,7 @@ public class UserInterface extends JFrame{
 		JLabel creationFirstName = new JLabel("First Name");
 		JLabel creationLastName = new JLabel("Last Name");
 		JLabel creationEmail = new JLabel("Email Address (Optional)");
-		JLabel creationPhoneNumber = new JLabel("Phone Number (Optional");
+		JLabel creationPhoneNumber = new JLabel("Phone Number (Optional)");
 		JLabel creationSSN = new JLabel("Social Security Number");
 		JLabel creationStreetAddress = new JLabel("Street Address");
 		JLabel creationCity = new JLabel("City");
@@ -1338,6 +1338,12 @@ public class UserInterface extends JFrame{
 						ResultSet rs1 = connection.createStatement().executeQuery("SELECT * FROM `user` WHERE `userID` = " + curUser.getID());
 						rs1.next();
 	
+						//Check for valid amount input
+						if (Float.parseFloat(buyStockAmountField.getText()) > rs.getFloat("totalShares"))
+							throw new Exception("Cannot purchase more than the total shares!");
+						if (Float.parseFloat(buyStockAmountField.getText()) < 1)
+							throw new Exception("Cannot purchase less than one share!");
+
 						//Calculate total cost of purchase
 						float total = Float.parseFloat(buyStockAmountField.getText()) * rs.getFloat("bid");
 						
@@ -1363,7 +1369,7 @@ public class UserInterface extends JFrame{
 							//Create new open order
 							Order buyOrder = new Order();
 							buyOrder.newOrder(curUser.getID(), stockName, orderType, shareAmnt);
-	
+
 							//Market delay timer
 							Main.marketDelay.schedule(new MarketDelay(buyStockAmountField.getText(), rs.getString("stockSymbol"), buyOrder.getTransactionID()), 0*1000);
 							//After delay, if order is not interrupted, it is completed!
@@ -1432,7 +1438,7 @@ public class UserInterface extends JFrame{
 					//Creates a string for the order details
 					String reviewOrder = "Review Order:\n";
 					reviewOrder += "Stock Name: " + stockName + "\n";
-					reviewOrder += "Order Type: Buy\n";
+					reviewOrder += "Order Type: Sale\n";
 					reviewOrder += "Shares: " + shareAmnt + "\n";
 					reviewOrder += "Value per Share: " + rs.getFloat("ask") + "\n\n";
 					reviewOrder += "Current Balance: " + rs1.getFloat("balance") + "\n";
