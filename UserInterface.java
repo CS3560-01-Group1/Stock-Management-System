@@ -1071,6 +1071,7 @@ public class UserInterface extends JFrame{
 					creationZipCodeField.setText(null);
 					creationEmailField.setText(null);
 					creationPhoneNumberField.setText(null);
+					
 					c1.show(cards, "1"); //switch to login
 				}
 			}
