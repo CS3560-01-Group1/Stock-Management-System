@@ -1141,6 +1141,17 @@ public class UserInterface extends JFrame{
 												creationEmailField.getText(), 
 												creationPhoneNumberField.getText());
 						JOptionPane.showMessageDialog(null, "Account created successfully!");
+						creationUsernameField.setText(null);
+						creationPasswordField.setText(null);
+						creationFirstNameField.setText(null);
+						creationLastNameField.setText(null);
+						creationSSNField.setText(null);
+						creationStreetAddressField.setText(null);
+						creationCityField.setText(null);
+						creationStateField.setText(null);
+						creationZipCodeField.setText(null);
+						creationEmailField.setText(null);
+						creationPhoneNumberField.setText(null);
 						c1.show(cards, "1"); //switch to login
 					}
 				}
@@ -1152,6 +1163,17 @@ public class UserInterface extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == signUp2BackButton) {
+					creationUsernameField.setText(null);
+					creationPasswordField.setText(null);
+					creationFirstNameField.setText(null);
+					creationLastNameField.setText(null);
+					creationSSNField.setText(null);
+					creationStreetAddressField.setText(null);
+					creationCityField.setText(null);
+					creationStateField.setText(null);
+					creationZipCodeField.setText(null);
+					creationEmailField.setText(null);
+					creationPhoneNumberField.setText(null);
 					c1.show(cards, "1"); //switch to login for 2nd sign up
 				}
 			}
